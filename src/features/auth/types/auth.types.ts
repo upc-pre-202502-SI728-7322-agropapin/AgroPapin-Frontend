@@ -9,10 +9,14 @@ export interface AuthState {
 }
 
 export interface PlanOption {
-    id: Plan
+    id: string
     name: string
     price: string
     period: string
-    color: string
+    bgColor: string
+    borderColor: string
+    textColor: string
+    accentColor: string
+    hoverBg: string
     features: string[]
 }
