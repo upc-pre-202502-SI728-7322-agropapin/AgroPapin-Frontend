@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import {useNavigate} from "react-router-dom";
-import type { Plan, PlanOption } from "../types/auth.types"
+import type { PlanOption } from "../types/auth.types"
 import { ROUTES } from "../../../shared/constants/routes"
 import {PlanCard} from "../../../shared/components/ui/PlanCard.tsx";
+import {useOnboarding} from "../context/OnboardingContext.tsx";
 
 const plans: PlanOption[] = [
     {
@@ -50,13 +51,20 @@ export function PlanSelector() {
     const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false)
 
-    const handleSelect = async (plan: string) => {
-        if (!plan) return
+    const {setSelectedPlan: setOnboardingSelectedPlan} = useOnboarding();
 
-        setIsLoading(true)
-        setTimeout(() => {
-            navigate(ROUTES.ONBOARDING.PAYMENT)
-        }, 500)
+    const handleSelect = async (planId: string) => {
+        const plan = plans.find(p=> p.id === planId)
+
+        if (plan){
+            setSelectedPlan(plan.id)
+            setOnboardingSelectedPlan(plan)
+            setIsLoading(true)
+            setTimeout(() => {
+                navigate(ROUTES.ONBOARDING.PAYMENT)
+            }, 500)
+        }
+
     }
 
     return (

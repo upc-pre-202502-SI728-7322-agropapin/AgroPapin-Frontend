@@ -1,4 +1,5 @@
 "use client"
+import { FiCheckCircle } from "react-icons/fi";
 
 interface PlanCardProps {
     id: string
@@ -17,7 +18,6 @@ interface PlanCardProps {
 }
 
 export function PlanCard({
-                             id,
                              name,
                              price,
                              period,
@@ -27,7 +27,6 @@ export function PlanCard({
                              accentColor,
                              hoverBg,
                              features,
-                             isSelected,
                              isLoading,
                              onClick,
                          }: PlanCardProps) {
@@ -64,7 +63,7 @@ export function PlanCard({
                 {features.map((feature, idx) => (
                     <li key={idx} className="flex items-start gap-3" style={{ color: textColor }}>
             <span className="font-bold mt-1 flex-shrink-0" style={{ color: accentColor }}>
-              ✓
+              <FiCheckCircle size={20}/>
             </span>
                         <span className="text-sm leading-relaxed">{feature}</span>
                     </li>
