@@ -1,4 +1,4 @@
-import {LoginForm} from "../../features/auth/components/LoginForm.tsx";
+import {LoginForm} from "../../features/auth";
 import {CgProfile} from "react-icons/cg";
 
 export default function LoginPage(){
