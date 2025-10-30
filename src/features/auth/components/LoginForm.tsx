@@ -95,14 +95,14 @@ export function LoginForm() {
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-green-700 text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition disabled:opacity-50"
+                className="w-full bg-[#3E7C59] text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition disabled:opacity-50"
             >
                 {isLoading ? "Signing in..." : "Sign In"}
             </button>
 
             <p className="text-center text-gray-600">
                 Don't have an account?{" "}
-                <Link to={ROUTES.SIGNUP} className="text-green-700 font-semibold hover:text-green-800">
+                <Link to={ROUTES.SIGNUP} className="text-[#3E7C59] font-semibold hover:text-green-800">
                     Sign up
                 </Link>
             </p>

@@ -102,14 +102,14 @@ export function SignupForm() {
             <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-green-700 text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition disabled:opacity-50"
+                className="w-full bg-[#3E7C59] text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition disabled:opacity-50"
             >
                 {isLoading ? "Creating account..." : "Sign Up"}
             </button>
 
             <p className="text-center text-gray-600">
                 Already have an account?{" "}
-                <Link to={ROUTES.LOGIN} className="text-green-700 font-semibold hover:text-green-800">
+                <Link to={ROUTES.LOGIN} className="text-[#3E7C59] font-semibold hover:text-green-800">
                     Sign in
                 </Link>
             </p>
