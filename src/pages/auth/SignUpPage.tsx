@@ -1,4 +1,4 @@
-import {SignupForm} from "../../features/auth/components/SignUpForm.tsx";
+import {SignupForm} from "../../features/auth";
 import {CgProfile} from "react-icons/cg";
 
 export default function SignUpPage(){

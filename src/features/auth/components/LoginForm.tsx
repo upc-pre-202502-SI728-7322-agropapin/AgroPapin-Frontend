@@ -2,18 +2,17 @@
 
 import type React from "react"
 import { useState } from "react"
-import {useNavigate} from "react-router-dom";
 import { validateEmail, validatePassword } from "../../../shared/utils/validations.ts"
 import { ROUTES } from "../../../shared/constants/routes"
 import {Link} from "react-router-dom";
+import { useLogin } from "../hooks/useLogin"
 
 export function LoginForm() {
-    const navigate = useNavigate()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [rememberMe, setRememberMe] = useState(false)
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
-    const [isLoading, setIsLoading] = useState(false)
+    const { handleLogin, isLoading, error } = useLogin()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -31,14 +30,17 @@ export function LoginForm() {
             return
         }
 
-        setIsLoading(true)
-        setTimeout(() => {
-            navigate(ROUTES.DASHBOARD)
-        }, 500)
+        await handleLogin(email, password)
     }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                    <p className="text-sm">{error}</p>
+                </div>
+            )}
+
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input

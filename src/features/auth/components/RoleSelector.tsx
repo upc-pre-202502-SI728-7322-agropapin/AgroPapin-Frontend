@@ -5,15 +5,17 @@ import type { Role } from "../types/auth.types"
 import { ROUTES } from "../../../shared/constants/routes"
 import {useNavigate} from "react-router-dom";
 import {RoleCard} from "../../../shared/components/ui/RoleCard.tsx";
+import { useOnboarding } from "../context/OnboardingContext"
 
 export function RoleSelector() {
     const navigate = useNavigate()
-    const [selectedRole, setSelectedRole] = useState<Role>(null)
+    const { selectedRole, setSelectedRole } = useOnboarding()
     const [isLoading, setIsLoading] = useState(false)
 
     const handleSelect = async (role: Role) => {
         if (!role) return
 
+        setSelectedRole(role)
         setIsLoading(true)
         setTimeout(() => {
             navigate(ROUTES.ONBOARDING.PLAN)
@@ -30,7 +32,6 @@ export function RoleSelector() {
                     isSelected={selectedRole === "farmer"}
                     isLoading={isLoading}
                     onClick={() => {
-                        setSelectedRole("farmer")
                         handleSelect("farmer")
                     }}
                 />
@@ -40,7 +41,6 @@ export function RoleSelector() {
                     isSelected={selectedRole === "cooperative"}
                     isLoading={isLoading}
                     onClick={() => {
-                        setSelectedRole("cooperative")
                         handleSelect("cooperative")
                     }}
                 />
