@@ -2,24 +2,23 @@
 
 import type React from "react"
 import { useState } from "react"
-import {useNavigate} from "react-router-dom";
 import { validateCardNumber, validateCVC } from "../../../shared/utils/validations.ts"
-import { ROUTES } from "../../../shared/constants/routes"
+import { useOnboarding } from "../context/OnboardingContext"
+import { useSignUp } from "../hooks/useSignUp"
 
 export function PaymentForm() {
-    const navigate = useNavigate()
+    const { formData, selectedRole } = useOnboarding()
+    const { handleSignUp, isLoading, error } = useSignUp()
     const [cardNumber, setCardNumber] = useState("")
     const [dueDate, setDueDate] = useState("")
     const [cvc, setCvc] = useState("")
-    const [email, setEmail] = useState("")
-    const [name, setName] = useState("")
     const [errors, setErrors] = useState<Record<string, string>>({})
-    const [isLoading, setIsLoading] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         const newErrors: Record<string, string> = {}
 
+        // validar los datos de la tarjeta
         if (!validateCardNumber(cardNumber)) {
             newErrors.cardNumber = "Invalid card number"
         }
@@ -29,22 +28,26 @@ export function PaymentForm() {
         if (!validateCVC(cvc)) {
             newErrors.cvc = "Invalid CVC"
         }
-        if (!email || !email.includes("@")) {
-            newErrors.email = "Invalid email"
-        }
-        if (!name || name.length < 3) {
-            newErrors.name = "Invalid name"
-        }
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors)
             return
         }
 
-        setIsLoading(true)
-        setTimeout(() => {
-            navigate(ROUTES.LOGIN)
-        }, 500)
+        // validar datos de registro
+        if (!formData.email || !formData.password || !formData.firstName || !formData.lastName || !selectedRole) {
+            alert("Missing registration data. Please go back and complete all steps.")
+            return
+        }
+
+        // registrar usuario
+        await handleSignUp(
+            formData.email,
+            formData.password,
+            formData.firstName,
+            formData.lastName,
+            selectedRole
+        )
     }
 
     const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,6 +71,12 @@ export function PaymentForm() {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                    <p className="text-sm">{error}</p>
+                </div>
+            )}
+
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Card number:</label>
                 <input
@@ -118,38 +127,11 @@ export function PaymentForm() {
                 </div>
             </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email:</label>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => {
-                        setEmail(e.target.value)
-                        if (errors.email) setErrors({ ...errors, email: "" })
-                    }}
-                    placeholder="your@email.com"
-                    className={`w-full px-4 py-3 rounded-lg border-2 transition ${
-                        errors.email ? "border-red-500 bg-red-50" : "border-gray-300 bg-white focus:border-green-600"
-                    } focus:outline-none`}
-                />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Name:</label>
-                <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => {
-                        setName(e.target.value)
-                        if (errors.name) setErrors({ ...errors, name: "" })
-                    }}
-                    placeholder="Your full name"
-                    className={`w-full px-4 py-3 rounded-lg border-2 transition ${
-                        errors.name ? "border-red-500 bg-red-50" : "border-gray-300 bg-white focus:border-green-600"
-                    } focus:outline-none`}
-                />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h4 className="font-semibold mb-2">Registration Summary:</h4>
+                <p className="text-sm text-gray-600">Name: {formData.firstName} {formData.lastName}</p>
+                <p className="text-sm text-gray-600">Email: {formData.email}</p>
+                <p className="text-sm text-gray-600">Role: {selectedRole}</p>
             </div>
 
             <button
@@ -157,7 +139,7 @@ export function PaymentForm() {
                 disabled={isLoading}
                 className="w-full bg-[#3E7C59] text-white py-3 rounded-lg font-semibold hover:bg-green-800 transition disabled:opacity-50"
             >
-                {isLoading ? "Processing..." : "Pay"}
+                {isLoading ? "Processing..." : "Complete Registration"}
             </button>
         </form>
     )
