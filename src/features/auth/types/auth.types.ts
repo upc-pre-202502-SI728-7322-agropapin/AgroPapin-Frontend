@@ -1,22 +1,29 @@
-export type Role = "farmer" | "cooperative" | null
-export type Plan = "basic" | "regular" | "premium" | null
+export type Role = "farmer" | "cooperative" | null;
 
-export interface AuthState {
-    email: string
-    password: string
-    role: Role
-    plan: Plan
+export interface User {
+  id: string;
+  email: string;
+  roles: string[];
 }
 
+export interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+}
+
+// Onboarding types
 export interface PlanOption {
-    id: string
-    name: string
-    price: string
-    period: string
-    bgColor: string
-    borderColor: string
-    textColor: string
-    accentColor: string
-    hoverBg: string
-    features: string[]
+  id: string;
+  name: string;
+  price: string;
+  period: string;
+  bgColor: string;
+  borderColor: string;
+  textColor: string;
+  accentColor: string;
+  hoverBg: string;
+  features: string[];
 }
