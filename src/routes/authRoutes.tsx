@@ -3,6 +3,7 @@ import AuthLayout from "../shared/components/layouts/AuthLayout";
 import {ROUTES} from "../shared/constants/routes.ts";
 import LoginPage from "../pages/auth/LoginPage.tsx"
 import SignUpPage from "../pages/auth/SignUpPage.tsx"
+import {RolePage} from "../pages/auth/RolePage.tsx";
 
 export const authRoutes: RouteObject[] = [
     {
@@ -15,7 +16,12 @@ export const authRoutes: RouteObject[] = [
             {
                 path:ROUTES.SIGNUP,
                 element:<SignUpPage/>
+            },
+            {
+                path:ROUTES.ONBOARDING.ROLE,
+                element:<RolePage/>
             }
+
         ]
     }
 ];

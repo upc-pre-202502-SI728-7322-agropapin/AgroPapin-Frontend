@@ -5,7 +5,7 @@ export const ROUTES = {
     DASHBOARD: '/dashboard',
     ONBOARDING:{
         ROLE: '/onboarding/role',
-        DETAILS: '/onboarding/plan',
+        PLAN: '/onboarding/plan',
         PAYMENT: '/onboarding/payment',
     },
     NOTFOUND: '*'
