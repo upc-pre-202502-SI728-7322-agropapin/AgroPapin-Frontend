@@ -6,6 +6,7 @@ import FieldInformationPage from '../pages/field-info/FieldInformationPage';
 import CropListPage from '../pages/crop-list/CropListPage';
 import { CropDetailPage } from '../pages/crop-detail/CropDetailPage';
 import DevicesPage from '../pages/devices/DevicesPage';
+import DeviceDetailsPage from '../pages/devices/DeviceDetailsPage';
 import { UserProfilePage } from '../pages/user-profile/UserProfilePage';
 import ChatPage from '../pages/chat/ChatPage';
 import IrrigationControlPage from '../pages/irrigation-control/IrrigationControlPage';
@@ -63,6 +64,10 @@ export const dashboardRoutes: RouteObject[] = [
             {
                 path: ROUTES.DEVICES,
                 element: <DevicesPage />,
+            },
+            {
+                path: '/devices/:cropId/details/:deviceId',
+                element: <DeviceDetailsPage />,
             },
             {
                 path: ROUTES.USER_PROFILE,

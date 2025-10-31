@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { IoChevronBack } from 'react-icons/io5';
+import { FaArrowLeft } from 'react-icons/fa';
 
 interface DevicesSidebarProps {
   activeSection: 'devices' | 'alerts';
@@ -15,9 +15,9 @@ export function DevicesSidebar({ activeSection, onSectionChange }: DevicesSideba
       {/* Back button and title */}
       <button
         onClick={() => navigate(-1)}
-        className="mb-6 text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-2"
+        className="mb-6 text-[#3E7C59] hover:text-[#2d5f43] transition-colors flex items-center gap-2 font-medium"
       >
-        <IoChevronBack size={20} />
+        <FaArrowLeft size={16} />
       </button>
 
       <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">Crop {id}</h2>

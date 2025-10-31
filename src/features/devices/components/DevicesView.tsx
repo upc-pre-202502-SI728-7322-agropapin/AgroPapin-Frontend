@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AddButton } from '../../../shared/components/ui/AddButton';
 import { Tabs } from '../../../shared/components/ui/Tabs';
 import { DevicesList } from './DevicesList';
@@ -11,7 +11,8 @@ import { AlertsView } from './AlertsView';
 import type { Device, ChartData } from '../types/device.types';
 
 export function DevicesView() {
-  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { id: cropId } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState<'all' | 'sensors' | 'actuators'>('all');
   const [activeSection, setActiveSection] = useState<'devices' | 'alerts'>('devices');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -90,7 +91,7 @@ export function DevicesView() {
   };
 
   const handleRowClick = (deviceId: string) => {
-    console.log('View device details:', deviceId);
+    navigate(`/devices/${cropId}/details/${deviceId}`);
   };
 
   const handleEdit = (deviceId: string) => {
