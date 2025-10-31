@@ -5,6 +5,7 @@ import AdminDashboardPage from '../pages/dashboard/AdminDashboardPage';
 import FieldInformationPage from '../pages/field-info/FieldInformationPage';
 import CropListPage from '../pages/crop-list/CropListPage';
 import { CropDetailPage } from '../pages/crop-detail/CropDetailPage';
+import { UserProfilePage } from '../pages/user-profile/UserProfilePage';
 import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import MainLayout from "../shared/components/layouts/MainLayout.tsx";
 
@@ -52,6 +53,14 @@ export const dashboardRoutes: RouteObject[] = [
                 element: (
                     <ProtectedRoute>
                         <CropDetailPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: ROUTES.USER_PROFILE,
+                element: (
+                    <ProtectedRoute>
+                        <UserProfilePage />
                     </ProtectedRoute>
                 ),
             },

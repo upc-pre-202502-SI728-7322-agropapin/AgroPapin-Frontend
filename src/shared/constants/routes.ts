@@ -7,6 +7,7 @@ export const ROUTES = {
     FIELD_INFO: '/field-information',
     CROP_LIST: '/crop-list',
     CROP_DETAIL: '/crop-detail/:id',
+    USER_PROFILE: '/profile',
     ONBOARDING:{
         ROLE: '/onboarding/role',
         PLAN: '/onboarding/plan',
