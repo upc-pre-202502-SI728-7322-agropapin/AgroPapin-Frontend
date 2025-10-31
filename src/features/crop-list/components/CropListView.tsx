@@ -4,8 +4,8 @@ import { FaSearch } from 'react-icons/fa';
 import { CropTable } from './CropTable';
 import { CropModal } from './CropModal';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
+import { AddButton } from '../../../shared/components/ui/AddButton';
 import type { Crop, CropFormData } from '../types/crop.types';
-import { IoMdAddCircleOutline } from "react-icons/io";
 import { ROUTES } from '../../../shared/constants/routes';
 
 export function CropListView() {
@@ -126,15 +126,10 @@ export function CropListView() {
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
                 />
               </div>
-              <button
-                  onClick={handleOpenAddModal}
-                  className="bg-[#3E7C59] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#2d5f43] transition-colors flex items-center gap-2"
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <IoMdAddCircleOutline size={25} />
-                  Add Crop
-                </div>
-              </button>
+              <AddButton
+                onClick={handleOpenAddModal}
+                label="Add Crop"
+              />
             </div>
           </div>
 

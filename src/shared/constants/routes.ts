@@ -9,6 +9,7 @@ export const ROUTES = {
     CROP_DETAIL: '/crop-detail/:id',
     USER_PROFILE: '/profile',
     CHAT: '/chat',
+    IRRIGATION_CONTROL: '/irrigation-control',
     ONBOARDING:{
         ROLE: '/onboarding/role',
         PLAN: '/onboarding/plan',

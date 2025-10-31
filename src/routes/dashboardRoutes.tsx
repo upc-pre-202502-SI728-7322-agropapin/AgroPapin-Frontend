@@ -7,6 +7,7 @@ import CropListPage from '../pages/crop-list/CropListPage';
 import { CropDetailPage } from '../pages/crop-detail/CropDetailPage';
 import { UserProfilePage } from '../pages/user-profile/UserProfilePage';
 import ChatPage from '../pages/chat/ChatPage';
+import IrrigationControlPage from '../pages/irrigation-control/IrrigationControlPage';
 import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import MainLayout from "../shared/components/layouts/MainLayout.tsx";
 
@@ -70,6 +71,14 @@ export const dashboardRoutes: RouteObject[] = [
                 element: (
                     <ProtectedRoute>
                         <ChatPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: ROUTES.IRRIGATION_CONTROL,
+                element: (
+                    <ProtectedRoute>
+                        <IrrigationControlPage />
                     </ProtectedRoute>
                 ),
             },

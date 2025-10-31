@@ -51,7 +51,7 @@ export function FarmerDashboardView() {
   }
 
   const handleIrrigationClick = () => {
-    console.log("Control de Riego clicked")
+    navigate(ROUTES.IRRIGATION_CONTROL);
   }
 
   return (
