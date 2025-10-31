@@ -140,7 +140,7 @@ export function DevicesView() {
   const deviceToDeleteName = devices.find(d => d.id === deviceToDelete)?.name || '';
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
       {/* Sidebar */}
       <DevicesSidebar 
         activeSection={activeSection} 
@@ -148,19 +148,19 @@ export function DevicesView() {
       />
 
       {/* Main content */}
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         {activeSection === 'alerts' ? (
           <AlertsView />
         ) : (
-          <div className="p-8">
+          <div className="p-4 md:p-8">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
               <h1 className="text-3xl font-bold text-gray-900">Devices</h1>
               <AddButton onClick={handleAddDevice} label="Add Device" />
             </div>
 
             {/* Tabs */}
-            <div className="mb-8">
+            <div className="mb-8 overflow-x-auto">
               <Tabs 
                 tabs={tabs}
                 activeTab={activeTab}
@@ -172,20 +172,24 @@ export function DevicesView() {
             <div className="mb-8">
               <h2 className="text-xl font-bold text-gray-900 mb-4">General Data</h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <AreaChart
-                  title="Temperature Over Time (Last 7 Days)"
-                  subtitle=""
-                  data={temperatureData}
-                  color="#4ade80"
-                  unit="°C"
-                />
-                <AreaChart
-                  title="Humidity Over Time (Last 7 Days)"
-                  subtitle=""
-                  data={humidityData}
-                  color="#60a5fa"
-                  unit="%"
-                />
+                <div className="min-w-0">
+                  <AreaChart
+                    title="Temperature Over Time (Last 7 Days)"
+                    subtitle=""
+                    data={temperatureData}
+                    color="#4ade80"
+                    unit="°C"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <AreaChart
+                    title="Humidity Over Time (Last 7 Days)"
+                    subtitle=""
+                    data={humidityData}
+                    color="#60a5fa"
+                    unit="%"
+                  />
+                </div>
               </div>
             </div>
 

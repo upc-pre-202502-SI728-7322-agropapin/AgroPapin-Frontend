@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 import { ChatHistoryPanel } from './ChatHistoryPanel';
 import { ChatWindow } from './ChatWindow';
 import { ChatInput } from './ChatInput';
@@ -78,8 +80,9 @@ const getBotResponse = (userMessage: string): string => {
 };
 
 export function ChatView() {
+  const navigate = useNavigate();
   const [sessions, setSessions] = useState<ChatSession[]>(mockSessions);
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(sessions[0]?.id || null);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(mockSessions[0]?.id || null);
   const [isLoading, setIsLoading] = useState(false);
 
   const activeSession = sessions.find((s) => s.id === activeSessionId);
@@ -152,44 +155,57 @@ export function ChatView() {
 
   return (
     <div className="flex h-full bg-white">
-      <ChatHistoryPanel
-        sessions={sessions}
-        activeSessionId={activeSessionId}
-        onSessionSelect={setActiveSessionId}
-        onNewChat={handleNewChat}
-      />
+      <div className="flex flex-col w-full">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors font-medium"
+          >
+            <FaArrowLeft size={16} />
+            <span>Back</span>
+          </button>
+        </div>
+        <div className="flex flex-1">
+          <ChatHistoryPanel
+            sessions={sessions}
+            activeSessionId={activeSessionId}
+            onSessionSelect={setActiveSessionId}
+            onNewChat={handleNewChat}
+          />
       
-      <div className="flex-1 flex flex-col">
-        {activeSession ? (
-          <>
-            <div className="border-b border-gray-200 px-6 py-4 bg-white">
-              <h2 className="text-xl font-semibold text-gray-800">
-                {activeSession.title}
-              </h2>
-            </div>
-            <ChatWindow messages={activeSession.messages} isLoading={isLoading} />
-            <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-6xl mb-4"> 
-                  <img src={agropapinLogo} className="h-10" alt="Agrotech's logo"/>
+          <div className="flex-1 flex flex-col">
+            {activeSession ? (
+              <>
+                <div className="border-b border-gray-200 px-6 py-4 bg-white">
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    {activeSession.title}
+                  </h2>
+                </div>
+                <ChatWindow messages={activeSession.messages} isLoading={isLoading} />
+                <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-6xl mb-4"> 
+                    <img src={agropapinLogo} className="h-10" alt="Agrotech's logo"/>
+                  </div>
+                  <h3 className="text-2xl font-semibold text-gray-700 mb-2">
+                    Say hi to Agropapin!
+                  </h3>
+                  <p className="text-gray-500 mb-6">
+                    Start a new conversation to get farming advice
+                  </p>
+                  <button
+                    onClick={handleNewChat}
+                    className="bg-[#3E7C59] text-white px-6 py-3 rounded-lg hover:bg-[#2d5f43] transition-colors">
+                    Start New Chat
+                  </button>
+                </div>
               </div>
-              <h3 className="text-2xl font-semibold text-gray-700 mb-2">
-                Say hi to Agropapin!
-              </h3>
-              <p className="text-gray-500 mb-6">
-                Start a new conversation to get farming advice
-              </p>
-              <button
-                onClick={handleNewChat}
-                className="bg-[#3E7C59] text-white px-6 py-3 rounded-lg hover:bg-[#2d5f43] transition-colors">
-                Start New Chat
-              </button>
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

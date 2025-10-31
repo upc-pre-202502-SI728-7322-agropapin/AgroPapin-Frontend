@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaArrowLeft } from 'react-icons/fa';
 import { CropTable } from './CropTable';
 import { CropModal } from './CropModal';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
@@ -105,6 +105,13 @@ export function CropListView() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
+        >
+          <FaArrowLeft size={16} />
+          <span>Back</span>
+        </button>
 
         <h1 className="text-4xl font-bold text-gray-900 text-center mb-8">
           Crops in Progress List
@@ -117,8 +124,8 @@ export function CropListView() {
           <div className="mb-8">
 
 
-            <div className="flex justify-between items-center mb-6">
-              <div className="relative w-80">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+              <div className="relative w-full sm:w-80">
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
                 <input
                     type="text"

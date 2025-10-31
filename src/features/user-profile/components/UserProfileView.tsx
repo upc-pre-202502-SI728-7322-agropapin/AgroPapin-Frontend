@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { FaEdit } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { FaEdit, FaArrowLeft } from 'react-icons/fa';
 import { CgProfile } from 'react-icons/cg';
 import { EditProfileModal } from './EditProfileModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
@@ -16,6 +17,7 @@ const mockUserProfile: UserProfile = {
 };
 
 export function UserProfileView() {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile>(mockUserProfile);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
@@ -47,6 +49,13 @@ export function UserProfileView() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
       <div className="max-w-5xl mx-auto">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
+        >
+          <FaArrowLeft size={16} />
+          <span>Back</span>
+        </button>
         <div className="bg-white rounded-lg shadow-lg p-10">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">My Profile</h1>
 

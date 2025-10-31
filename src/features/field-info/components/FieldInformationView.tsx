@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
 import { FieldList } from "./FieldList";
 import type { Field } from "../types/field.types";
 import fieldImage from "../../../assets/campo-predeterminado.png";
@@ -40,6 +41,13 @@ export function FieldInformationView() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
+        >
+          <FaArrowLeft size={16} />
+          <span>Back</span>
+        </button>
 
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 text-center mb-2">

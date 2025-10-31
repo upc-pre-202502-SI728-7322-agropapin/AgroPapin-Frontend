@@ -1,6 +1,10 @@
 export { DevicesView } from './components/DevicesView';
 export { DeviceDetailsView } from './components/DeviceDetailsView';
 export { AllReadingsView } from './components/AllReadingsView';
+export { SensorDetailsView } from './components/SensorDetailsView';
+export { ActuatorDetailsView } from './components/ActuatorDetailsView';
+export { SensorReadingsView } from './components/SensorReadingsView';
+export { ActuatorReadingsView } from './components/ActuatorReadingsView';
 export { DevicesList } from './components/DevicesList';
 export { DevicesSidebar } from './components/DevicesSidebar';
 export { AlertsView } from './components/AlertsView';

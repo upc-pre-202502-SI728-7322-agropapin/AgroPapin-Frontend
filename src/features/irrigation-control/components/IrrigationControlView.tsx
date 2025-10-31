@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 import { IrrigationCalendar } from './IrrigationCalendar';
 import { LastIrrigationInfo } from './LastIrrigationInfo';
 import { PlantStatusGrid } from './PlantStatusGrid';
@@ -86,7 +88,7 @@ const mockLastIrrigation: LastIrrigation = {
   imageUrl: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=400&fit=crop',
 };
 
-// Using same images from crops
+
 const mockFieldStatus: FieldStatus[] = [
   {
     id: '1',
@@ -115,23 +117,29 @@ const mockFieldStatus: FieldStatus[] = [
 ];
 
 export function IrrigationControlView() {
+  const navigate = useNavigate();
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(mockFields[0].id);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [schedules] = useState<IrrigationSchedule[]>(mockSchedules);
 
   const handleScheduleIrrigation = (data: ScheduleIrrigationForm) => {
     console.log('Schedule irrigation:', data);
-    // Logic to save new schedule would go here
     alert(`Irrigation scheduled for ${mockFields.find(f => f.id === data.fieldId)?.name} from ${data.startDate.toLocaleDateString()} to ${data.endDate.toLocaleDateString()}`);
   };
 
   return (
     <div className="min-h-[calc(100vh-80px)] bg-gray-50 py-8 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 flex justify-between items-start">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
+        >
+          <FaArrowLeft size={16} />
+          <span>Back</span>
+        </button>
+        <div className="mb-8 flex flex-col md:flex-row md:justify-between md:items-start gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               Irrigation Actuators
             </h1>
             <p className="text-gray-600">
