@@ -34,7 +34,7 @@ export function FieldInformationView() {
   };
 
   const handleDevicesClick = (fieldId: string) => {
-    console.log('ver dispositivos:', fieldId);
+    navigate(ROUTES.DEVICES.replace(':id', fieldId));
   };
 
   return (

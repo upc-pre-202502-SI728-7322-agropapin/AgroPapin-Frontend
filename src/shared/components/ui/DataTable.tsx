@@ -30,7 +30,7 @@ export function DataTable<T>({
   showActions = true,
 }: DataTableProps<T>) {
   return (
-    <div className="bg-white rounded-lg  overflow-hidden">
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       <table className="w-full">
         <thead className="bg-[#3E7C59] text-white">
           <tr>

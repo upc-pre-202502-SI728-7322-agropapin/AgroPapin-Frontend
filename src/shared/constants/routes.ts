@@ -7,6 +7,7 @@ export const ROUTES = {
     FIELD_INFO: '/field-information',
     CROP_LIST: '/crop-list',
     CROP_DETAIL: '/crop-detail/:id',
+    DEVICES: '/devices/:id',
     USER_PROFILE: '/profile',
     CHAT: '/chat',
     IRRIGATION_CONTROL: '/irrigation-control',
