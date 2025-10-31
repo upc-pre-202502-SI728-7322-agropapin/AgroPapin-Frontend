@@ -4,6 +4,7 @@ export const ROUTES = {
     SIGNUP: '/signup',
     DASHBOARD_FARMER: '/dashboard/farmer',
     DASHBOARD_ADMIN: '/dashboard/admin',
+    FIELD_INFO: '/field-information',
     ONBOARDING:{
         ROLE: '/onboarding/role',
         PLAN: '/onboarding/plan',

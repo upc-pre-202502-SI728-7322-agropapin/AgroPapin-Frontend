@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {DashboardGrid} from "../../features/dashboard/components/DashboardGrid.tsx";
 import { getFarmerData } from "../../services/dashboard/DashboardService";
 import { useAuth } from "../../features/auth/context/AuthContext";
 import {CropsChart} from "../../shared/components/ui/CropsChart.tsx";
+import { ROUTES } from "../../shared/constants/routes.ts";
 
 
 export default function FarmerDashboardPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [farmerData, setFarmerData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -36,7 +39,7 @@ export default function FarmerDashboardPage() {
   }, [user?.id]);
 
   const handleFieldInfoClick = () => {
-    console.log("Información de Campo clicked")
+    navigate(ROUTES.FIELD_INFO);
   }
 
   const handleChatClick = () => {
@@ -56,13 +59,13 @@ export default function FarmerDashboardPage() {
       <div className="max-w-8xl mx-auto p-4 ">
 
         <div className="mb-12 ">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Panel de Control</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
           <p className="text-gray-600">
             {loading 
               ? 'Cargando...' 
               : farmerData 
-                ? `Bienvenido, ${farmerData.firstName} ${farmerData.lastName}` 
-                : 'Bienvenido a tu panel de control agrícola'}
+                ? `Welcome, ${farmerData.firstName} ${farmerData.lastName}`
+                : 'Welcome to Agrotech dashboard'}
           </p>
         </div>
 
