@@ -25,15 +25,15 @@ axiosClient.interceptors.request.use(
 
 // interceptor para las respuestas que maneja errores globales
 axiosClient.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/';
-        }
-        return Promise.reject(error);
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/';
     }
+    return Promise.reject(error);
+  }
 );
 
 export default axiosClient;

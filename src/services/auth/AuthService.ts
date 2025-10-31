@@ -4,7 +4,7 @@ import axiosClient from '../api/axiosClient';
 
 // iniciar sesión
 export const signIn = async (email: string, password: string) => {
-  const { data } = await axiosClient.post(`/api/v1/authentication/sign-in`, {
+  const { data } = await axiosClient.post(`/authentication/sign-in`, {
     email,
     password,
   });
@@ -21,7 +21,7 @@ export const signUpFarmer = async (userData: {
   phone: string;
 }) => {
   const { data } = await axiosClient.post(
-    `/api/v1/authentication/sign-up/farmer`,
+    `/authentication/sign-up/farmer`,
     userData
   );
   return data;
@@ -37,7 +37,7 @@ export const signUpAdministrator = async (userData: {
   phone: string;
 }) => {
   const { data } = await axiosClient.post(
-    `/api/v1/authentication/sign-up/administrator`,
+    `/authentication/sign-up/administrator`,
     userData
   );
   return data;
