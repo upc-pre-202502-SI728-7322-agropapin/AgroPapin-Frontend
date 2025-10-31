@@ -31,6 +31,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       id: response.id,
       email: response.email,
       roles: response.roles,
+      firstName: response.firstName,
+      lastName: response.lastName,
     };
 
     localStorage.setItem('token', response.token);

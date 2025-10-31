@@ -23,10 +23,10 @@ export function DashboardGrid({
                               }: DashboardGridProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
-            <FieldInfoCard title="Información de Campo" icon={fieldLogo } onClick={onFieldInfoClick} />
+            <FieldInfoCard title="Field Information" icon={fieldLogo } onClick={onFieldInfoClick} />
             <FieldInfoCard title="AgroPapin Chat" icon={ agropapinLogo} onClick={onChatClick} />
-            <FieldInfoCard title="Seguimiento de Cultivo" icon={cropLogo } onClick={onCropTrackingClick} />
-            <FieldInfoCard title="Control de Riego" icon={irrigationLogo } onClick={onIrrigationClick} />
+            <FieldInfoCard title="Crop Tracking" icon={cropLogo } onClick={onCropTrackingClick} />
+            <FieldInfoCard title="Irrigation Management" icon={irrigationLogo } onClick={onIrrigationClick} />
         </div>
     )
 }
