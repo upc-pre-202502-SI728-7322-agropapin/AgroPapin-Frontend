@@ -5,6 +5,7 @@ import { GeneralInfoTab } from './GeneralInfoTab';
 import { CropCareTab } from './CropCareTab';
 import { ControlsTab } from './ControlsTab';
 import { PestsTab } from './PestsTab';
+import { ProductsTab } from './ProductsTab';
 import type { CropDetail } from '../types/crop-details.types';
 import {FaArrowLeft} from "react-icons/fa";
 
@@ -76,7 +77,7 @@ export function CropDetailView() {
       case 'pests':
         return <PestsTab cropId={crop.id} />;
       case 'products':
-        return <div className="py-8 text-center text-gray-500">Products Used content coming soon</div>;
+        return <ProductsTab cropId={crop.id} />;
       default:
         return <GeneralInfoTab crop={crop} />;
     }

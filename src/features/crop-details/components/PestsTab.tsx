@@ -117,7 +117,7 @@ export function PestsTab({ cropId }: PestsTabProps) {
       </div>
 
 
-      <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
+      <div className="bg-white rounded-lg overflow-hidden">
         <SimpleTable
           columns={columns}
           data={filteredPests}
