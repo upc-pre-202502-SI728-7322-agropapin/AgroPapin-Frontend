@@ -1,9 +1,5 @@
-export default function FarmerDashboardPage(){
-     return (
-        <div>
-            <h1>Farmer Dashboard</h1>
-            <img src="../../assets/agropapin.png" alt="agropapin"/>
-        </div>
+import { FarmerDashboardView } from "../../features/dashboard/components/FarmerDashboardView";
 
-    );
+export default function FarmerDashboardPage() {
+  return <FarmerDashboardView />;
 }
