@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { IoMdAddCircleOutline } from 'react-icons/io';
 import { ControlsTable } from './ControlsTable';
 import { ControlModal } from './ControlModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
+import { AddButton } from '../../../shared/components/ui/AddButton';
 import type { Control, ControlFormData } from '../types/control.types';
 
 interface ControlsTabProps {
@@ -141,13 +141,10 @@ export function ControlsTab({ cropId }: ControlsTabProps) {
     <div className="py-6">
 
       <div className="flex justify-end mb-6">
-        <button
+        <AddButton
           onClick={handleOpenAddModal}
-          className="bg-[#3E7C59] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#2d5f43] transition-colors flex items-center gap-2"
-        >
-          <IoMdAddCircleOutline size={22} />
-          Add Control
-        </button>
+          label="Add Control"
+        />
       </div>
 
       <div className="bg-white rounded-lg overflow-hidden ">
