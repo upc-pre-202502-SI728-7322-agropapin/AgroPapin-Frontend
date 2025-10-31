@@ -177,7 +177,10 @@ export function DeviceDetailsView() {
                 <p className="text-gray-900 font-semibold text-2xl">{mockCurrentReadings.ph}</p>
               </div>
             </div>
-            <button className="w-full mt-6 bg-[#3E7C59] text-white py-3 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
+            <button 
+              onClick={() => navigate(`/devices/${cropId}/readings/${deviceId}`)}
+              className="w-full mt-6 bg-[#3E7C59] text-white py-3 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold"
+            >
               All Readings →
             </button>
           </div>
