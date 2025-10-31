@@ -1,5 +1,4 @@
 import { DataTable } from '../../../shared/components/ui/DataTable';
-import type { TableColumn } from '../../../shared/components/ui/DataTable';
 import type { Crop } from '../types/crop.types';
 
 interface CropTableProps {
@@ -9,39 +8,41 @@ interface CropTableProps {
   onDelete: (cropId: string) => void;
 }
 
-const columns: TableColumn[] = [
-  { key: 'name', label: 'Name' },
-  { key: 'plantedDate', label: 'Planting Date' },
-  { key: 'estimatedHarvestDate', label: 'Estimated Harvest Time' },
-  { key: 'phase', label: 'Phase' },
-  { key: 'plantedArea', label: 'Planted Area(m2)' },
-];
-
 export function CropTable({ crops, onRowClick, onEdit, onDelete }: CropTableProps) {
+  const columns = [
+    { key: 'name', label: 'Name' },
+    { key: 'plantedDate', label: 'Planting Date' },
+    { key: 'estimatedHarvestDate', label: 'Estimated Harvest Time' },
+    { key: 'phase', label: 'Phase' },
+    { key: 'plantedArea', label: 'Planted Area(m2)' },
+  ];
+
+  const renderCell = (crop: Crop, columnKey: string) => {
+    switch (columnKey) {
+      case 'name':
+        return crop.name;
+      case 'plantedDate':
+        return crop.plantedDate;
+      case 'estimatedHarvestDate':
+        return crop.estimatedHarvestDate;
+      case 'phase':
+        return crop.phase;
+      case 'plantedArea':
+        return crop.plantedArea;
+      default:
+        return '';
+    }
+  };
+
   return (
-    <DataTable
-      columns={columns}
-      data={crops}
-      onRowClick={(crop) => onRowClick(crop.id)}
-      onEdit={onEdit}
-      onDelete={(crop) => onDelete(crop.id)}
-      getRowKey={(crop) => crop.id}
-      renderCell={(crop, columnKey) => {
-        switch (columnKey) {
-          case 'name':
-            return <span className="font-medium">{crop.name}</span>;
-          case 'plantedDate':
-            return crop.plantedDate;
-          case 'estimatedHarvestDate':
-            return crop.estimatedHarvestDate;
-          case 'phase':
-            return crop.phase;
-          case 'plantedArea':
-            return crop.plantedArea;
-          default:
-            return null;
-        }
-      }}
-    />
+      <DataTable
+          columns={columns}
+          data={crops}
+          renderCell={renderCell}
+          onRowClick={(crop) => onRowClick(crop.id)}
+          onEdit={onEdit}
+          onDelete={(crop) => onDelete(crop.id)}
+          getRowKey={(crop) => crop.id}
+      />
   );
 }

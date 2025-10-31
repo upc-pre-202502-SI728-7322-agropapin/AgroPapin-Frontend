@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CropDetailTabs } from './CropDetailTabs';
 import { GeneralInfoTab } from './GeneralInfoTab';
 import { CropCareTab } from './CropCareTab';
+import { ControlsTab } from './ControlsTab';
 import type { CropDetail } from '../types/crop-details.types';
 import {FaArrowLeft} from "react-icons/fa";
 
@@ -70,7 +71,7 @@ export function CropDetailView() {
       case 'care':
         return <CropCareTab cropId={crop.id} />;
       case 'controls':
-        return <div className="py-8 text-center text-gray-500">Controls content coming soon</div>;
+        return <ControlsTab cropId={crop.id} />;
       case 'pests':
         return <div className="py-8 text-center text-gray-500">Pests content coming soon</div>;
       case 'products':
@@ -93,7 +94,7 @@ export function CropDetailView() {
       </button>
 
       {/* Title */}
-      <h1 className="text-4xl font-bold text-gray-900 text-center mb-5">
+      <h1 className="text-4xl font-bold text-gray-900 text-center mb-8">
         Crop Information
       </h1>
       
