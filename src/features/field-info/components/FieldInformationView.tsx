@@ -1,8 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import { FieldList } from "./FieldList";
 import type { Field } from "../types/field.types";
 import fieldImage from "../../../assets/campo-predeterminado.png";
+import { ROUTES } from "../../../shared/constants/routes";
 
 export function FieldInformationView() {
+  const navigate = useNavigate();
+  
   const fields: Field[] = [
     {
       id: '1',
@@ -25,7 +29,8 @@ export function FieldInformationView() {
   ];
 
   const handleInfoClick = (fieldId: string) => {
-    console.log('ver info de cultivo', fieldId);
+    console.log('ver info de campo', fieldId);
+    navigate(ROUTES.CROP_LIST);
   };
 
   const handleDevicesClick = (fieldId: string) => {

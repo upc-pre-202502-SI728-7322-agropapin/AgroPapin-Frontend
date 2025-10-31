@@ -5,6 +5,7 @@ export const ROUTES = {
     DASHBOARD_FARMER: '/dashboard/farmer',
     DASHBOARD_ADMIN: '/dashboard/admin',
     FIELD_INFO: '/field-information',
+    CROP_LIST: '/crop-list',
     ONBOARDING:{
         ROLE: '/onboarding/role',
         PLAN: '/onboarding/plan',
