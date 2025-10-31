@@ -74,7 +74,7 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
-              placeholder="e.g., Aminofol Plus"
+              placeholder="e.g., Aminofol"
               required
             />
           </div>
