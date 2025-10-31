@@ -5,6 +5,9 @@ import AdminDashboardPage from '../pages/dashboard/AdminDashboardPage';
 import FieldInformationPage from '../pages/field-info/FieldInformationPage';
 import CropListPage from '../pages/crop-list/CropListPage';
 import { CropDetailPage } from '../pages/crop-detail/CropDetailPage';
+import DevicesPage from '../pages/devices/DevicesPage';
+import DeviceDetailsPage from '../pages/devices/DeviceDetailsPage';
+import AllReadingsPage from '../pages/devices/AllReadingsPage';
 import { UserProfilePage } from '../pages/user-profile/UserProfilePage';
 import ChatPage from '../pages/chat/ChatPage';
 import IrrigationControlPage from '../pages/irrigation-control/IrrigationControlPage';
@@ -14,6 +17,7 @@ import MainLayout from "../shared/components/layouts/MainLayout.tsx";
 //rutas protegidas del dashboard
 export const dashboardRoutes: RouteObject[] = [
     {
+        path: '/',
         element: (
             <MainLayout></MainLayout>
         ),
@@ -57,6 +61,18 @@ export const dashboardRoutes: RouteObject[] = [
                         <CropDetailPage />
                     </ProtectedRoute>
                 ),
+            },
+            {
+                path: ROUTES.DEVICES,
+                element: <DevicesPage />,
+            },
+            {
+                path: '/devices/:cropId/details/:deviceId',
+                element: <DeviceDetailsPage />,
+            },
+            {
+                path: '/devices/:cropId/readings/:deviceId',
+                element: <AllReadingsPage />,
             },
             {
                 path: ROUTES.USER_PROFILE,

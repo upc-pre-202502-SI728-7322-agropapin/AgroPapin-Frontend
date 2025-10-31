@@ -47,7 +47,7 @@ export function FarmerDashboardView() {
   }
 
   const handleCropTrackingClick = () => {
-    console.log("Seguimiento de Cultivo clicked")
+    navigate(ROUTES.CROP_LIST);
   }
 
   const handleIrrigationClick = () => {
