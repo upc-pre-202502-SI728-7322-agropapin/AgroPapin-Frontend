@@ -12,9 +12,6 @@ export default function MainLayout(){
                 <Outlet></Outlet>
             </main>
 
-            <footer>
-                <p>Main Layout</p>
-            </footer>
         </div>
     )
 };
