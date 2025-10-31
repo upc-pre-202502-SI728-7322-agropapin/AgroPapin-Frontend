@@ -1,12 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 import { CropTable } from './CropTable';
 import { CropModal } from './CropModal';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import type { Crop, CropFormData } from '../types/crop.types';
-import {IoMdAddCircleOutline} from "react-icons/io";
+import { IoMdAddCircleOutline } from "react-icons/io";
+import { ROUTES } from '../../../shared/constants/routes';
 
 export function CropListView() {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState<Crop | null>(null);
@@ -48,8 +51,7 @@ export function CropListView() {
   ]);
 
   const handleRowClick = (cropId: string) => {
-    console.log('Navigate to crop details:', cropId);
-    // navigate(`/crop-detail/${cropId}`);
+    navigate(ROUTES.CROP_DETAIL.replace(':id', cropId));
   };
 
   const handleEdit = (crop: Crop) => {

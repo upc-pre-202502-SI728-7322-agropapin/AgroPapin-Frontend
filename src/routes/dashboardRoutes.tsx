@@ -4,6 +4,7 @@ import FarmerDashboardPage from '../pages/dashboard/FarmerDashboardPage';
 import AdminDashboardPage from '../pages/dashboard/AdminDashboardPage';
 import FieldInformationPage from '../pages/field-info/FieldInformationPage';
 import CropListPage from '../pages/crop-list/CropListPage';
+import { CropDetailPage } from '../pages/crop-detail/CropDetailPage';
 import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import MainLayout from "../shared/components/layouts/MainLayout.tsx";
 
@@ -43,6 +44,14 @@ export const dashboardRoutes: RouteObject[] = [
                 element: (
                     <ProtectedRoute>
                         <CropListPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: ROUTES.CROP_DETAIL,
+                element: (
+                    <ProtectedRoute>
+                        <CropDetailPage />
                     </ProtectedRoute>
                 ),
             },
