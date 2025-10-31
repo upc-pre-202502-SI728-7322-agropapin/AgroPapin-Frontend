@@ -43,8 +43,7 @@ export function Navbar() {
                     {showUserElements && (
                         <button
                             onClick={handleDashboardClick}
-                            className="bg-white text-[#3E7C59] px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
-                        >
+                            className="bg-white text-[#3E7C59] px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
                             Dashboard
                         </button>
                     )}
@@ -52,8 +51,7 @@ export function Navbar() {
                     {showSignUp && (
                         <Link
                             to={ROUTES.SIGNUP}
-                            className="bg-white text-[#3E7C59] px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
-                        >
+                            className="bg-white text-[#3E7C59] px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
                             Sign Up
                         </Link>
                     )}

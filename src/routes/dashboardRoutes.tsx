@@ -6,6 +6,7 @@ import FieldInformationPage from '../pages/field-info/FieldInformationPage';
 import CropListPage from '../pages/crop-list/CropListPage';
 import { CropDetailPage } from '../pages/crop-detail/CropDetailPage';
 import { UserProfilePage } from '../pages/user-profile/UserProfilePage';
+import ChatPage from '../pages/chat/ChatPage';
 import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import MainLayout from "../shared/components/layouts/MainLayout.tsx";
 
@@ -61,6 +62,14 @@ export const dashboardRoutes: RouteObject[] = [
                 element: (
                     <ProtectedRoute>
                         <UserProfilePage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: ROUTES.CHAT,
+                element: (
+                    <ProtectedRoute>
+                        <ChatPage />
                     </ProtectedRoute>
                 ),
             },
