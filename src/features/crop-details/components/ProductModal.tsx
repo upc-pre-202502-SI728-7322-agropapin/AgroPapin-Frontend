@@ -1,32 +1,35 @@
 import { useState, useEffect } from 'react';
-import type { Crop, CropFormData } from '../types/crop.types';
+import type { Product, ProductFormData } from '../types/product.types';
 
-interface CropModalProps {
+interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: CropFormData) => void;
-  crop?: Crop | null;
+  onSave: (data: ProductFormData) => void;
+  product: Product | null;
 }
 
-export function CropModal({ isOpen, onClose, onSave, crop }: CropModalProps) {
-  const [formData, setFormData] = useState<CropFormData>({
+export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
+  const [formData, setFormData] = useState<ProductFormData>({
+    type: '',
     name: '',
-    plantedArea: 0,
+    quantity: '',
   });
 
   useEffect(() => {
-    if (crop) {
+    if (product) {
       setFormData({
-        name: crop.name,
-        plantedArea: crop.plantedArea,
+        type: product.type,
+        name: product.name,
+        quantity: product.quantity,
       });
     } else {
       setFormData({
+        type: '',
         name: '',
-        plantedArea: 0,
+        quantity: '',
       });
     }
-  }, [crop]);
+  }, [product, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,14 +43,28 @@ export function CropModal({ isOpen, onClose, onSave, crop }: CropModalProps) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          {crop ? 'Edit Crop' : 'Add Crop'}
+          {product ? 'Edit Product' : 'Add Product'}
         </h2>
         
         <p className="text-gray-600 text-center mb-6">
-          Enter the crop name and planted area.
+          Enter the type of input, name and quantity used.
         </p>
 
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">
+              Type
+            </label>
+            <input
+              type="text"
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
+              placeholder="e.g., Fertilizer"
+              required
+            />
+          </div>
+
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
               Name
@@ -57,21 +74,21 @@ export function CropModal({ isOpen, onClose, onSave, crop }: CropModalProps) {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
-              placeholder="e.g., Rice"
+              placeholder="e.g., Aminofol"
               required
             />
           </div>
 
           <div className="mb-6">
             <label className="block text-gray-700 font-medium mb-2">
-              Planted Area (m2)
+              Quantity
             </label>
             <input
-              type="number"
-              value={formData.plantedArea || ''}
-              onChange={(e) => setFormData({ ...formData, plantedArea: Number(e.target.value) })}
+              type="text"
+              value={formData.quantity}
+              onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
-              placeholder="e.g., 2000"
+              placeholder="e.g., 20 Kg"
               required
             />
           </div>
@@ -81,7 +98,7 @@ export function CropModal({ isOpen, onClose, onSave, crop }: CropModalProps) {
               type="submit"
               className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold"
             >
-              {crop ? 'Save' : 'Create'}
+              {product ? 'Save' : 'Create'}
             </button>
             <button
               type="button"
