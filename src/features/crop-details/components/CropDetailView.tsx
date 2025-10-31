@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CropDetailTabs } from './CropDetailTabs';
 import { GeneralInfoTab } from './GeneralInfoTab';
+import { CropCareTab } from './CropCareTab';
 import type { CropDetail } from '../types/crop-details.types';
 import {FaArrowLeft} from "react-icons/fa";
 
@@ -67,7 +68,7 @@ export function CropDetailView() {
       case 'general':
         return <GeneralInfoTab crop={crop} />;
       case 'care':
-        return <div className="py-8 text-center text-gray-500">Crop Care content coming soon</div>;
+        return <CropCareTab cropId={crop.id} />;
       case 'controls':
         return <div className="py-8 text-center text-gray-500">Controls content coming soon</div>;
       case 'pests':
