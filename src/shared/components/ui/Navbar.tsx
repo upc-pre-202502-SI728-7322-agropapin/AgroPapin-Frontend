@@ -60,7 +60,10 @@ export function Navbar() {
                     <button className="text-white hover:opacity-80 transition">EN</button>
 
                     {showUserElements && (
-                        <button className="flex items-center gap-2 hover:opacity-80 transition mr-1">
+                        <button 
+                            onClick={() => navigate(ROUTES.USER_PROFILE)}
+                            className="flex items-center gap-2 hover:opacity-80 transition mr-1"
+                        >
                             <div className="flex items-center justify-center text-white rounded-full font-bold p-1">
                                 <CgProfile size={35}/>
                             </div>
@@ -113,7 +116,13 @@ export function Navbar() {
                     <button className="w-full text-left px-4 py-2 text-white hover:opacity-80 transition">EN</button>
 
                     {showUserElements && (
-                        <button className="flex items-center gap-2 px-4 py-2 hover:opacity-80 transition">
+                        <button 
+                            onClick={() => {
+                                navigate(ROUTES.USER_PROFILE);
+                                setIsOpen(false);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 hover:opacity-80 transition"
+                        >
                             <div className="flex items-center justify-center bg-white text-[#3E7C59] rounded-full w-10 h-10 font-bold">
                                 <CgProfile size={24}/>
                             </div>
