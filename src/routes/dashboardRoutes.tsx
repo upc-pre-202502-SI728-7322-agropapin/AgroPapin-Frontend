@@ -25,7 +25,7 @@ export const dashboardRoutes: RouteObject[] = [
             {
                 path: ROUTES.DASHBOARD_FARMER,
                 element: (
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['ROLE_FARMER']}>
                         <FarmerDashboardPage />
                     </ProtectedRoute>
                 ),
@@ -33,7 +33,7 @@ export const dashboardRoutes: RouteObject[] = [
             {
                 path: ROUTES.DASHBOARD_ADMIN,
                 element: (
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={['ROLE_ADMINISTRATOR']}>
                         <AdminDashboardPage />
                     </ProtectedRoute>
                 ),
