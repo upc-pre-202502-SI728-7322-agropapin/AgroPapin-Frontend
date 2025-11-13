@@ -3,6 +3,7 @@ import { ROUTES } from '../shared/constants/routes';
 import FarmerDashboardPage from '../pages/dashboard/FarmerDashboardPage';
 import AdminDashboardPage from '../pages/dashboard/AdminDashboardPage';
 import FieldInformationPage from '../pages/field-info/FieldInformationPage';
+import CreateFieldPage from '../pages/field-info/CreateFieldPage';
 import CropListPage from '../pages/crop-list/CropListPage';
 import { CropDetailPage } from '../pages/crop-detail/CropDetailPage';
 import DevicesPage from '../pages/devices/DevicesPage';
@@ -43,6 +44,14 @@ export const dashboardRoutes: RouteObject[] = [
                 element: (
                     <ProtectedRoute>
                         <FieldInformationPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: ROUTES.CREATE_FIELD,
+                element: (
+                    <ProtectedRoute>
+                        <CreateFieldPage />
                     </ProtectedRoute>
                 ),
             },
