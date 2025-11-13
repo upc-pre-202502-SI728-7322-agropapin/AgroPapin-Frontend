@@ -1,32 +1,44 @@
 "use client"
 
-import { ROUTES } from "../../../shared/constants/routes"
-import {Link} from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export function LoginForm() {
     const { loginWithRedirect } = useAuth0();
 
     const handleSignUpFarmer = async () => {
+        console.log(' usuario con rol ROLE_FARMER');
+        
         await loginWithRedirect({
             authorizationParams: {
-                custom_role: 'ROLE_FARMER', 
-                audience: 'https://agropapin-api' 
+                screen_hint: 'signup',
+                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+                scope: 'openid profile email',
+                acr_values: 'custom_role:ROLE_FARMER'
             }
         });
-
-        // TODO: MANEJAR ERRORES Y LLEGADA DE DATOS DEL TOKEN PARA REDIRECCIONAR A DASHBOARD SEGUN ROL
     };
 
     const handleSignUpAdministrator = async () => {
+        console.log('usuario con rol ROLE_ADMINISTRATOR');
+
         await loginWithRedirect({
             authorizationParams: {
-                custom_role: 'ROLE_ADMINISTRATOR',
-                audience: 'https://agropapin-api'
+                screen_hint: 'signup',
+                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+                scope: 'openid profile email',
+                acr_values: 'custom_role:ROLE_ADMINISTRATOR'
             }
         });
-        
-        // TODO: MANEJAR ERRORES Y LLEGADA DE DATOS DEL TOKEN PARA REDIRECCIONAR A DASHBOARD SEGUN ROL
+    };
+
+    const handleLogin = async () => {
+        await loginWithRedirect({
+            authorizationParams: {
+                screen_hint: 'login', 
+                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+                scope: 'openid profile email',
+            }
+        });
     };
 
     return (
@@ -64,9 +76,12 @@ export function LoginForm() {
             <div className="text-center mt-6 pt-6 border-t border-gray-200">
                 <p className="text-gray-600">
                     ¿Ya tienes una cuenta?{" "}
-                    <Link to={ROUTES.SIGNUP} className="text-[#3E7C59] font-semibold hover:text-green-800">
+                    <button
+                        onClick={handleLogin}
+                        className="text-[#3E7C59] font-semibold hover:text-green-800 underline cursor-pointer"
+                    >
                         Iniciar sesión
-                    </Link>
+                    </button>
                 </p>
             </div>
         </div>

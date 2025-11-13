@@ -2,6 +2,12 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+let getAuth0Token: (() => Promise<string>) | null = null;
+
+export function setAuth0TokenGetter(tokenGetter: () => Promise<string>) {
+  getAuth0Token = tokenGetter;
+}
+
 // instancia de axios
 export const axiosClient = axios.create({
   baseURL: API_BASE_URL,
@@ -13,10 +19,19 @@ export const axiosClient = axios.create({
 
 // interceptor para las peticiones que añade el token JWT al header
 axiosClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config) => {
+    try {
+      // le pide el token al auth0
+      if (getAuth0Token) {
+        const token = await getAuth0Token();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+          return config;
+        }
+      }
+      
+    } catch (error) {
+      console.error('Error obteniendo token:', error);
     }
     return config;
   },

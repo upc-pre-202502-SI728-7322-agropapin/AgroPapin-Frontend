@@ -2,7 +2,7 @@
 import {ROUTES} from "../../constants/routes.ts";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import agropapinLogo from "../../../assets/agropapin.png"
-import {useState} from "react";
+import {useState, useEffect, useRef} from "react";
 import {CgProfile} from "react-icons/cg";
 import {useAuth} from "../../../features/auth/context/AuthContext.tsx";
 import {getDashboardRoute} from "../../utils/navigation.ts";
@@ -10,16 +10,31 @@ import {getDashboardRoute} from "../../utils/navigation.ts";
 
 export function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
+    const [isProfileOpen, setIsProfileOpen] = useState(false)
+    const profileRef = useRef<HTMLDivElement>(null)
     const location = useLocation();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
 
-    const showSignUp = location.pathname === ROUTES.LOGIN;
-    
-    // si esta en la ruta de autenticación o onboarding no se muestra el botón de dashboard ni el perfil
-    const isAuthRoute = location.pathname === ROUTES.LOGIN || location.pathname === ROUTES.SIGNUP;
-    const isOnboardingRoute = location.pathname.startsWith('/onboarding');
-    const showUserElements = user && !isAuthRoute && !isOnboardingRoute;
+    // si esta en la ruta de autenticación no se muestra el botón de dashboard ni el perfil
+    const isAuthRoute = location.pathname === ROUTES.LOGIN;
+    const showUserElements = user && !isAuthRoute;
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+                setIsProfileOpen(false);
+            }
+        }
+
+        if (isProfileOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isProfileOpen]);
 
     const handleDashboardClick = () => {
         if (user?.roles) {
@@ -48,29 +63,59 @@ export function Navbar() {
                         </button>
                     )}
                     
-                    {showSignUp && (
-                        <Link
-                            to={ROUTES.SIGNUP}
-                            className="bg-white text-[#3E7C59] px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
-                            Sign Up
-                        </Link>
-                    )}
                     <button className="text-white hover:opacity-80 transition">EN</button>
 
                     {showUserElements && (
-                        <button 
-                            onClick={() => navigate(ROUTES.USER_PROFILE)}
-                            className="flex items-center gap-2 hover:opacity-80 transition mr-1"
-                        >
-                            <div className="flex items-center justify-center text-white rounded-full font-bold p-1">
-                                <CgProfile size={35}/>
-                            </div>
-                            <span className="text-sm font-medium">
-                                {user.firstName && user.lastName 
-                                    ? `${user.firstName} ${user.lastName}`
-                                    : user.email?.split('@')[0]}
-                            </span>
-                        </button>
+                        <div className="relative" ref={profileRef}>
+                            <button 
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                className="flex items-center gap-2 hover:opacity-80 transition"
+                            >
+                                <div className="flex items-center justify-center text-white rounded-full font-bold p-1">
+                                    <CgProfile size={35}/>
+                                </div>
+                                <span className="text-sm font-medium">
+                                    {user.firstName && user.lastName 
+                                        ? `${user.firstName} ${user.lastName}`
+                                        : user.email?.split('@')[0]}
+                                </span>
+                                <svg 
+                                    className={`w-4 h-4 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            {isProfileOpen && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                                    <button
+                                        onClick={() => {
+                                            navigate(ROUTES.USER_PROFILE);
+                                            setIsProfileOpen(false);
+                                        }}
+                                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                        <CgProfile size={20} />
+                                        My Profile
+                                    </button>
+                                    <hr className="my-1" />
+                                    <button
+                                        onClick={() => {
+                                            logout();
+                                            setIsProfileOpen(false);
+                                        }}
+                                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                        </svg>
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     )}
                 </div>
 
@@ -96,40 +141,43 @@ export function Navbar() {
                                 handleDashboardClick();
                                 setIsOpen(false);
                             }}
-                            className="block w-full bg-white text-[#3E7C59] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition text-center"
-                        >
+                            className="block w-full bg-white text-[#3E7C59] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition text-center">
                             Dashboard
                         </button>
                     )}
                     
-                    {showSignUp && (
-                        <Link
-                            to={ROUTES.SIGNUP}
-                            className="block bg-white text-[#3E7C59] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition text-center"
-                            onClick={() => setIsOpen(false)}
-                        >
-                            Sign Up
-                        </Link>
-                    )}
                     <button className="w-full text-left px-4 py-2 text-white hover:opacity-80 transition">EN</button>
 
                     {showUserElements && (
-                        <button 
-                            onClick={() => {
-                                navigate(ROUTES.USER_PROFILE);
-                                setIsOpen(false);
-                            }}
-                            className="flex items-center gap-2 px-4 py-2 hover:opacity-80 transition"
-                        >
-                            <div className="flex items-center justify-center bg-white text-[#3E7C59] rounded-full w-10 h-10 font-bold">
-                                <CgProfile size={24}/>
-                            </div>
-                            <span className="text-sm font-medium">
-                                {user.firstName && user.lastName 
-                                    ? `${user.firstName} ${user.lastName}`
-                                    : user.email?.split('@')[0]}
-                            </span>
-                        </button>
+                        <>
+                            <button 
+                                onClick={() => {
+                                    navigate(ROUTES.USER_PROFILE);
+                                    setIsOpen(false);
+                                }}
+                                className="flex items-center gap-2 px-4 py-2 hover:opacity-80 transition">
+                                <div className="flex items-center justify-center bg-white text-[#3E7C59] rounded-full w-10 h-10 font-bold">
+                                    <CgProfile size={24}/>
+                                </div>
+                                <span className="text-sm font-medium">
+                                    {user.firstName && user.lastName 
+                                        ? `${user.firstName} ${user.lastName}`
+                                        : user.email?.split('@')[0]}
+                                </span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    logout();
+                                    setIsOpen(false);
+                                }}
+                                className="block w-full bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition text-center flex items-center justify-center gap-2">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Logout
+                            </button>
+                        </>
                     )}
 
                 </div>
