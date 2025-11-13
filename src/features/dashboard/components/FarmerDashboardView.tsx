@@ -15,16 +15,12 @@ export function FarmerDashboardView() {
 
   useEffect(() => {
     const loadFarmerData = async () => {
-      console.log('uudi', user?.id);
-      console.log('token', localStorage.getItem('token'));
-      
       if (!user?.id) {
         setLoading(false);
         return;
       }
 
       try {
-        console.log(`uuid del usuaro: ${user.id}`);
         const data = await getFarmerData(user.id);
         console.log('respuesta', data);
         setFarmerData(data);
@@ -62,7 +58,7 @@ export function FarmerDashboardView() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
           <p className="text-gray-600">
             {loading 
-              ? 'Cargando...' 
+              ? 'Loading...' 
               : farmerData 
                 ? `Welcome, ${farmerData.firstName} ${farmerData.lastName}`
                 : 'Welcome to Agrotech dashboard'}
