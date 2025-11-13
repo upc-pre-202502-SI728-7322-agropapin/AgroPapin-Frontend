@@ -1,8 +1,29 @@
 export interface Field {
   id: string;
-  name: string;
-  imageUrl: string;
-  cropType: string;
+  fieldName: string;
+  location: string;
+  totalArea: string;
+  status: string;
+}
+
+export interface CreateFieldRequest {
+  fieldName: string;
+  location: string;
+  area: string;
+}
+
+export interface UpdateFieldRequest {
+  fieldName: string;
+  location: string;
+  area: string;
+}
+
+export interface FieldResponse {
+  id: string;
+  fieldName: string;
+  location: string;
+  totalArea: string;
+  status: string;
 }
 
 export interface FieldCardProps {
