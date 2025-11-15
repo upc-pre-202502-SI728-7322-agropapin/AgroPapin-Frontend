@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import { CgProfile } from 'react-icons/cg';
 import { EditProfileModal } from './EditProfileModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
@@ -130,7 +130,6 @@ export function UserProfileView() {
                   onClick={() => setIsEditModalOpen(true)}
                   className="w-full bg-[#3E7C59] text-white py-2.5 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold flex items-center justify-center gap-2"
                 >
-                  <FaEdit />
                   Edit Information
                 </button>
               </div>

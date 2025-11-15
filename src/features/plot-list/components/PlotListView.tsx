@@ -1,64 +1,179 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
-import fieldImage from "../../../assets/campo-predeterminado.png";
+import { FaArrowLeft, FaPlus } from "react-icons/fa";
+import { FieldService } from "../../../services/field";
+import { usePlots } from "../hooks";
+import { PlotModal } from "./PlotModal";
+import { AddButton } from "../../../shared/components/ui/AddButton";
+import { ConfirmModal } from "../../../shared/components/ui/ConfirmModal";
 import { ROUTES } from "../../../shared/constants/routes";
-import type { Plot } from "../types/plot.types";
 import { PlotList } from "./PlotList";
+import type { Plot, CreatePlotResource, UpdatePlotResource } from "../types/plot.types";
 
 export function PlotListView() {
   const navigate = useNavigate();
+  const [fieldId, setFieldId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPlot, setSelectedPlot] = useState<Plot | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [plotToDelete, setPlotToDelete] = useState<string | null>(null);
   
-  const plots: Plot[] = [
-    {
-      id: '1',
-      name: 'Plot 1',
-      imageUrl: fieldImage,
-      cropType: 'Maíz'
-    },
-    {
-      id: '2',
-      name: 'Plot 2',
-      imageUrl: fieldImage,
-      cropType: 'Trigo'
-    },
-    {
-      id: '3',
-      name: 'Plot 3',
-      imageUrl: fieldImage,
-      cropType: 'Arroz'
-    },
-  ];
+  const { plots, error, createPlot, updatePlot, deletePlot, fetchPlots } = usePlots(fieldId);
 
-  const handleInfoClick = (fieldId: string) => {
-    console.log('ver info de campo', fieldId);
+  useEffect(() => {
+    const loadField = async () => {
+      try {
+        const field = await FieldService.getField();
+        if (field) {
+          setFieldId(field.id || field.fieldId || null);
+        } else {
+          console.warn('usuario no tiene field');
+          navigate(ROUTES.CREATE_FIELD);
+        }
+      } catch (err) {
+        console.error('Error cargando field:', err);
+      }
+    };
+    loadField();
+  }, [navigate]);
+
+  const handleSavePlot = async (data: CreatePlotResource | UpdatePlotResource) => {
+    try {
+      if (selectedPlot) {
+        await updatePlot(selectedPlot.plotId, data as UpdatePlotResource);
+      } else {
+        await createPlot(data as CreatePlotResource);
+      }
+      await fetchPlots();
+      setSelectedPlot(null);
+    } catch (error) {
+      console.error('Error guardando plot:', error);
+    }
+  };
+
+  const handleOpenAddModal = () => {
+    setSelectedPlot(null);
+    setIsModalOpen(true);
+  };
+
+  const handleInfoClick = (plotId: string) => {
+    console.log('ver crops del plot', plotId);
     navigate(ROUTES.CROP_LIST);
   };
 
-  const handleDevicesClick = (fieldId: string) => {
-    navigate(ROUTES.DEVICES.replace(':id', fieldId));
+  const handleDevicesClick = (_plotId: string) => {
+    if (fieldId) {
+      navigate(ROUTES.DEVICES.replace(':id', fieldId));
+    }
+  };
+
+  const handleEdit = (plot: Plot) => {
+    setSelectedPlot(plot);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteRequest = (plotId: string) => {
+    setPlotToDelete(plotId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (plotToDelete) {
+      try {
+        await deletePlot(plotToDelete);
+        await fetchPlots();
+        setIsDeleteModalOpen(false);
+        setPlotToDelete(null);
+      } catch (error) {
+        console.error('error eliminando plot:', error);
+      }
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false);
+    setPlotToDelete(null);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
-        >
+       
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium">
           <FaArrowLeft size={16} />
           <span>Back</span>
         </button>
 
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 text-center mb-2">
-            Information field
+        <div className="mb-8 flex justify-between items-center">
+          <h1 className="text-4xl font-bold text-gray-900">
+            Field Plots
           </h1>
+          <AddButton onClick={handleOpenAddModal} label="Add Plot"/>
         </div>
 
-        <PlotList
-          plots={plots}
-          onInfoClick={handleInfoClick}
-          onDevicesClick={handleDevicesClick}/>
+        {error && (
+          <div className="text-center py-8 text-red-600">
+            {error}
+          </div>
+        )}
+
+        {!error && plots.length === 0 && (
+          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FaPlus className="text-gray-400 text-3xl" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  No Plots Found
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  You haven't created any plots yet. Create your first plot to start organizing your crops.
+                </p>
+              </div>
+              
+              <button
+                onClick={handleOpenAddModal}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#3E7C59] text-white rounded-lg font-semibold hover:bg-[#2d5f43] transition"
+                disabled={!fieldId}
+              >
+                <FaPlus />
+                Add Plot
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!error && plots.length > 0 && (
+          <PlotList
+            plots={plots}
+            onInfoClick={handleInfoClick}
+            onDevicesClick={handleDevicesClick}
+            onEdit={handleEdit}
+            onDelete={handleDeleteRequest}
+          />
+        )}
+
+        <PlotModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedPlot(null);
+          }}
+          onSave={handleSavePlot}
+          plot={selectedPlot}
+        />
+
+        <ConfirmModal
+          isOpen={isDeleteModalOpen}
+          onConfirm={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
+          title="Delete Plot"
+          message="Are you sure you want to delete this plot? This action cannot be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          confirmButtonColor="bg-red-600 hover:bg-red-700"
+        />
       </div>
     </div>
   );
