@@ -1,11 +1,3 @@
-export interface Field {
-  id: string;
-  fieldName: string;
-  location: string;
-  totalArea: string;
-  status: string;
-}
-
 export interface CreateFieldRequest {
   fieldName: string;
   location: string;
@@ -24,10 +16,12 @@ export interface FieldResponse {
   location: string;
   totalArea: string;
   status: string;
+  fieldId?: string;
 }
 
-export interface FieldCardProps {
-  field: Field;
-  onInfoClick: (fieldId: string) => void;
-  onDevicesClick: (fieldId: string) => void;
+export interface FieldModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: CreateFieldRequest | UpdateFieldRequest) => Promise<void>;
+  field?: FieldResponse | null;
 }

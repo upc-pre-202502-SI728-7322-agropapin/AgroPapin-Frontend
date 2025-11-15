@@ -5,6 +5,8 @@ export const ROUTES = {
     DASHBOARD_ADMIN: '/dashboard/admin',
     FIELD_INFO: '/field-information',
     CREATE_FIELD: '/field-information/create',
+    PLOT_LIST: '/plot-list',
+    CREATE_PLOT: '/plot-list/create',
     CROP_LIST: '/crop-list',
     CROP_DETAIL: '/crop-detail/:id',
     DEVICES: '/devices/:id',
