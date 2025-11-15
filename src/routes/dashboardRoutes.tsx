@@ -14,6 +14,7 @@ import ChatPage from '../pages/chat/ChatPage';
 import IrrigationControlPage from '../pages/irrigation-control/IrrigationControlPage';
 import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import MainLayout from "../shared/components/layouts/MainLayout.tsx";
+import PlotListPage from '../pages/plot-list/PlotListPage.tsx';
 
 //rutas protegidas del dashboard
 export const dashboardRoutes: RouteObject[] = [
@@ -107,6 +108,14 @@ export const dashboardRoutes: RouteObject[] = [
                     </ProtectedRoute>
                 ),
             },
+            {
+                path: ROUTES.PLOT_LIST,
+                element: (
+                    <ProtectedRoute>
+                        <PlotListPage />
+                    </ProtectedRoute>
+                ),
+            }
         ]
     }
 ];
