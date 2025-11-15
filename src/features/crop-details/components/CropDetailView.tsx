@@ -49,22 +49,15 @@ export function CropDetailView() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
 
-  const crop = id ? mockCropData[id] : null;
-
-  if (!crop) {
-    return (
-      <div className="bg-white rounded-lg shadow-md p-8 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Crop Not Found</h2>
-        <p className="text-gray-600 mb-6">The crop you are looking for does not exist.</p>
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-[#3E7C59] text-white px-6 py-2 rounded-lg hover:bg-[#2d5a42] transition-colors"
-        >
-          Go Back
-        </button>
-      </div>
-    );
-  }
+  // MOCKUP DATA
+  const crop = id && mockCropData[id] ? mockCropData[id] : {
+    id: id || '1',
+    name: 'Tomato',
+    creationDate: '15/11/2024',
+    plantedArea: 150,
+    description: 'Tomato (Solanum lycopersicum) is an annual herbaceous crop that requires well-drained soils and moderate water for optimal growth. It is cultivated in a variety of climatic conditions and its growth cycle includes stages such as germination, flowering, fruit development and harvest. The mature fruits are harvested and can be consumed fresh or processed into sauces and other products.',
+    imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&h=400&fit=crop'
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {

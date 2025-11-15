@@ -58,7 +58,7 @@ export function PlotListView() {
 
   const handleInfoClick = (plotId: string) => {
     console.log('ver crops del plot', plotId);
-    navigate(ROUTES.CROP_LIST);
+    navigate(`${ROUTES.CROP_LIST}?plotId=${plotId}`);
   };
 
   const handleDevicesClick = (_plotId: string) => {

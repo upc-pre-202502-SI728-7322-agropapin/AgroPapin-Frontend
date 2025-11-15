@@ -1,34 +1,68 @@
 import { DataTable } from '../../../shared/components/ui/DataTable';
-import type { Crop } from '../types/crop.types';
+import type { PlantingResource } from '../types/crop.types';
 
 interface CropTableProps {
-  crops: Crop[];
-  onRowClick: (cropId: string) => void;
-  onEdit: (crop: Crop) => void;
-  onDelete: (cropId: string) => void;
+  plantings: PlantingResource[];
+  onRowClick: (plantingId: string) => void;
+  onEdit: (planting: PlantingResource) => void;
+  onDelete: (plantingId: string) => void;
 }
 
-export function CropTable({ crops, onRowClick, onEdit, onDelete }: CropTableProps) {
+export function CropTable({ plantings, onRowClick, onEdit, onDelete }: CropTableProps) {
   const columns = [
-    { key: 'name', label: 'Name' },
-    { key: 'plantedDate', label: 'Planting Date' },
-    { key: 'estimatedHarvestDate', label: 'Estimated Harvest Time' },
-    { key: 'phase', label: 'Phase' },
-    { key: 'plantedArea', label: 'Planted Area(m2)' },
+    { key: 'plantingDate', label: 'Planting Date' },
+    { key: 'harvestDate', label: 'Harvest Date' },
+    { key: 'status', label: 'Status' },
   ];
 
-  const renderCell = (crop: Crop, columnKey: string) => {
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'GERMINATING':
+        return 'Germinating';
+      case 'GROWING':
+        return 'Growing';
+      case 'FLOWERING':
+        return 'Flowering';
+      case 'FRUITING':
+        return 'Fruiting';
+      case 'HARVESTED':
+        return 'Harvested';
+      default:
+        return status;
+    }
+  };
+
+  const renderCell = (planting: PlantingResource, columnKey: string) => {
     switch (columnKey) {
-      case 'name':
-        return crop.name;
-      case 'plantedDate':
-        return crop.plantedDate;
-      case 'estimatedHarvestDate':
-        return crop.estimatedHarvestDate;
-      case 'phase':
-        return crop.phase;
-      case 'plantedArea':
-        return crop.plantedArea;
+      case 'plantingDate':
+        return formatDate(planting.plantingDate);
+      case 'harvestDate':
+        return formatDate(planting.actualHarvestDate);
+      case 'status':
+        return (
+          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+            planting.status === 'HARVESTED' 
+              ? 'bg-blue-100 text-blue-800' 
+              : planting.status === 'FRUITING'
+              ? 'bg-yellow-100 text-yellow-800'
+              : planting.status === 'FLOWERING'
+              ? 'bg-pink-100 text-pink-800'
+              : planting.status === 'GROWING'
+              ? 'bg-green-100 text-green-800'
+              : 'bg-gray-100 text-gray-800'
+          }`}>
+            {getStatusLabel(planting.status)}
+          </span>
+        );
       default:
         return '';
     }
@@ -37,12 +71,12 @@ export function CropTable({ crops, onRowClick, onEdit, onDelete }: CropTableProp
   return (
       <DataTable
           columns={columns}
-          data={crops}
+          data={plantings}
           renderCell={renderCell}
-          onRowClick={(crop) => onRowClick(crop.id)}
+          onRowClick={(planting) => onRowClick(planting.id)}
           onEdit={onEdit}
-          onDelete={(crop) => onDelete(crop.id)}
-          getRowKey={(crop) => crop.id}
+          onDelete={(planting) => onDelete(planting.id)}
+          getRowKey={(planting) => planting.id}
       />
   );
 }
