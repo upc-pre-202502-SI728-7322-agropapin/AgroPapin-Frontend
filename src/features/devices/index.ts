@@ -9,3 +9,6 @@ export { DevicesList } from './components/DevicesList';
 export { DevicesSidebar } from './components/DevicesSidebar';
 export { AlertsView } from './components/AlertsView';
 export type { Device, DeviceType, DeviceStatus } from './types/device.types';
+export type { ActuatorResource, CreateActuatorResource } from './types/actuator.types';
+export type { SensorResource, CreateSensorResource } from './types/sensor.types';
+export { useActuators, useSensors } from './hooks';

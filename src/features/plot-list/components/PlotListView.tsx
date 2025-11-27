@@ -61,10 +61,8 @@ export function PlotListView() {
     navigate(`${ROUTES.CROP_LIST}?plotId=${plotId}`);
   };
 
-  const handleDevicesClick = (_plotId: string) => {
-    if (fieldId) {
-      navigate(ROUTES.DEVICES.replace(':id', fieldId));
-    }
+  const handleDevicesClick = (plotId: string) => {
+    navigate(ROUTES.DEVICES.replace(':plotId', plotId));
   };
 
   const handleEdit = (plot: Plot) => {

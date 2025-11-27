@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Product, ProductFormData } from '../types/product.types';
+import { validateField } from '../../../shared/utils/validations';
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -14,6 +15,8 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
     name: '',
     quantity: '',
   });
+
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (product) {
@@ -33,6 +36,13 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    const typeError = validateField({ value: formData.type, required: true });
+    if (typeError) return setError(typeError);
+    const nameError = validateField({ value: formData.name, required: true });
+    if (nameError) return setError(nameError);
+    const quantityError = validateField({ value: formData.quantity, required: true, numeric: true, positive: true });
+    if (quantityError) return setError(quantityError);
     onSave(formData);
     onClose();
   };
@@ -84,13 +94,17 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
               Quantity
             </label>
             <input
-              type="text"
+              type="number"
               value={formData.quantity}
               onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
-              placeholder="e.g., 20 Kg"
+              placeholder="e.g., 20"
               required
+              min="0"
             />
+            {error && (
+              <p className="mt-2 text-sm text-red-600">{error}</p>
+            )}
           </div>
 
           <div className="flex gap-4">

@@ -175,20 +175,12 @@ export function FieldInformationView() {
                   <LuPencil />
                   Edit Field Information
                 </button>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={() => navigate(ROUTES.PLOT_LIST)}
-                    className="flex-1 px-4 py-2 bg-[#3E7C59] text-white rounded-lg font-medium text-sm hover:bg-[#2d5f43] transition"
-                  >
-                    View Plots
-                  </button>
-                  <button
-                    onClick={() => navigate(ROUTES.DEVICES.replace(':id', field.id))}
-                    className="flex-1 px-4 py-2 border-2 border-[#3E7C59] bg-white text-[#3E7C59] rounded-lg font-medium text-sm hover:bg-gray-100 hover:border-[#2d5f43] hover:text-[#2d5f43] transition"
-                  >
-                    View Devices
-                  </button>
-                </div>
+                <button
+                  onClick={() => navigate(ROUTES.PLOT_LIST)}
+                  className="w-full px-4 py-2 bg-[#3E7C59] text-white rounded-lg font-medium text-sm hover:bg-[#2d5f43] transition"
+                >
+                  View Plots
+                </button>
               </div>
             </div>
 

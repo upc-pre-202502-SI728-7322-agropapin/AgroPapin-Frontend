@@ -11,22 +11,25 @@ interface DevicesListProps {
 
 export function DevicesList({ devices, onRowClick, onEdit, onDelete }: DevicesListProps) {
   const columns = [
-    { key: 'name', label: 'Name' },
-    { key: 'type', label: 'Type' },
+    { key: 'serialNumber', label: 'Serial Number' },
+    { key: 'deviceType', label: 'Device Type' },
+    { key: 'model', label: 'Model' },
+    { key: 'version', label: 'Version' },
     { key: 'status', label: 'Status' },
-    { key: 'location', label: 'Location' },
   ];
 
   const renderCell = (device: Device, columnKey: string) => {
     switch (columnKey) {
-      case 'name':
-        return <div className="text-sm font-medium text-gray-900">{device.name}</div>;
-      case 'type':
-        return <div className="text-sm text-gray-600 capitalize">{device.type}</div>;
+      case 'serialNumber':
+        return <div className="text-sm font-medium text-gray-900">{device.serialNumber}</div>;
+      case 'deviceType':
+        return <div className="text-sm text-gray-600">{device.deviceType}</div>;
+      case 'model':
+        return <div className="text-sm text-gray-600">{device.model}</div>;
+      case 'version':
+        return <div className="text-sm text-gray-600">{device.version}</div>;
       case 'status':
         return <StatusBadge status={device.status} />;
-      case 'location':
-        return <div className="text-sm text-gray-600">{device.location}</div>;
       default:
         return null;
     }

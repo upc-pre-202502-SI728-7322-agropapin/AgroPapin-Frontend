@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { CreateFieldRequest, UpdateFieldRequest, FieldModalProps } from '../types/field.types';
+import { validateField } from '../../../shared/utils/validations';
 
 export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) {
   const [formData, setFormData] = useState<CreateFieldRequest | UpdateFieldRequest>({
@@ -7,6 +8,8 @@ export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) 
     location: '',
     area: ''
   });
+
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -28,7 +31,14 @@ export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSave(formData);
+    setError(null);
+    const nameError = validateField({ value: formData.fieldName, required: true });
+    if (nameError) return setError(nameError);
+    const locationError = validateField({ value: formData.location, required: true });
+    if (locationError) return setError(locationError);
+    const areaError = validateField({ value: formData.area, required: true, numeric: true, positive: true, max: 1000000 });
+    if (areaError) return setError(areaError);
+    await onSave({ ...formData, area: String(formData.area) });
     onClose();
   };
 
@@ -92,14 +102,19 @@ export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) 
               Area (m²) *
             </label>
             <input
-              type="text"
+              type="number"
               name="area"
               value={formData.area}
               onChange={handleInputChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
               placeholder="Ex: 12000"
               required
+              min="0"
+              max="1000000"
             />
+            {error && (
+              <p className="mt-2 text-sm text-red-600">{error}</p>
+            )}
           </div>
 
           <div className="flex gap-4">

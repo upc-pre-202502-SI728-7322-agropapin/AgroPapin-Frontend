@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaCopy, FaCheck } from 'react-icons/fa';
 import { CgProfile } from 'react-icons/cg';
+import { useAuth } from '../../auth/context/AuthContext';
 import { EditProfileModal } from './EditProfileModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import type { UserProfile, UserProfileFormData } from '../types/user-profile.types';
@@ -18,11 +19,13 @@ const mockUserProfile: UserProfile = {
 
 export function UserProfileView() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile>(mockUserProfile);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [pendingChanges, setPendingChanges] = useState<UserProfileFormData | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleSaveClick = (data: UserProfileFormData) => {
     setPendingChanges(data);
@@ -44,6 +47,20 @@ export function UserProfileView() {
   const handleDeleteAccount = () => {
     console.log('cuenta eliminada');
     setIsDeleteModalOpen(false);
+  };
+
+  const handleCopyUserId = async () => {
+    if (user?.id) {
+      try {
+        // Limpiar el userId removiendo el prefijo "auth0|" si existe
+        const cleanUserId = user.id.replace(/^auth0\|/, '');
+        await navigator.clipboard.writeText(cleanUserId);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      } catch (error) {
+        console.error('Error al copiar el userId:', error);
+      }
+    }
   };
 
   return (
@@ -133,6 +150,38 @@ export function UserProfileView() {
                   Edit Information
                 </button>
               </div>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">User ID</h2>
+            <p className="text-gray-600 mb-4">
+              Use this ID to identify your account in the system and get added in a cooperative.
+            </p>
+            <div className="flex items-center gap-3">
+              <input
+                type="text"
+                value={user?.id ? user.id.replace(/^auth0\|/, '') : ''}
+                readOnly
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 font-mono text-sm"
+              />
+              <button
+                onClick={handleCopyUserId}
+                className="flex items-center gap-2 bg-[#3E7C59] text-white py-2.5 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold"
+                type="button"
+              >
+                {isCopied ? (
+                  <>
+                    <FaCheck size={16} />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <FaCopy size={16} />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
