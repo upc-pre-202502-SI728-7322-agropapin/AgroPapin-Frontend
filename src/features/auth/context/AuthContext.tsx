@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { setAuth0TokenGetter } from '../../../services/api/axiosClient';
+import { registerUserWebhook } from '../../../services/auth/AuthService';
 import type { User, AuthContextType } from '../types/auth.types';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,6 +39,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           localStorage.setItem('user', JSON.stringify(userData));
           localStorage.setItem('token', token);
           setUser(userData);
+
+          // llamando al webhook para que guarde al nuevo usuario en la bd
+          try {
+            await registerUserWebhook({
+              auth0UserId: auth0User.sub || '',
+              email: auth0User.email || '',
+              roleType: roles[0] || '',
+            });
+            console.log('Usuario guardado en la base de datos');
+          } catch (webhookError) {
+            console.error('Error al sincronizar usuario:', webhookError);
+          }
         } catch (error) {
           console.error('error:', error);
         }
