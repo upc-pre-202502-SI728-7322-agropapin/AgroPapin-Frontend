@@ -8,6 +8,7 @@ export interface SensorResource {
   status: string;
   model: string;
   version: string;
+  sensorType: string;
 }
 
 export interface CreateSensorResource {

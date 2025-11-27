@@ -15,6 +15,7 @@ export function useActuators(plotId: string | undefined) {
       setError(null);
       try {
         const data = await ActuatorService.getActuatorsByPlotId(plotId);
+        console.log(`Actuators fetched for plotId ${plotId}:`, data);
         setActuators(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error loading actuators');

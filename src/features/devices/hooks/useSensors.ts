@@ -15,6 +15,7 @@ export function useSensors(plotId: string | undefined) {
       setError(null);
       try {
         const data = await SensorService.getSensorsByPlotId(plotId);
+        console.log(`Sensors fetched for plotId ${plotId}:`, data);
         setSensors(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error loading sensors');

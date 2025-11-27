@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Device } from '../types/device.types';
+import type { SensorResource } from '../types/sensor.types';
+import type { ActuatorResource } from '../types/actuator.types';
 
 interface DeviceModalProps {
   isOpen: boolean;
@@ -12,9 +14,11 @@ interface DeviceModalProps {
     version: string;
   }) => void;
   device?: Device | null;
+  existingSensors: SensorResource[];
+  existingActuators: ActuatorResource[];
 }
 
-export function DeviceModal({ isOpen, onClose, onSave, device }: DeviceModalProps) {
+export function DeviceModal({ isOpen, onClose, onSave, device, existingSensors, existingActuators }: DeviceModalProps) {
   const [formData, setFormData] = useState({
     serialNumber: '',
     type: 'sensor' as 'sensor' | 'actuator',
@@ -100,14 +104,34 @@ export function DeviceModal({ isOpen, onClose, onSave, device }: DeviceModalProp
               required>
               <option value="">Select type...</option>
               {formData.type === 'sensor' ? (<>
-                  <option value="TEMPERATURE">Temperature</option>
-                  <option value="HUMIDITY">Humidity</option>
-                  <option value="PH">pH</option></>) : 
+                  <option value="TEMPERATURE" disabled={existingSensors.some(s => s.sensorType === 'TEMPERATURE')}>
+                    Temperature {existingSensors.some(s => s.sensorType === 'TEMPERATURE') && '(Already exists)'}
+                  </option>
+                  <option value="HUMIDITY" disabled={existingSensors.some(s => s.sensorType === 'HUMIDITY')}>
+                    Humidity {existingSensors.some(s => s.sensorType === 'HUMIDITY') && '(Already exists)'}
+                  </option>
+                  <option value="PH" disabled={existingSensors.some(s => s.sensorType === 'PH')}>
+                    pH {existingSensors.some(s => s.sensorType === 'PH') && '(Already exists)'}
+                  </option></>) : 
                 (<>
-                  <option value="IRRIGATION_VALVE">Irrigation Valve</option>
-                  <option value="FERTILIZER_DISPENSER">Fertilizer Dispenser</option>
+                  <option value="IRRIGATION_VALVE" disabled={existingActuators.length > 0}>
+                    Irrigation Valve {existingActuators.length > 0 && '(Only one actuator allowed per plot)'}
+                  </option>
+                  <option value="FERTILIZER_DISPENSER" disabled={existingActuators.length > 0}>
+                    Fertilizer Dispenser {existingActuators.length > 0 && '(Only one actuator allowed per plot)'}
+                  </option>
                 </>)}
             </select>
+            {formData.type === 'sensor' && formData.deviceType && existingSensors.some(s => s.sensorType === formData.deviceType) && (
+              <p className="mt-2 text-sm text-red-600">
+                Only one sensor of each type is allowed per plot.
+              </p>
+            )}
+            {formData.type === 'actuator' && existingActuators.length > 0 && (
+              <p className="mt-2 text-sm text-red-600">
+                Only one actuator is allowed per plot. Please remove the existing one first.
+              </p>
+            )}
           </div>
 
           <div className="mb-4">

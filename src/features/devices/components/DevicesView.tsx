@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { AddButton } from '../../../shared/components/ui/AddButton';
 import { Tabs } from '../../../shared/components/ui/Tabs';
 import { DevicesList } from './DevicesList';
@@ -8,18 +8,21 @@ import { DeleteDeviceModal } from './DeleteDeviceModal';
 import { AreaChart } from '../../../shared/components/charts/AreaChart';
 import { DevicesSidebar } from './DevicesSidebar';
 import { AlertsView } from './AlertsView';
-import { useActuators, useSensors } from '../hooks';
+import { useActuators, useSensors, useTelemetry } from '../hooks';
 import ActuatorService from '../../../services/device/ActuatorService';
 import SensorService from '../../../services/device/SensorService';
-import type { Device, ChartData } from '../types/device.types';
+import type { Device } from '../types/device.types';
 import type { ActuatorResource } from '../types/actuator.types';
 import type { SensorResource } from '../types/sensor.types';
 
 export function DevicesView() {
-  const navigate = useNavigate();
   const { plotId } = useParams<{ plotId: string }>();
+  
+  console.log('Current plotId from URL:', plotId);
+  
   const [activeTab, setActiveTab] = useState<'sensors' | 'actuators'>('sensors');
   const [activeSection, setActiveSection] = useState<'devices' | 'alerts'>('devices');
+  const [selectedDays, setSelectedDays] = useState<number>(1); // 1 día predeterminado
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
@@ -27,6 +30,10 @@ export function DevicesView() {
 
   const { actuators, refetch: refetchActuators } = useActuators(plotId);
   const { sensors, refetch: refetchSensors } = useSensors(plotId);
+  const { telemetryData } = useTelemetry(plotId, selectedDays);
+
+  console.log('Telemetry data in DevicesView:', telemetryData);
+  console.log('Number of telemetry points:', telemetryData.length);
 
   // une a los actuadores y sensores en un único array de devices para mostrarlos en la tabla
   const devices: Device[] = [
@@ -55,28 +62,6 @@ export function DevicesView() {
     { id: 'actuators', label: 'Actuators' },
   ];
 
-
-  const temperatureData: ChartData[] = [
-    { day: 'Mon', value: 24 },
-    { day: 'Tue', value: 26 },
-    { day: 'Wed', value: 23 },
-    { day: 'Thu', value: 25 },
-    { day: 'Fri', value: 28 },
-    { day: 'Sat', value: 27 },
-    { day: 'Sun', value: 25 },
-  ];
-
-
-  const humidityData: ChartData[] = [
-    { day: 'Mon', value: 65 },
-    { day: 'Tue', value: 68 },
-    { day: 'Wed', value: 70 },
-    { day: 'Thu', value: 66 },
-    { day: 'Fri', value: 64 },
-    { day: 'Sat', value: 62 },
-    { day: 'Sun', value: 65 },
-  ];
-
   const filteredDevices = devices.filter(device => {
     if (activeTab === 'sensors') return device.type === 'sensor';
     if (activeTab === 'actuators') return device.type === 'actuator';
@@ -89,7 +74,8 @@ export function DevicesView() {
   };
 
   const handleRowClick = (deviceId: string) => {
-    navigate(`/devices/details/${deviceId}`);
+    // REVISAR SI TODAVÍA VA A EXISTIR LA VISTA DETALLADA DE SENSORES
+    // navigate(`/devices/details/${deviceId}`);
   };
 
   const handleEdit = (deviceId: string) => {
@@ -190,30 +176,56 @@ export function DevicesView() {
               />
             </div>
 
-            {/* Charts  */}
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">General Data</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="min-w-0">
-                  <AreaChart
-                    title="Temperature Over Time (Last 7 Days)"
-                    subtitle=""
-                    data={temperatureData}
-                    color="#4ade80"
-                    unit="°C"
-                  />
+            {/* Charts */}
+            {activeTab === 'sensors' && (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Sensor Metrics (Last {selectedDays} {selectedDays === 1 ? 'Day' : 'Days'})
+                  </h2>
+                  <div className="relative">
+                    <select
+                      value={selectedDays}
+                      onChange={(e) => setSelectedDays(Number(e.target.value))}
+                      className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#3E7C59] cursor-pointer"
+                    >
+                      <option value={1}>Last 1 Day</option>
+                      <option value={7}>Last 7 Days</option>
+                      <option value={30}>Last 30 Days</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <AreaChart
-                    title="Humidity Over Time (Last 7 Days)"
-                    subtitle=""
-                    data={humidityData}
-                    color="#60a5fa"
-                    unit="%"
-                  />
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className="min-w-0">
+                    <AreaChart
+                      title="Temperature"
+                      subtitle=""
+                      data={telemetryData.map(d => ({ time: d.time, value: d.temperature || 0 }))}
+                      color="#ef4444"
+                      unit="°C"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <AreaChart
+                      title="Humidity"
+                      subtitle=""
+                      data={telemetryData.map(d => ({ time: d.time, value: d.humidity || 0 }))}
+                      color="#3b82f6"
+                      unit="%"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <AreaChart
+                      title="Soil Moisture"
+                      subtitle=""
+                      data={telemetryData.map(d => ({ time: d.time, value: d.soilMoisture || 0 }))}
+                      color="#10b981"
+                      unit="%"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Devices List */}
             <div>
@@ -239,6 +251,8 @@ export function DevicesView() {
         }}
         onSave={handleSaveDevice}
         device={selectedDevice}
+        existingSensors={sensors}
+        existingActuators={actuators}
       />
 
       <DeleteDeviceModal
