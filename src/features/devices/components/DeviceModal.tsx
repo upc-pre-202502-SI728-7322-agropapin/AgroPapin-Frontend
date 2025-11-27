@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { Device } from '../types/device.types';
 import type { SensorResource } from '../types/sensor.types';
 import type { ActuatorResource } from '../types/actuator.types';
+import { validateField } from '../../../shared/utils/validations';
 
 interface DeviceModalProps {
   isOpen: boolean;
@@ -27,6 +28,8 @@ export function DeviceModal({ isOpen, onClose, onSave, device, existingSensors, 
     version: '',
   });
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     if (device) {
       setFormData({
@@ -49,6 +52,17 @@ export function DeviceModal({ isOpen, onClose, onSave, device, existingSensors, 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    const serialError = validateField({ value: formData.serialNumber, required: true });
+    if (serialError) return setError(serialError);
+    const typeError = validateField({ value: formData.type, required: true });
+    if (typeError) return setError(typeError);
+    const deviceTypeError = validateField({ value: formData.deviceType, required: true });
+    if (deviceTypeError) return setError(deviceTypeError);
+    const modelError = validateField({ value: formData.model, required: true });
+    if (modelError) return setError(modelError);
+    const versionError = validateField({ value: formData.version, required: true });
+    if (versionError) return setError(versionError);
     onSave(formData);
     onClose();
   };
@@ -160,6 +174,9 @@ export function DeviceModal({ isOpen, onClose, onSave, device, existingSensors, 
               required/>
           </div>
 
+          {error && (
+            <p className="mt-2 text-sm text-red-600">{error}</p>
+          )}
           <div className="flex gap-4">
             <button
               type="submit"

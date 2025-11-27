@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { PlotModalProps, CreatePlotResource, UpdatePlotResource } from '../types/plot.types';
+import { validateField } from '../../../shared/utils/validations';
 
 export function PlotModal({ isOpen, onClose, onSave, plot }: PlotModalProps) {
   const [formData, setFormData] = useState<CreatePlotResource | UpdatePlotResource>({
@@ -23,8 +24,16 @@ export function PlotModal({ isOpen, onClose, onSave, plot }: PlotModalProps) {
     }
   }, [plot, isOpen]);
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    // Validations
+    const nameError = validateField({ value: formData.plotName, required: true });
+    if (nameError) return setError(nameError);
+    const areaError = validateField({ value: formData.plotArea, required: true, numeric: true, positive: true, max: 100000 });
+    if (areaError) return setError(areaError);
     await onSave(formData);
     onClose();
   };
@@ -82,7 +91,11 @@ export function PlotModal({ isOpen, onClose, onSave, plot }: PlotModalProps) {
               placeholder="Ex: 1500"
               required
               min="0"
+              max="100000"
             />
+            {error && (
+              <p className="mt-2 text-sm text-red-600">{error}</p>
+            )}
           </div>
 
           <div className="flex gap-4">

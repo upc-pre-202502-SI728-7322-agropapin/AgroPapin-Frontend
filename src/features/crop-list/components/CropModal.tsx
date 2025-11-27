@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { PlantingResource, CreatePlantingResource } from '../types/crop.types';
 import { useCropTypes } from '../hooks';
+import { validateField } from '../../../shared/utils/validations';
 
 interface CropModalProps {
   isOpen: boolean;
@@ -15,11 +16,13 @@ export function CropModal({ isOpen, onClose, onSave, planting }: CropModalProps)
     cropTypeId: '',
   });
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     if (isOpen) {
       if (planting) {
         setFormData({
-          cropTypeId: planting.cropType?.id || '',
+          cropTypeId: (planting as any).cropTypeId || '',
         });
       } else {
         setFormData({
@@ -31,8 +34,11 @@ export function CropModal({ isOpen, onClose, onSave, planting }: CropModalProps)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('DATOS ENVIADOS ', {cropTypeId: formData.cropTypeId});
-    // TODO: ELIMINAR HARCODEADO DE FECHAS CUANDO SE IMPLEENTE LOGICA EN EL BACKEND
+    setError(null);
+    // Validations
+    const cropTypeError = validateField({ value: formData.cropTypeId, required: true });
+    if (cropTypeError) return setError(cropTypeError);
+    // TODO: Remove hardcoded dates when backend logic is implemented
     const dates: CreatePlantingResource = {
       cropTypeId: formData.cropTypeId,
       plantingDate: new Date().toISOString().split('T')[0],
@@ -73,6 +79,9 @@ export function CropModal({ isOpen, onClose, onSave, planting }: CropModalProps)
                 </option>
               ))}
             </select>
+            {error && (
+              <p className="mt-2 text-sm text-red-600">{error}</p>
+            )}
           </div>
 
           <div className="flex gap-4">
