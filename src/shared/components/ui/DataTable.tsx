@@ -1,4 +1,4 @@
-import {FaRegEdit} from 'react-icons/fa';
+import { LuPencil } from 'react-icons/lu';
 import type { ReactNode } from 'react';
 import {IoTrashOutline} from "react-icons/io5";
 
@@ -71,8 +71,8 @@ export function DataTable<T>({
                             e.stopPropagation();
                             onEdit(item);
                           }}
-                          className="text-orange-500 rounded p-3 hover:bg-orange-200 transition-colors">
-                          <FaRegEdit  size={20} />
+                          className="text-orange-500 hover:text-orange-700 transition-colors p-3">
+                          <LuPencil size={22} />
                         </button>
                       )}
                       {onDelete && (
@@ -81,8 +81,8 @@ export function DataTable<T>({
                             e.stopPropagation();
                             onDelete(item);
                           }}
-                          className=" text-red-500 p-3 rounded hover:bg-red-200 transition-colors">
-                          <IoTrashOutline  size={25} />
+                          className="text-red-500 hover:text-red-700 transition-colors p-3">
+                          <IoTrashOutline size={25} />
                         </button>
                       )}
                     </div>

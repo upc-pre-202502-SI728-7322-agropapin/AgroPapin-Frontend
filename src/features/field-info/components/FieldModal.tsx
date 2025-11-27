@@ -44,18 +44,19 @@ export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) 
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 ">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
           {field ? 'Edit Field' : 'Create New Field'}
         </h2>
         
-        <p className="text-gray-600 text-center mb-6">
+        <p className="text-gray-600  mb-6">
           {field 
             ? 'Update your field information.' 
             : 'To get started, we need some information about your field.'}
         </p>
 
-        <form onSubmit={handleSubmit}>
+        <div className="text-left">
+            <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
               Field Name *
@@ -117,6 +118,8 @@ export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) 
             </button>
           </div>
         </form>
+        </div>
+        
       </div>
     </div>
   );

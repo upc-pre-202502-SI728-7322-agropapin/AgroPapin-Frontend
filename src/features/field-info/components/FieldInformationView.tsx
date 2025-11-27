@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowLeft, FaEdit } from "react-icons/fa";
+import { FaArrowLeft, FaPlus } from "react-icons/fa";
+import { LuPencil } from "react-icons/lu";
 import { FieldService } from "../../../services/field";
 import { FieldModal } from "./FieldModal";
 import type { FieldResponse, CreateFieldRequest, UpdateFieldRequest } from "../types/field.types";
@@ -11,13 +12,15 @@ export function FieldInformationView() {
   const navigate = useNavigate();
   const [field, setField] = useState<FieldResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loadingField, setLoadingField] = useState(true);
 
   useEffect(() => {
     loadField();
-  }, [navigate]);
+  }, []);
 
   const loadField = async () => {
     try {
+      setLoadingField(true);
       const fieldData = await FieldService.getField();
       
       if (fieldData) {
@@ -25,27 +28,91 @@ export function FieldInformationView() {
         setField(fieldData);
       } else {
         console.log('No se encontró ningún field');
-        navigate(ROUTES.CREATE_FIELD, { replace: true });
+        setField(null);
       }
     } catch (err) {
       console.error('error cargando el field:', err);
+      setField(null);
+    } finally {
+      setLoadingField(false);
     }
   };
 
   const handleSaveField = async (data: CreateFieldRequest | UpdateFieldRequest) => {
     try {
-      const updatedField = await FieldService.updateField(data as UpdateFieldRequest);
-      setField(updatedField);
-      console.log('Field actualizado');
+      let savedField: FieldResponse;
+      
+      if (field) {
+        savedField = await FieldService.updateField(data as UpdateFieldRequest);
+        console.log('Field actualizado');
+      } else {
+        savedField = await FieldService.createField(data as CreateFieldRequest);
+        console.log('Field creado');
+      }
+      
+      setField(savedField);
+      setIsModalOpen(false);
     } catch (err) {
-      console.error('error actualiando el field:', err);
+      console.error('error guardando el field:', err);
     }
   };
 
-  if (!field) {
+  if (loadingField) {
     return null;
   }
 
+  // cuando no hay field muestra esta vista
+  if (!field) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
+        <div className="max-w-4xl mx-auto">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
+          >
+            <FaArrowLeft size={16} />
+            <span>Back</span>
+          </button>
+
+          <h1 className="text-4xl font-bold text-gray-900 mb-8">
+            Field information
+          </h1>
+
+          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+            <div className="max-w-md mx-auto">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FaPlus className="text-gray-400 text-3xl" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  No Field Found
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  You haven't created a field yet. Create your first field.
+                </p>
+              </div>
+              
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#3E7C59] text-white rounded-lg font-semibold hover:bg-[#2d5f43] transition"
+              >
+                <FaPlus />
+                Add Field
+              </button>
+            </div>
+          </div>
+
+          <FieldModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSave={handleSaveField}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // cuando hay field
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
       <div className="max-w-4xl mx-auto">
@@ -105,7 +172,7 @@ export function FieldInformationView() {
                   onClick={() => setIsModalOpen(true)}
                   className="flex items-center justify-center gap-2 w-full px-4 py-2 mb-3 border-2 border-[#3E7C59] text-[#3E7C59] rounded-lg font-medium text-sm hover:bg-gray-100 hover:border-[#2d5f43] hover:text-[#2d5f43] transition"
                 >
-                  <FaEdit />
+                  <LuPencil />
                   Edit Field Information
                 </button>
                 <div className="flex flex-col sm:flex-row gap-3">
