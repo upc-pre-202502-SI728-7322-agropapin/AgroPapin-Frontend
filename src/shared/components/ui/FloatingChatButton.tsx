@@ -3,14 +3,19 @@ import { useParams, useLocation } from 'react-router-dom';
 import agropapinChatIcon from '../../../assets/agropapinChat.png';
 import { ChatView } from '../../../features/chat/components/ChatView';
 
-export function FloatingChatButton() {
+interface FloatingChatButtonProps {
+  plotId?: string | null;
+  fieldId?: string | null;
+}
+
+export function FloatingChatButton({ plotId: propPlotId, fieldId: propFieldId }: FloatingChatButtonProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const params = useParams<{ plotId?: string }>();
   const location = useLocation();
   
-  // Auto-detect context from URL
-  const plotId = params.plotId || null;
-  const fieldId = (location.state as any)?.fieldId || null;
+  // detctando el contexto por la url 
+  const plotId = propPlotId || params.plotId || null;
+  const fieldId = propFieldId || (location.state as any)?.fieldId || null;
 
   return (<>
       <button
