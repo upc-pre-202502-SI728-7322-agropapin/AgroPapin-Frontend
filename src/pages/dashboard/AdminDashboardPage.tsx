@@ -1,9 +1,5 @@
-export default function AdminDashboardPage() {
+import { AdminDashboardView } from '../../features/dashboard/components/AdminDashboardView';
 
-    return (
-        <div>
-            <h1>Admin Dashboard</h1>
-            <img src="/fichaje.jpeg" alt="fichaje"/>
-        </div>
-    );
+export default function AdminDashboardPage() {
+  return <AdminDashboardView />;
 }
