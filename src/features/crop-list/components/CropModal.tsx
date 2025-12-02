@@ -1,44 +1,42 @@
 import { useState, useEffect } from 'react';
-import type { PlantingResource, CreatePlantingResource } from '../types/crop.types';
+import type { CreatePlantingResource } from '../types/crop.types';
 import { useCropTypes } from '../hooks';
 
-interface CropModalProps {
+export interface CropModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: CreatePlantingResource) => void;
-  planting?: PlantingResource | null;
 }
 
-export function CropModal({ isOpen, onClose, onSave, planting }: CropModalProps) {
+export function CropModal({ isOpen, onClose, onSave }: CropModalProps) {
   const { cropTypes } = useCropTypes();
-  const [formData, setFormData] = useState<{ cropTypeId: string }>({
+  const [formData, setFormData] = useState<{
+    cropTypeId: string;
+    plantingDate: string;
+    actualHarvestDate: string | null;}>({
     cropTypeId: '',
+    plantingDate: '',
+    actualHarvestDate: null,
   });
 
   useEffect(() => {
     if (isOpen) {
-      if (planting) {
-        setFormData({
-          cropTypeId: planting.cropType?.id || '',
-        });
-      } else {
-        setFormData({
-          cropTypeId: '',
-        });
-      }
+      setFormData({
+        cropTypeId: '',
+        plantingDate: new Date().toISOString().split('T')[0],
+        actualHarvestDate: '',
+      });
     }
-  }, [planting, isOpen]);
+  }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('DATOS ENVIADOS ', {cropTypeId: formData.cropTypeId});
-    // TODO: ELIMINAR HARCODEADO DE FECHAS CUANDO SE IMPLEENTE LOGICA EN EL BACKEND
-    const dates: CreatePlantingResource = {
+    const createData: CreatePlantingResource = {
       cropTypeId: formData.cropTypeId,
-      plantingDate: new Date().toISOString().split('T')[0],
-      actualHarvestDate: null
+      plantingDate: formData.plantingDate,
+      actualHarvestDate: formData.actualHarvestDate === '' ? null : formData.actualHarvestDate,
     };
-    onSave(dates);
+    onSave(createData);
     onClose();
   };
 
@@ -48,11 +46,11 @@ export function CropModal({ isOpen, onClose, onSave, planting }: CropModalProps)
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          {planting ? 'Edit Crop' : 'Add Crop'}
+          Add Crop
         </h2>
         
         <p className="text-gray-600 text-center mb-6">
-          {planting ? 'Update the crop type.' : 'Select a crop type to add to your plot.'}
+          Select a crop type to add to your plot.
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -77,7 +75,7 @@ export function CropModal({ isOpen, onClose, onSave, planting }: CropModalProps)
 
           <div className="flex gap-4">
             <button type="submit" className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
-              {planting ? 'Save' : 'Create'}
+              Create
             </button>
             <button type="button" onClick={onClose} className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
               Cancel

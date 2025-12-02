@@ -1,78 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CropDetailTabs } from './CropDetailTabs';
 import { GeneralInfoTab } from './GeneralInfoTab';
-import { CropCareTab } from './CropCareTab';
 import { ControlsTab } from './ControlsTab';
-import { PestsTab } from './PestsTab';
 import { ProductsTab } from './ProductsTab';
-import type { CropDetail } from '../types/crop-details.types';
+import type { PlantingResource } from '../../crop-list/types/crop.types';
+import PlantingService from '../../crop-list/../../services/crop/PlantingService';
 import {FaArrowLeft} from "react-icons/fa";
 
-const mockCropData: Record<string, CropDetail> = {
-  '1': {
-    id: '1',
-    name: 'Lemon',
-    creationDate: '19/07/2024',
-    plantedArea: 100,
-    description: 'Lemon (Citrus limon) is a perennial crop that requires well-drained soils and moderate water for optimal growth. It is cultivated in a variety of climatic conditions and its growth cycle includes stages such as flowering, fruit development and harvest. The mature fruits are harvested and can be processed into fresh juice or used in culinary applications. It is an important crop for the food industry.',
-    imageUrl: 'https://images.unsplash.com/photo-1590502593747-42a996133562?w=600&h=400&fit=crop'
-  },
-  '2': {
-    id: '2',
-    name: 'Rice',
-    creationDate: '19/07/2024',
-    plantedArea: 700,
-    description: 'Rice (Oryza sativa) is an annual herbaceous crop that requires well-drained soils and abundant water for optimal growth. It is cultivated in a variety of climatic conditions and its growth cycle includes stages such as germination, flowering and grain maturation. The mature grains are harvested and can be processed into refined white rice or brown rice. It is an important staple food worldwide.',
-    imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&h=400&fit=crop'
-  },
-  '3': {
-    id: '3',
-    name: 'Rice',
-    creationDate: '19/07/2024',
-    plantedArea: 700,
-    description: 'Rice (Oryza sativa) is an annual herbaceous crop that requires well-drained soils and abundant water for optimal growth. It is cultivated in a variety of climatic conditions and its growth cycle includes stages such as germination, flowering and grain maturation. The mature grains are harvested and can be processed into refined white rice or brown rice. It is an important staple food worldwide.',
-    imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&h=400&fit=crop'
-  },
-  '4': {
-    id: '4',
-    name: 'Rice',
-    creationDate: '19/07/2024',
-    plantedArea: 700,
-    description: 'Rice (Oryza sativa) is an annual herbaceous crop that requires well-drained soils and abundant water for optimal growth. It is cultivated in a variety of climatic conditions and its growth cycle includes stages such as germination, flowering and grain maturation. The mature grains are harvested and can be processed into refined white rice or brown rice. It is an important staple food worldwide.',
-    imageUrl: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&h=400&fit=crop'
-  }
-};
-
 export function CropDetailView() {
-  const { id } = useParams<{ id: string }>();
+  const { fieldId, plotId, plantingId } = useParams<{ fieldId: string; plotId: string; plantingId: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
+  const [planting, setPlanting] = useState<PlantingResource | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // MOCKUP DATA
-  const crop = id && mockCropData[id] ? mockCropData[id] : {
-    id: id || '1',
-    name: 'Tomato',
-    creationDate: '15/11/2024',
-    plantedArea: 150,
-    description: 'Tomato (Solanum lycopersicum) is an annual herbaceous crop that requires well-drained soils and moderate water for optimal growth. It is cultivated in a variety of climatic conditions and its growth cycle includes stages such as germination, flowering, fruit development and harvest. The mature fruits are harvested and can be consumed fresh or processed into sauces and other products.',
-    imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&h=400&fit=crop'
-  };
+  useEffect(() => {
+    const fetchPlanting = async () => {
+      if (!fieldId || !plotId || !plantingId) {
+        setError('Missing field, plot or planting information');
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+      try {
+        const plantingData = await PlantingService.getPlantingById(fieldId, plotId, plantingId);
+        setPlanting(plantingData);
+      } catch (err) {
+        setError('Error loading planting details');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPlanting();
+  }, [fieldId, plotId, plantingId]);
 
   const renderTabContent = () => {
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div className="text-red-600">{error}</div>;
+    if (!planting) return <div>No planting found.</div>;
+
+    const cropDetail = planting.croptype ? {
+      ...planting.croptype,
+      creationDate: planting.plantingDate ? new Date(planting.plantingDate).toLocaleDateString() : '',
+      plantedArea: 0,
+      description: planting.croptype.description ?? '',
+      imageUrl: planting.croptype.imageUrl ?? '',
+    } : null;
     switch (activeTab) {
       case 'general':
-        return <GeneralInfoTab crop={crop} />;
-      case 'care':
-        return <CropCareTab cropId={crop.id} />;
+        return cropDetail ? <GeneralInfoTab crop={cropDetail} /> : <div>No crop detail found.</div>;
       case 'controls':
-        return <ControlsTab cropId={crop.id} />;
-      case 'pests':
-        return <PestsTab cropId={crop.id} />;
+        return <ControlsTab cropId={planting.id} />;
       case 'products':
-        return <ProductsTab cropId={crop.id} />;
+        return <ProductsTab cropId={planting.id} />;
       default:
-        return <GeneralInfoTab crop={crop} />;
+        return cropDetail ? <GeneralInfoTab crop={cropDetail} /> : <div>No crop detail found.</div>;
     }
   };
 
