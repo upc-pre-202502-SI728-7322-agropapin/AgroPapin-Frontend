@@ -31,43 +31,43 @@ export function SensorDetailsView() {
   const [selectedMetric, setSelectedMetric] = useState<'temperature' | 'humidity' | 'soilHumidity' | 'ph'>('temperature');
 
   const temperatureData: ChartData[] = [
-    { day: 'Mon', value: 24 },
-    { day: 'Tue', value: 26 },
-    { day: 'Wed', value: 23 },
-    { day: 'Thu', value: 25 },
-    { day: 'Fri', value: 28 },
-    { day: 'Sat', value: 27 },
-    { day: 'Sun', value: 25 },
+    { day: 'Mon', time: 'Mon', value: 24 },
+    { day: 'Tue', time: 'Tue', value: 26 },
+    { day: 'Wed', time: 'Wed', value: 23 },
+    { day: 'Thu', time: 'Thu', value: 25 },
+    { day: 'Fri', time: 'Fri', value: 28 },
+    { day: 'Sat', time: 'Sat', value: 27 },
+    { day: 'Sun', time: 'Sun', value: 25 },
   ];
 
   const humidityData: ChartData[] = [
-    { day: 'Mon', value: 55 },
-    { day: 'Tue', value: 60 },
-    { day: 'Wed', value: 58 },
-    { day: 'Thu', value: 62 },
-    { day: 'Fri', value: 65 },
-    { day: 'Sat', value: 63 },
-    { day: 'Sun', value: 60 },
+    { day: 'Mon', time: 'Mon', value: 55 },
+    { day: 'Tue', time: 'Tue', value: 60 },
+    { day: 'Wed', time: 'Wed', value: 58 },
+    { day: 'Thu', time: 'Thu', value: 62 },
+    { day: 'Fri', time: 'Fri', value: 65 },
+    { day: 'Sat', time: 'Sat', value: 63 },
+    { day: 'Sun', time: 'Sun', value: 60 },
   ];
 
   const soilHumidityData: ChartData[] = [
-    { day: 'Mon', value: 35 },
-    { day: 'Tue', value: 38 },
-    { day: 'Wed', value: 42 },
-    { day: 'Thu', value: 40 },
-    { day: 'Fri', value: 37 },
-    { day: 'Sat', value: 39 },
-    { day: 'Sun', value: 40 },
+    { day: 'Mon', time: 'Mon', value: 35 },
+    { day: 'Tue', time: 'Tue', value: 38 },
+    { day: 'Wed', time: 'Wed', value: 42 },
+    { day: 'Thu', time: 'Thu', value: 40 },
+    { day: 'Fri', time: 'Fri', value: 37 },
+    { day: 'Sat', time: 'Sat', value: 39 },
+    { day: 'Sun', time: 'Sun', value: 40 },
   ];
 
   const phData: ChartData[] = [
-    { day: 'Mon', value: 5.4 },
-    { day: 'Tue', value: 5.6 },
-    { day: 'Wed', value: 5.5 },
-    { day: 'Thu', value: 5.7 },
-    { day: 'Fri', value: 5.8 },
-    { day: 'Sat', value: 5.6 },
-    { day: 'Sun', value: 5.6 },
+    { day: 'Mon', time: 'Mon', value: 5.4 },
+    { day: 'Tue', time: 'Tue', value: 5.6 },
+    { day: 'Wed', time: 'Wed', value: 5.5 },
+    { day: 'Thu', time: 'Thu', value: 5.7 },
+    { day: 'Fri', time: 'Fri', value: 5.8 },
+    { day: 'Sat', time: 'Sat', value: 5.6 },
+    { day: 'Sun', time: 'Sun', value: 5.6 },
   ];
 
   const chartDataMap = {

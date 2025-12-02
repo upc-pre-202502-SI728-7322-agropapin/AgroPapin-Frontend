@@ -90,12 +90,6 @@ export function DevicesView() {
     setIsModalOpen(true);
   };
 
-  const handleRowClick = (deviceId: string) => {
-    // REVISAR SI TODAVÍA VA A EXISTIR LA VISTA DETALLADA DE SENSORES
-    // navigate(`/devices/details/${deviceId}`);
-  };
-
-
   const handleDelete = (deviceId: string) => {
     if (isAdmin) return;
     setDeviceToDelete(deviceId);

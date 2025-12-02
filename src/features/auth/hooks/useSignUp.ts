@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signUpFarmer, signUpAdministrator } from '../../../services/auth/AuthService';
-import { useAuth } from '../context/AuthContext';
 import { getDashboardByRole } from '../../../shared/utils/navigation';
 
 export function useSignUp() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const handleSignUp = async (
     email: string,
@@ -37,10 +35,7 @@ export function useSignUp() {
         await signUpAdministrator(userData);
       }
 
-      // Auto login
-      await login(email, password);
 
-      // redirigir al dashboard según el rol
       const dashboard = getDashboardByRole(role);
       navigate(dashboard);
     } catch (err) {
