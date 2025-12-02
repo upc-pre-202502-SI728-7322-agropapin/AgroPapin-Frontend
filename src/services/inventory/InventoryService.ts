@@ -33,6 +33,7 @@ export class InventoryService {
 
   // POST 
   static async useSupply(cooperativeId: string, itemId: string, data: UseSupplyResource): Promise<InventoryItemResource> {
+    console.log('Sending use supply request:', { cooperativeId, itemId, data });
     const res = await axiosClient.post<InventoryItemResource>(`/cooperative/${cooperativeId}/inventory/${itemId}/use`, data);
     return res.data;
   }

@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { ChatWindow } from './ChatWindow';
 import { ChatInput } from './ChatInput';
+import { useAuth } from '../../auth/context/AuthContext';
+import AgentService from '../../../services/agent/AgentService';
 import type { Message } from '../types/chat.types';
 import agropapinLogo from "../../../assets/agropapin.png"
 
-// respuestas automáticas del bot
+// respuestas automáticas del bot (fallback)
 const getBotResponse = (userMessage: string): string => {
   const lowerMessage = userMessage.toLowerCase();
   
@@ -31,14 +33,23 @@ const getBotResponse = (userMessage: string): string => {
 
 interface ChatViewProps {
   isFloating?: boolean;
+  plotId?: string | null;    // Para preguntas específicas de parcela (zoom in)
+  fieldId?: string | null;   // Para preguntas generales de campo (zoom out)
 }
 
-export function ChatView({ isFloating = false }: ChatViewProps) {
+export function ChatView({ isFloating = false, plotId = null, fieldId = null }: ChatViewProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSendMessage = (content: string) => {
+  // detectar el contexto por la URL
+  const contextPlotId = plotId || params.plotId || undefined;
+  const contextFieldId = fieldId || (location.state as any)?.fieldId || undefined;
+
+  const handleSendMessage = async (content: string) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       content,
@@ -49,18 +60,35 @@ export function ChatView({ isFloating = false }: ChatViewProps) {
     setMessages(prev => [...prev, newMessage]);
     setIsLoading(true);
 
-    // Simular respuesta del bot
-    setTimeout(() => {
+    try {
+      const response = await AgentService.chat({
+        question: content,
+        plotId: contextPlotId,
+        fieldId: contextFieldId,
+        userId: user?.id,
+        role: user?.roles?.includes('ROLE_ADMINISTRATOR') ? 'ADMIN' : 'FARMER',
+      });
+
+      const botResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        content: response,
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      console.error('Error getting agent response:', error);
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         content: getBotResponse(content),
         sender: 'bot',
         timestamp: new Date(),
       };
-
       setMessages(prev => [...prev, botResponse]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (

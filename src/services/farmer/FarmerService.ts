@@ -1,22 +1,5 @@
 import axiosClient from '../api/axiosClient';
-
-export interface FarmerResource {
-  farmerId: string;
-  firstName: string;
-  lastName: string;
-  country: string;
-  phone: string;
-  email: string;
-  userId: string;
-  cooperativeId: string;
-}
-
-export interface UpdateFarmerResource {
-  firstName: string;
-  lastName: string;
-  country: string;
-  phone: string;
-}
+import type { FarmerResource, UpdateFarmerResource } from '../../features/user-profile/types/user-profile.types';
 
 export class FarmerService {
   // GET - My Farmer Profile

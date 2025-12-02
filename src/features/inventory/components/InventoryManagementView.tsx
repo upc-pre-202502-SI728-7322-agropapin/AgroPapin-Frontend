@@ -158,8 +158,11 @@ export function InventoryManagementView() {
       setUsePurpose('');
       setSelectedItem(null);
       await loadInventory();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error using supply:', error);
+      if (error?.response?.data) {
+        console.error('Backend error details:', error.response.data);
+      }
     }
   };
 
@@ -256,8 +259,7 @@ export function InventoryManagementView() {
             </p>
             <button
               onClick={() => window.location.href = '/create-cooperative'}
-              className="bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
-            >
+              className="bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold px-6 py-3 rounded-lg transition-colors">
               Create Cooperative
             </button>
           </div>
@@ -470,7 +472,7 @@ export function InventoryManagementView() {
                 <p className="text-2xl font-bold text-gray-900">{selectedItem.amount} {selectedItem.unit}</p>
               </div>
 
-              <div className="mb-6">
+              <div className="mb-4">
                 <label className="block text-gray-700 font-medium mb-2">Amount to Add *</label>
                 <input
                   type="number"
@@ -483,8 +485,11 @@ export function InventoryManagementView() {
                 />
               </div>
 
-              <div className="flex gap-4">
-                <button onClick={handleIncrease} className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors font-semibold">
+              <div className="flex gap-4 mt-6">
+                <button 
+                  onClick={handleIncrease} 
+                  className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold"
+                >
                   Add Stock
                 </button>
                 <button
@@ -492,7 +497,8 @@ export function InventoryManagementView() {
                     setShowIncreaseModal(false);
                     setSelectedItem(null);
                   }}
-                  className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
+                  className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors"
+                >
                   Cancel
                 </button>
               </div>
@@ -517,7 +523,7 @@ export function InventoryManagementView() {
                 <p className="text-2xl font-bold text-gray-900">{selectedItem.amount} {selectedItem.unit}</p>
               </div>
 
-              <div className="space-y-4 mb-6">
+              <div className="space-y-4">
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">Amount to Use *</label>
                   <input
@@ -543,8 +549,11 @@ export function InventoryManagementView() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
-                <button onClick={handleUse} className="flex-1 bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors font-semibold">
+              <div className="flex gap-4 mt-6">
+                <button 
+                  onClick={handleUse} 
+                  className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold"
+                >
                   Use Supply
                 </button>
                 <button
@@ -552,7 +561,8 @@ export function InventoryManagementView() {
                     setShowUseModal(false);
                     setSelectedItem(null);
                   }}
-                  className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
+                  className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors"
+                >
                   Cancel
                 </button>
               </div>

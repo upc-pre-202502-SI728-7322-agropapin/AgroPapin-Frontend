@@ -5,7 +5,8 @@ import { GeneralInfoTab } from './GeneralInfoTab';
 import { ControlsTab } from './ControlsTab';
 import { ProductsTab } from './ProductsTab';
 import { useAuth } from '../../auth/context/AuthContext';
-import type { CropDetail } from '../types/crop-details.types';
+import PlantingService from '../../../services/crop/PlantingService';
+import type { PlantingResource } from '../../crop-list/types/crop.types';
 import {FaArrowLeft} from "react-icons/fa";
 
 export function CropDetailView() {
@@ -55,11 +56,13 @@ export function CropDetailView() {
       case 'general':
         return cropDetail ? <GeneralInfoTab crop={cropDetail} /> : <div>No crop detail found.</div>;
       case 'controls':
-        return <ControlsTab cropId={crop.id} isAdmin={isAdmin} />;
-      case 'pests':
-        return <PestsTab cropId={crop.id} />;
+        return fieldId && plotId && plantingId ? (
+          <ControlsTab cropId={planting.id} plotId={plotId} plantingId={plantingId} isAdmin={isAdmin} />
+        ) : <div>Missing required information</div>;
       case 'products':
-        return <ProductsTab cropId={crop.id} isAdmin={isAdmin} />;
+        return fieldId && plotId && plantingId ? (
+          <ProductsTab cropId={planting.id} plotId={plotId} plantingId={plantingId} isAdmin={isAdmin} />
+        ) : <div>Missing required information</div>;
       default:
         return cropDetail ? <GeneralInfoTab crop={cropDetail} /> : <div>No crop detail found.</div>;
     }

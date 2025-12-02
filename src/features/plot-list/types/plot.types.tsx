@@ -40,6 +40,7 @@ export interface PlotCardProps {
   plot: Plot;
   onInfoClick: (plotId: string) => void;
   onDevicesClick: (plotId: string) => void;
+  onMetricsClick?: (plotId: string) => void;
   onEdit?: (plot: Plot) => void;
   onDelete?: (plotId: string) => void;
   isAdmin?: boolean;
@@ -49,6 +50,7 @@ export interface PlotListProps {
   plots: Plot[];
   onInfoClick: (plotId: string) => void;
   onDevicesClick: (plotId: string) => void;
+  onMetricsClick?: (plotId: string) => void;
   onEdit?: (plot: Plot) => void;
   onDelete?: (plotId: string) => void;
   isAdmin?: boolean;
