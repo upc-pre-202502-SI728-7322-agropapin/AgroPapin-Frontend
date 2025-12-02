@@ -2,12 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CooperativeService } from "../../../services/cooperative/CooperativeService";
 import { ROUTES } from "../../../shared/constants/routes";
-import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import type { CooperativeResource } from '../../cooperative/types/cooperative.types';
 import { PiFarm } from 'react-icons/pi';
 import { BiBox } from 'react-icons/bi';
 import { HiOutlineChartBar } from 'react-icons/hi';
-import agropapinChatIcon from '../../../assets/agropapinChat.png';
 
 export function AdminDashboardView() {
   const navigate = useNavigate();
@@ -121,10 +119,7 @@ export function AdminDashboardView() {
                 )}
               </div>
 
-              <button
-                onClick={handleManageMembersClick}
-                className="w-full bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-              >
+              <button onClick={handleManageMembersClick} className="w-full bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                 Manage Members
               </button>
             </div>

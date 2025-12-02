@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import type { CreatePlantingResource } from '../types/crop.types';
+import type { PlantingResource } from '../types/crop.types';
 import { useCropTypes } from '../hooks';
-import { validateField } from '../../../shared/utils/validations';
 
 export interface CropModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: CreatePlantingResource) => void;
+  externalError?: string | null;
+  plantings: PlantingResource[];
 }
 
-export function CropModal({ isOpen, onClose, onSave }: CropModalProps) {
+export function CropModal({ isOpen, onClose, onSave, externalError, plantings }: CropModalProps) {
   const { cropTypes } = useCropTypes();
   const [formData, setFormData] = useState<{
     cropTypeId: string;
@@ -20,7 +22,10 @@ export function CropModal({ isOpen, onClose, onSave }: CropModalProps) {
     actualHarvestDate: null,
   });
 
-  const [error, setError] = useState<string | null>(null);
+  // validar si hay plantings activos
+  const hasActivePlanting = Array.isArray(plantings) && plantings.some(p => 
+    p.status === 'GROWING'
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -40,7 +45,6 @@ export function CropModal({ isOpen, onClose, onSave }: CropModalProps) {
       actualHarvestDate: formData.actualHarvestDate === '' ? null : formData.actualHarvestDate,
     };
     onSave(createData);
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -74,16 +78,27 @@ export function CropModal({ isOpen, onClose, onSave }: CropModalProps) {
                 </option>
               ))}
             </select>
-            {error && (
-              <p className="mt-2 text-sm text-red-600">{error}</p>
+            {hasActivePlanting && (
+              <p className="mt-2 text-sm text-red-600">
+                This plot already has an active crop. Please harvest or remove the existing crop before planting a new one.
+              </p>
+            )}
+            {externalError && (
+              <p className="mt-2 text-sm text-red-600">{externalError}</p>
             )}
           </div>
 
-          <div className="flex gap-4">
-            <button type="submit" className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
+          <div className="flex gap-3">
+            <button 
+              type="submit" 
+              disabled={hasActivePlanting}
+              className="flex-1 bg-[#3E7C59] text-white py-3 px-6 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
               Create
             </button>
-            <button type="button" onClick={onClose} className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="flex-1 bg-gray-200 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
               Cancel
             </button>
           </div>

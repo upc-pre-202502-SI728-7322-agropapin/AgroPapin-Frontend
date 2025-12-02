@@ -59,7 +59,7 @@ export function FarmerDashboardView() {
   }
 
   const handleIrrigationClick = () => {
-    navigate(ROUTES.IRRIGATION_CONTROL);
+    navigate('/irrigation-history');
   }
 
   const handleManagePlotsClick = () => {
@@ -127,10 +127,10 @@ export function FarmerDashboardView() {
             >
               <div className="flex items-center gap-4 mb-3">
                 <GiWaterDrop className="w-12 h-12" />
-                <h3 className="text-2xl font-bold">Irrigation Management</h3>
+                <h3 className="text-2xl font-bold">Irrigation History</h3>
               </div>
               <p className="text-white/90 text-base">
-                Optimize the irrigation of your field.
+                View irrigation history.
               </p>
             </button>
           </div>
@@ -161,10 +161,7 @@ export function FarmerDashboardView() {
                 )}
               </div>
 
-              <button
-                onClick={handleManagePlotsClick}
-                className="w-full bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-              >
+              <button onClick={handleManagePlotsClick} className="w-full bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                 Manage Plots
               </button>
             </div>
