@@ -108,6 +108,7 @@ export function ActuatorReadingsView() {
           return <span className="text-gray-900">{value}</span>;
         }}
         showActions={false}
+        emptyMessage="No actuator readings available."
       />
     </div>
   );

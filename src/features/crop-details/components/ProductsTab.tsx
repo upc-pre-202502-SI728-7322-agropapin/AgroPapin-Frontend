@@ -9,22 +9,87 @@ import type { Product, ProductFormData, ProductResource, CreateProductResource, 
 
 interface ProductsTabProps {
   cropId: string;
+  isAdmin?: boolean;
 }
 
-// Helper function to convert ProductResource to Product for UI
-const mapProductResourceToProduct = (resource: ProductResource): Product => ({
-  id: resource.productId,
-  date: new Date(resource.applicationDate).toLocaleDateString('en-GB'),
-  type: resource.type,
-  name: resource.name,
-  quantity: `${resource.amount} ${resource.unit}`,
-});
+const mockProductsData: Record<string, Product[]> = {
+  '1': [
+    {
+      id: '1',
+      date: '09/05/2025',
+      type: 'Fertilizer',
+      name: 'Aminofol Plus',
+      quantity: '10 Kg',
+    },
+    {
+      id: '2',
+      date: '07/05/2025',
+      type: 'Pesticide',
+      name: 'Beta-Baytroide',
+      quantity: '10 Kg',
+    },
+    {
+      id: '3',
+      date: '05/05/2025',
+      type: 'Fungicide',
+      name: 'Antracol',
+      quantity: '2 L',
+    },
+    {
+      id: '4',
+      date: '03/05/2025',
+      type: 'Fertilizer',
+      name: 'Aminofol Plus',
+      quantity: '15 Kg',
+    },
+    {
+      id: '5',
+      date: '01/05/2025',
+      type: 'Pesticide',
+      name: 'Beta-Baytroide',
+      quantity: '10 Kg',
+    },
+  ],
+  '2': [
+    {
+      id: '1',
+      date: '20/07/2024',
+      type: 'Fertilizer',
+      name: 'NPK Complex',
+      quantity: '25 Kg',
+    },
+    {
+      id: '2',
+      date: '25/07/2024',
+      type: 'Herbicide',
+      name: 'Glyphosate',
+      quantity: '5 L',
+    },
+  ],
+  '3': [
+    {
+      id: '1',
+      date: '20/07/2024',
+      type: 'Fertilizer',
+      name: 'NPK Complex',
+      quantity: '25 Kg',
+    },
+  ],
+  '4': [
+    {
+      id: '1',
+      date: '20/07/2024',
+      type: 'Fertilizer',
+      name: 'NPK Complex',
+      quantity: '25 Kg',
+    },
+  ],
+};
 
-export function ProductsTab({ cropId: _ }: ProductsTabProps) {
-  const { plotId, plantingId } = useParams<{ plotId: string; plantingId: string }>();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export function ProductsTab({ cropId, isAdmin = false }: ProductsTabProps) {
+  const [products, setProducts] = useState<Product[]>(
+    mockProductsData[cropId] || mockProductsData['1']
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -50,11 +115,13 @@ export function ProductsTab({ cropId: _ }: ProductsTabProps) {
   }, [plotId, plantingId]);
 
   const handleEdit = (product: Product) => {
+    if (isAdmin) return;
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
   const handleDelete = (productId: string) => {
+    if (isAdmin) return;
     setProductToDelete(productId);
     setIsDeleteModalOpen(true);
   };
@@ -118,44 +185,30 @@ export function ProductsTab({ cropId: _ }: ProductsTabProps) {
   };
 
   const handleOpenAddModal = () => {
+    if (isAdmin) return;
     setSelectedProduct(null);
     setIsModalOpen(true);
   };
 
   return (
     <div className="py-6">
-      {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-          {error}
+     
+      {!isAdmin && (
+        <div className="flex justify-end mb-6">
+          <AddButton
+            onClick={handleOpenAddModal}
+            label="Add Product"
+          />
         </div>
       )}
-
-      {loading && (
-        <div className="mb-4 text-center text-gray-600">
-          Loading products...
-        </div>
-      )}
-
-      <div className="flex justify-end mb-6">
-        <AddButton
-          onClick={handleOpenAddModal}
-          label="Add Product"
-        />
-      </div>
 
       <div className="bg-white rounded-lg overflow-hidden ">
-        {products.length === 0 && !loading && !error ? (
-          <div className="text-center py-12 text-gray-500">
-            <p className="text-lg mb-2">No products registered yet</p>
-            <p className="text-sm">Click "Add Product" to register your first product</p>
-          </div>
-        ) : (
-          <ProductsTable
-            products={products}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        )}
+        <ProductsTable
+          products={products}
+          onEdit={isAdmin ? undefined : handleEdit}
+          onDelete={isAdmin ? undefined : handleDelete}
+          showActions={!isAdmin}
+        />
       </div>
 
       <ProductModal

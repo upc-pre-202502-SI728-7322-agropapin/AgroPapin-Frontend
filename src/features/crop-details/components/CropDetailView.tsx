@@ -4,13 +4,15 @@ import { CropDetailTabs } from './CropDetailTabs';
 import { GeneralInfoTab } from './GeneralInfoTab';
 import { ControlsTab } from './ControlsTab';
 import { ProductsTab } from './ProductsTab';
-import type { PlantingResource } from '../../crop-list/types/crop.types';
-import PlantingService from '../../crop-list/../../services/crop/PlantingService';
+import { useAuth } from '../../auth/context/AuthContext';
+import type { CropDetail } from '../types/crop-details.types';
 import {FaArrowLeft} from "react-icons/fa";
 
 export function CropDetailView() {
   const { fieldId, plotId, plantingId } = useParams<{ fieldId: string; plotId: string; plantingId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
   const [activeTab, setActiveTab] = useState('general');
   const [planting, setPlanting] = useState<PlantingResource | null>(null);
   const [loading, setLoading] = useState(false);
@@ -53,9 +55,11 @@ export function CropDetailView() {
       case 'general':
         return cropDetail ? <GeneralInfoTab crop={cropDetail} /> : <div>No crop detail found.</div>;
       case 'controls':
-        return <ControlsTab cropId={planting.id} />;
+        return <ControlsTab cropId={crop.id} isAdmin={isAdmin} />;
+      case 'pests':
+        return <PestsTab cropId={crop.id} />;
       case 'products':
-        return <ProductsTab cropId={planting.id} />;
+        return <ProductsTab cropId={crop.id} isAdmin={isAdmin} />;
       default:
         return cropDetail ? <GeneralInfoTab crop={cropDetail} /> : <div>No crop detail found.</div>;
     }

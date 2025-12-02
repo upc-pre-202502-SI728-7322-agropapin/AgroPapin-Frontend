@@ -4,11 +4,3 @@ export interface Message {
   sender: 'user' | 'bot';
   timestamp: Date;
 }
-
-export interface ChatSession {
-  id: string;
-  title: string;
-  lastMessage: string;
-  timestamp: Date;
-  messages: Message[];
-}

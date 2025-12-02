@@ -147,6 +147,7 @@ export function SensorReadingsView() {
           return <span className="text-gray-900">{value}</span>;
         }}
         showActions={false}
+        emptyMessage="No sensor readings available."
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import axiosClient from '../api/axiosClient';
-import type { CooperativeResource } from '../../features/cooperative/types/cooperative.types';
+import type { CooperativeResource, MemberSummaryResource, MemberFieldResource } from '../../features/cooperative/types/cooperative.types';
 
 export class CooperativeService {
   // POST
@@ -8,7 +8,7 @@ export class CooperativeService {
     return res.data;
   }
 
-  // GET
+  // GET 
   static async getMyCooperative(): Promise<CooperativeResource> {
     const res = await axiosClient.get<CooperativeResource>('/cooperative/me');
     return res.data;
@@ -37,9 +37,27 @@ export class CooperativeService {
     return res.data;
   }
 
-  //POST- farmer
-  static async addFarmer(cooperativeId: string, userId: string): Promise<CooperativeResource> {
+  // POST - add farmer
+  static async addMember(cooperativeId: string, userId: string): Promise<CooperativeResource> {
     const res = await axiosClient.post<CooperativeResource>(`/cooperative/${cooperativeId}/members/${userId}`);
+    return res.data;
+  }
+
+  // DELETE
+  static async removeMember(cooperativeId: string, userId: string): Promise<{ message: string }> {
+    const res = await axiosClient.delete<{ message: string }>(`/cooperative/${cooperativeId}/members/remove/${userId}`);
+    return res.data;
+  }
+
+  // GET 
+  static async getMembers(cooperativeId: string): Promise<MemberSummaryResource[]> {
+    const res = await axiosClient.get<MemberSummaryResource[]>(`/cooperative/${cooperativeId}/members`);
+    return res.data;
+  }
+
+  // GET - Get member's fields
+  static async getMembersFields(cooperativeId: string): Promise<MemberFieldResource[]> {
+    const res = await axiosClient.get<MemberFieldResource[]>(`/field/cooperative/${cooperativeId}/members`);
     return res.data;
   }
 }

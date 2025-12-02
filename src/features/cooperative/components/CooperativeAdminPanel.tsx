@@ -46,7 +46,7 @@ export function CooperativeAdminPanel() {
         setAddFarmerLoading(false);
         return;
       }
-      const updated = await CooperativeService.addFarmer(cooperative!.cooperativeId, farmerId.trim());
+      const updated = await CooperativeService.addMember(cooperative!.cooperativeId, farmerId.trim());
       setCooperative(updated);
       setFarmerId('');
     } catch {

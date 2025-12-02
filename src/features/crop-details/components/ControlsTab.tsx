@@ -9,21 +9,87 @@ import type { Control, ControlFormData, ControlResource, CreateControlResource, 
 
 interface ControlsTabProps {
   cropId: string;
+  isAdmin?: boolean;
 }
 
-const mapControlResourceToControl = (resource: ControlResource): Control => ({
-  id: resource.controlId,
-  date: new Date(resource.date).toLocaleDateString('en-GB'),
-  leaves: resource.stateLeaves,
-  stemCondition: resource.stateStem,
-  soilMoisture: resource.soilMoisture,
-});
+const mockControlsData: Record<string, Control[]> = {
+  '1': [
+    {
+      id: '1',
+      date: '09/05/2025',
+      leaves: 'Shows two spots or areas.',
+      stemCondition: 'Shows lesions and discoloration.',
+      soilMoisture: 'The soil is very wet.',
+    },
+    {
+      id: '2',
+      date: '07/05/2025',
+      leaves: 'Shows two spots or areas.',
+      stemCondition: 'Shows lesions and discoloration.',
+      soilMoisture: 'The soil is very wet.',
+    },
+    {
+      id: '3',
+      date: '05/05/2025',
+      leaves: 'Shows two spots or areas.',
+      stemCondition: 'Shows lesions and discoloration.',
+      soilMoisture: 'The soil is very wet.',
+    },
+    {
+      id: '4',
+      date: '03/05/2025',
+      leaves: 'Shows two spots or areas.',
+      stemCondition: 'Shows lesions and discoloration.',
+      soilMoisture: 'The soil is very wet.',
+    },
+    {
+      id: '5',
+      date: '01/05/2025',
+      leaves: 'Shows two spots or areas.',
+      stemCondition: 'Shows lesions and discoloration.',
+      soilMoisture: 'The soil is very wet.',
+    },
+  ],
+  '2': [
+    {
+      id: '1',
+      date: '20/07/2024',
+      leaves: 'Healthy green leaves.',
+      stemCondition: 'Strong and upright.',
+      soilMoisture: 'The soil is adequately moist.',
+    },
+    {
+      id: '2',
+      date: '25/07/2024',
+      leaves: 'No visible damage.',
+      stemCondition: 'Growing well.',
+      soilMoisture: 'The soil is slightly dry.',
+    },
+  ],
+  '3': [
+    {
+      id: '1',
+      date: '20/07/2024',
+      leaves: 'Healthy green leaves.',
+      stemCondition: 'Strong and upright.',
+      soilMoisture: 'The soil is adequately moist.',
+    },
+  ],
+  '4': [
+    {
+      id: '1',
+      date: '20/07/2024',
+      leaves: 'Healthy green leaves.',
+      stemCondition: 'Strong and upright.',
+      soilMoisture: 'The soil is adequately moist.',
+    },
+  ],
+};
 
-export function ControlsTab({ cropId: _ }: ControlsTabProps) {
-  const { plotId, plantingId } = useParams<{ plotId: string; plantingId: string }>();
-  const [controls, setControls] = useState<Control[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export function ControlsTab({ cropId, isAdmin = false }: ControlsTabProps) {
+  const [controls, setControls] = useState<Control[]>(
+    mockControlsData[cropId] || mockControlsData['1']
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedControl, setSelectedControl] = useState<Control | null>(null);
@@ -49,11 +115,13 @@ export function ControlsTab({ cropId: _ }: ControlsTabProps) {
   }, [plotId, plantingId]);
 
   const handleEdit = (control: Control) => {
+    if (isAdmin) return;
     setSelectedControl(control);
     setIsModalOpen(true);
   };
 
   const handleDelete = (controlId: string) => {
+    if (isAdmin) return;
     setControlToDelete(controlId);
     setIsDeleteModalOpen(true);
   };
@@ -110,6 +178,7 @@ export function ControlsTab({ cropId: _ }: ControlsTabProps) {
   };
 
   const handleOpenAddModal = () => {
+    if (isAdmin) return;
     setSelectedControl(null);
     setIsModalOpen(true);
   };
@@ -128,12 +197,14 @@ export function ControlsTab({ cropId: _ }: ControlsTabProps) {
         </div>
       )}
 
-      <div className="flex justify-end mb-6">
-        <AddButton
-          onClick={handleOpenAddModal}
-          label="Add Control"
-        />
-      </div>
+      {!isAdmin && (
+        <div className="flex justify-end mb-6">
+          <AddButton
+            onClick={handleOpenAddModal}
+            label="Add Control"
+          />
+        </div>
+      )}
 
       <div className="bg-white rounded-lg overflow-hidden ">
         {controls.length === 0 && !loading && !error ? (

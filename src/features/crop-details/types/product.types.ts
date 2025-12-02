@@ -28,7 +28,6 @@ export interface UpdateProductResource {
   unit: string;
 }
 
-// UI types
 export interface Product {
   id: string;
   date: string;

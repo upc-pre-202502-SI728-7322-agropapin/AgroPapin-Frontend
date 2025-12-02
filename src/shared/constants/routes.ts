@@ -3,6 +3,7 @@ export const ROUTES = {
     LOGIN: '/',
     DASHBOARD_FARMER: '/dashboard/farmer',
     DASHBOARD_ADMIN: '/dashboard/admin',
+    CREATE_COOPERATIVE: '/create-cooperative',
     FIELD_INFO: '/field-information',
     CREATE_FIELD: '/field-information/create',
     PLOT_LIST: '/plot-list',
@@ -14,5 +15,7 @@ export const ROUTES = {
     USER_PROFILE: '/profile',
     CHAT: '/chat',
     IRRIGATION_CONTROL: '/irrigation-control',
+    MANAGE_MEMBERS: '/members',
+    INVENTORY: '/inventory',
     NOTFOUND: '*'
 }
