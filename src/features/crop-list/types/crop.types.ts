@@ -55,6 +55,7 @@ export interface PlantingResource {
   actualHarvestDate: string | null;
   status: CropStatus;
   plotId: string;
+  croptype: CropTypeResource;
 }
 
 export interface CreatePlantingResource {
@@ -67,6 +68,7 @@ export interface UpdatePlantingResource {
   plantingDate: string;
   harvestDate: string | null;
   cropId: string;
+  croptype: CropTypeResource;
 }
 
 export interface UpdatePlantingStatusResource {

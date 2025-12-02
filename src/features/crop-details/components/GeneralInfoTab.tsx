@@ -1,7 +1,6 @@
 import type { CropDetail } from '../types/crop-details.types';
 import {PiPottedPlant} from "react-icons/pi";
 import {MdOutlineCalendarToday} from "react-icons/md";
-import {LuRuler} from "react-icons/lu";
 
 interface GeneralInfoTabProps {
   crop: CropDetail;
@@ -17,7 +16,7 @@ export function GeneralInfoTab({ crop }: GeneralInfoTabProps) {
           <img
             src={crop.imageUrl}
             alt={crop.name}
-            className="rounded-lg w-full max-w-md h-auto object-cover"
+            className="rounded-lg w-full max-w-md h-80 object-cover"
           />
         </div>
 
@@ -43,17 +42,6 @@ export function GeneralInfoTab({ crop }: GeneralInfoTabProps) {
               <p className="text-base font-medium text-gray-700">Creation date</p>
             </div>
             <p className="text-lg font-semibold text-gray-900">{crop.creationDate}</p>
-          </div>
-
-          {/* Planted area */}
-          <div className="bg-[#FAFAFA] border border-gray-200 rounded-xl p-5 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="text-[#3E7C59] text-2xl">
-                <LuRuler size={30}/>
-              </div>
-              <p className="text-base font-medium text-gray-700">Planted area (m2)</p>
-            </div>
-            <p className="text-lg font-semibold text-gray-900">{crop.plantedArea}</p>
           </div>
         </div>
       </div>

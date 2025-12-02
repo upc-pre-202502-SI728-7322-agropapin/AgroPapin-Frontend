@@ -7,9 +7,7 @@ interface CropDetailTabsProps {
 
 const tabs = [
   { id: 'general', label: 'General Information' },
-  { id: 'care', label: 'Crop Care' },
   { id: 'controls', label: 'Controls' },
-  { id: 'pests', label: 'Pests' },
   { id: 'products', label: 'Products Used' },
 ];
 

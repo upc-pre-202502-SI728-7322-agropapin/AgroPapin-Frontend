@@ -4,15 +4,18 @@ import type { PlantingResource } from '../types/crop.types';
 interface CropTableProps {
   plantings: PlantingResource[];
   onRowClick: (plantingId: string) => void;
-  onEdit: (planting: PlantingResource) => void;
+  onEdit?: (planting: PlantingResource) => void;
   onDelete: (plantingId: string) => void;
 }
 
-export function CropTable({ plantings, onRowClick, onEdit, onDelete }: CropTableProps) {
+export function CropTable({ plantings, onRowClick, onEdit: _, onDelete }: CropTableProps) {
   const columns = [
+    { key: 'croptype', label: 'Crop Type' },
+    { key: 'status', label: 'Status' },
     { key: 'plantingDate', label: 'Planting Date' },
     { key: 'harvestDate', label: 'Harvest Date' },
-    { key: 'status', label: 'Status' },
+   
+   
   ];
 
   const formatDate = (dateString: string | null) => {
@@ -63,6 +66,8 @@ export function CropTable({ plantings, onRowClick, onEdit, onDelete }: CropTable
             {getStatusLabel(planting.status)}
           </span>
         );
+      case 'croptype':
+        return planting.croptype?.name || '';
       default:
         return '';
     }
@@ -74,7 +79,6 @@ export function CropTable({ plantings, onRowClick, onEdit, onDelete }: CropTable
           data={plantings}
           renderCell={renderCell}
           onRowClick={(planting) => onRowClick(planting.id)}
-          onEdit={onEdit}
           onDelete={(planting) => onDelete(planting.id)}
           getRowKey={(planting) => planting.id}
       />
