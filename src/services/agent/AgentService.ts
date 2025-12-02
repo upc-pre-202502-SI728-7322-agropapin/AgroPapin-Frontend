@@ -13,9 +13,11 @@ class AgentService {
         role: request.role,
       };
       
-      console.log('Sending to agent:', payload);
+      console.log('payload: ', payload);
       
-      const response = await axiosClient.post<ChatResponse>('/agent/chat', payload);
+      const response = await axiosClient.post<ChatResponse>('/agent/chat', payload, {
+        timeout: 60000,
+      });
       return response.data.response;
     } catch (error) {
       console.error('Error chatting with agent:', error);

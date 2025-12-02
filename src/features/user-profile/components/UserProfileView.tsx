@@ -4,6 +4,7 @@ import { FaArrowLeft, FaCopy, FaCheck } from 'react-icons/fa';
 import { CgProfile } from 'react-icons/cg';
 import { useAuth } from '../../auth/context/AuthContext';
 import { FarmerService } from '../../../services/farmer';
+import { AdministratorService } from '../../../services/administrator';
 import { EditProfileModal } from './EditProfileModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import type { UserProfile, UserProfileFormData } from '../types/user-profile.types';
@@ -11,6 +12,7 @@ import type { UserProfile, UserProfileFormData } from '../types/user-profile.typ
 export function UserProfileView() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -27,17 +29,30 @@ export function UserProfileView() {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const farmerData = await FarmerService.getMyFarmerProfile();
-      setProfile({
-        id: farmerData.farmerId,
-        firstName: farmerData.firstName,
-        lastName: farmerData.lastName,
-        email: farmerData.email,
-        country: farmerData.country,
-        phone: farmerData.phone,
-      });
+      
+      if (isAdmin) {
+        const adminData = await AdministratorService.getMyAdministratorProfile();
+        setProfile({
+          id: adminData.administratorId,
+          firstName: adminData.firstName,
+          lastName: adminData.lastName,
+          email: adminData.email,
+          country: adminData.country,
+          phone: adminData.phoneNumber,
+        });
+      } else {
+        const farmerData = await FarmerService.getMyFarmerProfile();
+        setProfile({
+          id: farmerData.farmerId,
+          firstName: farmerData.firstName,
+          lastName: farmerData.lastName,
+          email: farmerData.email,
+          country: farmerData.country,
+          phone: farmerData.phone,
+        });
+      }
     } catch (error) {
-      console.error('Error loading farmer profile:', error);
+      console.error('Error loading profile:', error);
     } finally {
       setLoading(false);
     }
@@ -53,21 +68,40 @@ export function UserProfileView() {
     if (pendingChanges && profile) {
       try {
         setIsSaving(true);
-        const updatedFarmer = await FarmerService.updateMyFarmerProfile({
-          firstName: pendingChanges.firstName,
-          lastName: pendingChanges.lastName,
-          country: pendingChanges.country,
-          phone: pendingChanges.phone,
-        });
         
-        setProfile({
-          id: updatedFarmer.farmerId,
-          firstName: updatedFarmer.firstName,
-          lastName: updatedFarmer.lastName,
-          email: updatedFarmer.email,
-          country: updatedFarmer.country,
-          phone: updatedFarmer.phone,
-        });
+        if (isAdmin) {
+          const updatedAdmin = await AdministratorService.updateMyAdministratorProfile({
+            firstName: pendingChanges.firstName,
+            lastName: pendingChanges.lastName,
+            country: pendingChanges.country,
+            phoneNumber: pendingChanges.phone,
+          });
+          
+          setProfile({
+            id: updatedAdmin.administratorId,
+            firstName: updatedAdmin.firstName,
+            lastName: updatedAdmin.lastName,
+            email: updatedAdmin.email,
+            country: updatedAdmin.country,
+            phone: updatedAdmin.phoneNumber,
+          });
+        } else {
+          const updatedFarmer = await FarmerService.updateMyFarmerProfile({
+            firstName: pendingChanges.firstName,
+            lastName: pendingChanges.lastName,
+            country: pendingChanges.country,
+            phone: pendingChanges.phone,
+          });
+          
+          setProfile({
+            id: updatedFarmer.farmerId,
+            firstName: updatedFarmer.firstName,
+            lastName: updatedFarmer.lastName,
+            email: updatedFarmer.email,
+            country: updatedFarmer.country,
+            phone: updatedFarmer.phone,
+          });
+        }
         
         console.log('Profile updated successfully');
         setPendingChanges(null);

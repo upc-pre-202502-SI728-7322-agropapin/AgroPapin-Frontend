@@ -195,7 +195,7 @@ export function PlotListView() {
         />
       </div>
 
-      {!isAdmin && <FloatingChatButton fieldId={fieldId} />}
+      <FloatingChatButton fieldId={fieldId} />
     </div>
   );
 }

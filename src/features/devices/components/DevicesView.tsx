@@ -298,7 +298,7 @@ export function DevicesView() {
         deviceName={deviceToDeleteName}
       />
 
-      {!isAdmin && <FloatingChatButton />}
+      <FloatingChatButton />
     </div>
   );
 }
