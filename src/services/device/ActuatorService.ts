@@ -26,6 +26,12 @@ class ActuatorService {
     const response = await axiosClient.patch<ActuatorResource>(`/actuators/plot/${plotId}/device/${actuatorId}/status`,data);
     return response.data;
   }
+
+  // DELETE
+  async deleteActuator(actuatorId: string): Promise<{ message: string }> {
+    const response = await axiosClient.delete<{ message: string }>(`/actuators/device/${actuatorId}`);
+    return response.data;
+  }
 }
 
 export default new ActuatorService();
