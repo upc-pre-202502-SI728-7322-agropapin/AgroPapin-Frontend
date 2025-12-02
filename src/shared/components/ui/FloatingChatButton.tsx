@@ -1,9 +1,16 @@
 import { useState } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import agropapinChatIcon from '../../../assets/agropapinChat.png';
 import { ChatView } from '../../../features/chat/components/ChatView';
 
 export function FloatingChatButton() {
   const [isOpen, setIsOpen] = useState(false);
+  const params = useParams<{ plotId?: string }>();
+  const location = useLocation();
+  
+  // Auto-detect context from URL
+  const plotId = params.plotId || null;
+  const fieldId = (location.state as any)?.fieldId || null;
 
   return (<>
       <button
@@ -19,7 +26,9 @@ export function FloatingChatButton() {
               <img src={agropapinChatIcon} alt="AgroPapin" className="w-10 h-10 object-contain" />
               <div>
                 <h3 className="font-semibold">AgroPapin Assistant</h3>
-                <p className="text-xs text-green-100">Online</p>
+                <p className="text-xs text-green-100">
+                  {plotId ? 'Plot Context' : fieldId ? 'Field Context' : 'Online'}
+                </p>
               </div>
             </div>
             <button onClick={() => setIsOpen(false)}className="text-white hover:text-gray-200 text-2xl leading-none">
@@ -27,7 +36,7 @@ export function FloatingChatButton() {
             </button>
           </div>
           <div className="flex-1 overflow-hidden">
-            <ChatView isFloating={true} />
+            <ChatView isFloating={true} plotId={plotId} fieldId={fieldId} />
           </div>
         </div>
       )}

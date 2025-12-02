@@ -19,7 +19,7 @@ export default function AdminDashboardPage() {
       setHasCooperative(true);
     } catch (error: any) {
       if (error?.response?.status === 404) {
-        // User doesn't have a cooperative, redirect to create one
+        // si no tiene cooperativa, que se rediriga a la página de crear cooperativa
         setHasCooperative(false);
         navigate('/create-cooperative');
       } else {
@@ -40,7 +40,7 @@ export default function AdminDashboardPage() {
   }
 
   if (hasCooperative === false) {
-    return null; // Will redirect to create cooperative
+    return null; 
   }
 
   return <AdminDashboardView />;
