@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PlantingService } from '../../../services/crop';
+import PlotService from '../../../services/plot/PlotService';
 import type { PlantingResource, CreatePlantingResource, UpdatePlantingResource, UpdatePlantingStatusResource } from '../types/crop.types';
 
 export function usePlantings(fieldId: string | null, plotId: string | null) {
@@ -30,27 +31,45 @@ export function usePlantings(fieldId: string | null, plotId: string | null) {
     if (!fieldId || !plotId) return null;
 
     try {
+      // validación para no permitir un planting nuevo si ya hay uno con el status de GROWING
+      const hasPlantedCrop = Array.isArray(plantings) && plantings.some(p => 
+        p.status === 'GROWING'
+      );
+      
+      if (hasPlantedCrop) {
+        throw new Error('This plot already has an active crop. Please harvest or remove the existing crop before planting a new one.');
+      }
+
       const newPlanting = await PlantingService.createPlanting(fieldId, plotId, data);
+      
+      // actualizar el estado del plot al crear un planting
+      try {
+        await PlotService.updatePlotStatus(fieldId, plotId, { status: 'PLANTED' });
+      } catch (statusError) {
+        console.warn('Warning: Failed to update plot status to PLANTED:', statusError);
+      }
+      
       setPlantings(prev => [...prev, newPlanting]);
       return newPlanting;
-    } catch (err) {
-      console.error('Error creando planting:', err);
-      return null;
+    } catch (err: any) {
+      if (!err.message?.includes('already has an active crop')) {
+        console.error('Error creando planting:', err);
+      }
+      throw err;
     }
   };
 
-  const updatePlanting = async (plantingId: string, data: UpdatePlantingResource): Promise<PlantingResource | null> => {
-    if (!fieldId || !plotId) return null;
+  const updatePlanting = async (plantingId: string, data: UpdatePlantingResource): Promise<boolean> => {
+    if (!fieldId || !plotId) return false;
 
     try {
-      const updatedPlanting = await PlantingService.updatePlanting(fieldId, plotId, plantingId, data);
-      console.log('RESPUESTA BACKEND', { plotId: updatedPlanting.plotId });
-      setPlantings(prev => prev.map(p => p.id === plantingId ? updatedPlanting : p));
-      return updatedPlanting;
+      await PlantingService.updatePlanting(fieldId, plotId, plantingId, data);
+      await fetchPlantings();
+      return true;
     } catch (err) {
       console.error('Error actualizando planting:', err);
       setError('Failed to update planting');
-      return null;
+      return false;
     }
   };
 
@@ -73,11 +92,45 @@ export function usePlantings(fieldId: string | null, plotId: string | null) {
 
     try {
       await PlantingService.deletePlanting(fieldId, plotId, plantingId);
-      setPlantings(prev => prev.filter(p => p.id !== plantingId));
+      setPlantings(prev => {
+        const updatedPlantings = prev.filter(p => p.id !== plantingId);
+        
+        // si ya no hay plantings activos se actualiza el estado del plot a EMPTY
+        if (updatedPlantings.length === 0) {
+          PlotService.updatePlotStatus(fieldId, plotId, { status: 'EMPTY' })
+            .catch(err => console.warn('Warning: Failed to update plot status to EMPTY:', err));
+        }
+        
+        return updatedPlantings;
+      });
       return true;
     } catch (err: any) {
       console.error('Error eliminando planting:', err);
       setError('Failed to delete planting');
+      return false;
+    }
+  };
+
+  const markAsHarvested = async (plantingId: string): Promise<boolean> => {
+    if (!fieldId || !plotId) return false;
+
+    try {
+      // se actualiza la fecha con la actual
+      const currentPlanting = await PlantingService.getPlantingById(fieldId, plotId, plantingId);
+      const currentDate = new Date().toISOString();
+      await PlantingService.updatePlanting(fieldId, plotId, plantingId, {
+        plantingDate: currentPlanting.plantingDate,
+        harvestDate: currentDate
+      });
+
+      // y luego el estado del planting
+      await PlantingService.updatePlantingStatus(fieldId, plotId, plantingId, { status: 'HARVESTED' });
+      
+      await fetchPlantings();
+      return true;
+    } catch (err: any) {
+      console.error('Error marking planting as harvested:', err);
+      setError('Failed to mark planting as harvested');
       return false;
     }
   };
@@ -89,6 +142,7 @@ export function usePlantings(fieldId: string | null, plotId: string | null) {
     createPlanting,
     updatePlanting,
     updatePlantingStatus,
-    deletePlanting
+    deletePlanting,
+    markAsHarvested
   };
 }

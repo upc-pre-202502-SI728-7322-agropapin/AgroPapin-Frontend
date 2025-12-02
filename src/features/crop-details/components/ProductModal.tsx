@@ -15,8 +15,6 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
     quantity: '',
   });
 
-  const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     if (product) {
       setFormData({
@@ -123,17 +121,10 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
           </div>
 
           <div className="flex gap-4">
-            <button
-              type="submit"
-              className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold"
-            >
+            <button type="submit" className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
               {product ? 'Save' : 'Create'}
             </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 bg-gray-300 py-2 px-4  rounded-lg font-semibold hover:bg-gray-400 transition-colors"
-            >
+            <button type="button" onClick={onClose} className="flex-1 bg-gray-300 py-2 px-4  rounded-lg font-semibold hover:bg-gray-400 transition-colors">
               Cancel
             </button>
           </div>

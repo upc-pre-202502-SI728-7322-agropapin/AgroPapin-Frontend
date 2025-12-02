@@ -1,5 +1,5 @@
 import { axiosClient } from "../api/axiosClient";
-import type { PlantingResource, CreatePlantingResource,  UpdatePlantingResource,  UpdatePlantingStatusResource } from "../../features/crop-list/types/crop.types";
+import type { PlantingResource, CreatePlantingResource,  UpdatePlantingResource,  UpdatePlantingStatusResource, UpdatedPlantingResource } from "../../features/crop-list/types/crop.types";
 
 class PlantingService {
   private basePath(fieldId: string, plotId: string): string {
@@ -21,8 +21,8 @@ class PlantingService {
     return response.data;
   }
 
-  async updatePlanting(fieldId: string, plotId: string, plantingId: string, data: UpdatePlantingResource): Promise<PlantingResource> {
-    const response = await axiosClient.put<PlantingResource>(`${this.basePath(fieldId, plotId)}/${plantingId}`, data);
+  async updatePlanting(fieldId: string, plotId: string, plantingId: string, data: UpdatePlantingResource): Promise<UpdatedPlantingResource> {
+    const response = await axiosClient.put<UpdatedPlantingResource>(`${this.basePath(fieldId, plotId)}/${plantingId}`, data);
     return response.data;
   }
 
@@ -31,10 +31,7 @@ class PlantingService {
   }
 
   async updatePlantingStatus(fieldId: string, plotId: string, plantingId: string, data: UpdatePlantingStatusResource): Promise<PlantingResource> {
-    const response = await axiosClient.patch<PlantingResource>(
-      `${this.basePath(fieldId, plotId)}/${plantingId}/status`,
-      data
-    );
+    const response = await axiosClient.patch<PlantingResource>(`${this.basePath(fieldId, plotId)}/${plantingId}/status`, data);
     return response.data;
   }
 }

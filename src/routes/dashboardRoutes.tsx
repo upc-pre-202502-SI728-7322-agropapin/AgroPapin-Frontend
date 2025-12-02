@@ -13,6 +13,7 @@ import AllReadingsPage from '../pages/devices/AllReadingsPage';
 import { UserProfilePage } from '../pages/user-profile/UserProfilePage';
 import ChatPage from '../pages/chat/ChatPage';
 import IrrigationControlPage from '../pages/irrigation-control/IrrigationControlPage';
+import { IrrigationHistoryPage } from '../pages/irrigation-control/IrrigationHistoryPage';
 import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import MainLayout from "../shared/components/layouts/MainLayout.tsx";
 import PlotListPage from '../pages/plot-list/PlotListPage.tsx';
@@ -88,6 +89,22 @@ export const dashboardRoutes: RouteObject[] = [
                 element: (
                     <ProtectedRoute>
                         <DevicesPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: '/irrigation-history',
+                element: (
+                    <ProtectedRoute>
+                        <IrrigationHistoryPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: '/plots/:plotId/irrigation-history',
+                element: (
+                    <ProtectedRoute>
+                        <IrrigationHistoryPage />
                     </ProtectedRoute>
                 ),
             },

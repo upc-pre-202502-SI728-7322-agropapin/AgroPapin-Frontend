@@ -2,8 +2,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 
 interface DevicesSidebarProps {
-  activeSection: 'devices' | 'alerts' | 'metrics';
-  onSectionChange: (section: 'devices' | 'alerts' | 'metrics') => void;
+  activeSection: 'devices' | 'alerts' | 'metrics' | 'irrigation';
+  onSectionChange: (section: 'devices' | 'alerts' | 'metrics' | 'irrigation') => void;
 }
 
 export function DevicesSidebar({ activeSection, onSectionChange }: DevicesSidebarProps) {
@@ -43,6 +43,15 @@ export function DevicesSidebar({ activeSection, onSectionChange }: DevicesSideba
               : 'bg-white text-gray-700 hover:bg-gray-100'
           }`}>
           Live Metrics
+        </button>
+        <button
+          onClick={() => onSectionChange('irrigation')}
+          className={`flex-1 lg:w-full px-4 py-3 rounded-lg font-medium transition-colors text-left ${
+            activeSection === 'irrigation'
+              ? 'bg-[#3E7C59] text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}>
+          Irrigation
         </button>
         <button
           onClick={() => onSectionChange('alerts')}

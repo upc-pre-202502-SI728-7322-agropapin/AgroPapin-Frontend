@@ -1,24 +1,17 @@
-import { DataTable } from '../../../shared/components/ui/DataTable';
 import type { PlantingResource } from '../types/crop.types';
+import { LuPencil } from 'react-icons/lu';
+import { IoTrashOutline } from 'react-icons/io5';
 
 interface CropTableProps {
   plantings: PlantingResource[];
   onRowClick: (plantingId: string) => void;
   onEdit?: (planting: PlantingResource) => void;
   onDelete: (plantingId: string) => void;
+  onHarvest?: (plantingId: string) => void;
   isAdmin?: boolean;
 }
 
-export function CropTable({ plantings, onRowClick, onEdit, onDelete, isAdmin = false }: CropTableProps) {
-  const columns = [
-    { key: 'croptype', label: 'Crop Type' },
-    { key: 'status', label: 'Status' },
-    { key: 'plantingDate', label: 'Planting Date' },
-    { key: 'harvestDate', label: 'Harvest Date' },
-   
-   
-  ];
-
+export function CropTable({ plantings, onRowClick, onEdit, onDelete, onHarvest, isAdmin = false }: CropTableProps) {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -30,61 +23,139 @@ export function CropTable({ plantings, onRowClick, onEdit, onDelete, isAdmin = f
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'GERMINATING':
-        return 'Germinating';
       case 'GROWING':
         return 'Growing';
-      case 'FLOWERING':
-        return 'Flowering';
-      case 'FRUITING':
-        return 'Fruiting';
       case 'HARVESTED':
         return 'Harvested';
+      case 'FAILED':
+        return 'Failed';
       default:
         return status;
     }
   };
 
-  const renderCell = (planting: PlantingResource, columnKey: string) => {
-    switch (columnKey) {
-      case 'plantingDate':
-        return formatDate(planting.plantingDate);
-      case 'harvestDate':
-        return formatDate(planting.actualHarvestDate);
-      case 'status':
-        return (
-          <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-            planting.status === 'HARVESTED' 
-              ? 'bg-blue-100 text-blue-800' 
-              : planting.status === 'FRUITING'
-              ? 'bg-yellow-100 text-yellow-800'
-              : planting.status === 'FLOWERING'
-              ? 'bg-pink-100 text-pink-800'
-              : planting.status === 'GROWING'
-              ? 'bg-green-100 text-green-800'
-              : 'bg-gray-100 text-gray-800'
-          }`}>
-            {getStatusLabel(planting.status)}
-          </span>
-        );
-      case 'croptype':
-        return planting.croptype?.name || '';
-      default:
-        return '';
-    }
-  };
+  if (plantings.length === 0) {
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
+        No crops found. Start by adding your first crop.
+      </div>
+    );
+  }
 
   return (
-      <DataTable
-          columns={columns}
-          data={plantings}
-          renderCell={renderCell}
-          onRowClick={(planting) => onRowClick(planting.id)}
-          onEdit={isAdmin ? undefined : onEdit}
-          onDelete={isAdmin ? undefined : (planting) => onDelete(planting.id)}
-          getRowKey={(planting) => planting.id}
-          showActions={!isAdmin}
-          emptyMessage="No crops found. Start by adding your first crop."
-      />
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-[#3E7C59] text-white">
+            <tr>
+              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">Crop Type</th>
+              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">Status</th>
+              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">Planting Date</th>
+              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">Harvest Date</th>
+              {!isAdmin && <th className="px-6 py-4 w-24"></th>}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {plantings.map((planting) => {
+              const isHarvested = planting.status === 'HARVESTED';
+              
+              return (
+                <tr
+                  key={planting.id}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => onRowClick(planting.id)}
+                  >
+                    {planting.croptype?.name || ''}
+                  </td>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => onRowClick(planting.id)}
+                  >
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                      planting.status === 'HARVESTED' 
+                        ? 'bg-blue-100 text-blue-800' 
+                        : planting.status === 'FAILED'
+                        ? 'bg-red-100 text-red-800'
+                        : planting.status === 'GROWING'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {getStatusLabel(planting.status)}
+                    </span>
+                  </td>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => onRowClick(planting.id)}
+                  >
+                    {formatDate(planting.plantingDate)}
+                  </td>
+                  <td
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => onRowClick(planting.id)}
+                  >
+                    {formatDate(planting.actualHarvestDate)}
+                  </td>
+                  {!isAdmin && (
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex gap-2 justify-end items-center">
+                        {onHarvest && !isHarvested && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onHarvest(planting.id);
+                            }}
+                            className="bg-[#3E7C59] text-white px-4 py-2 rounded-lg hover:bg-[#2d5f43] transition-colors font-medium text-sm"
+                          >
+                            Harvest
+                          </button>
+                        )}
+                        {onEdit && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit(planting);
+                            }}
+                            className="text-orange-500 hover:text-orange-700 transition-colors p-3">
+                            <LuPencil size={22} />
+                          </button>
+                        )}
+                        {onDelete && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete(planting.id);
+                            }}
+                            className="text-red-500 hover:text-red-700 transition-colors p-3">
+                            <IoTrashOutline size={25} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* paginator */}
+      <div className="px-6 py-4 border-t border-gray-200 flex justify-end items-center gap-4">
+        <span className="text-sm text-gray-600">Records per page</span>
+        <select className="border border-gray-300 rounded px-2 py-1 text-sm">
+          <option>5</option>
+          <option>10</option>
+          <option>20</option>
+        </select>
+        <span className="text-sm text-gray-600">1-{plantings.length} of {plantings.length}</span>
+        <div className="flex gap-2">
+          <button className="text-gray-400 hover:text-gray-600">‹</button>
+          <button className="text-gray-400 hover:text-gray-600">›</button>
+        </div>
+      </div>
+    </div>
   );
 }

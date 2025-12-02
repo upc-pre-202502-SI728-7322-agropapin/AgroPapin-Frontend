@@ -8,7 +8,7 @@ import { AddButton } from '../../../shared/components/ui/AddButton';
 import { usePlantings } from '../hooks';
 import { FieldService } from '../../../services/field';
 import { useAuth } from '../../auth/context/AuthContext';
-import type { PlantingResource, CreatePlantingResource } from '../types/crop.types';
+import type { CreatePlantingResource } from '../types/crop.types';
 import { ROUTES } from '../../../shared/constants/routes';
 
 export function CropListView() {
@@ -21,8 +21,9 @@ export function CropListView() {
   const [plantingToDelete, setPlantingToDelete] = useState<string | null>(null);
   const [fieldId, setFieldId] = useState<string | null>(null);
   const [plotId, setPlotId] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
 
-  const { plantings, error, createPlanting, deletePlanting, fetchPlantings } = usePlantings(fieldId, plotId);
+  const { plantings, error, createPlanting, deletePlanting, markAsHarvested, fetchPlantings } = usePlantings(fieldId, plotId);
 
 
   useEffect(() => {
@@ -74,8 +75,6 @@ export function CropListView() {
     navigate(url);
   };
 
-
-
   const handleDelete = (plantingId: string) => {
     setPlantingToDelete(plantingId);
     setIsDeleteModalOpen(true);
@@ -90,13 +89,27 @@ export function CropListView() {
     }
   };
 
-  const handleCreatePlanting = async (data: CreatePlantingResource) => {
-    await createPlanting(data);
+  const handleHarvest = async (plantingId: string) => {
+    try {
+      await markAsHarvested(plantingId);
+      await fetchPlantings();
+    } catch (err) {
+      console.error('Error marking as harvested:', err);
+    }
   };
 
-
+  const handleCreatePlanting = async (data: CreatePlantingResource) => {
+    setCreateError(null);
+    try {
+      await createPlanting(data);
+      setIsModalOpen(false);
+    } catch (err: any) {
+      setCreateError(err.message || 'Failed to create planting. Please try again.');
+    }
+  };
 
   const handleOpenAddModal = () => {
+    setCreateError(null);
     setIsModalOpen(true);
   };
 
@@ -144,6 +157,7 @@ export function CropListView() {
               plantings={plantings}
               onRowClick={handleRowClick}
               onDelete={handleDelete}
+              onHarvest={handleHarvest}
               isAdmin={isAdmin}
             />
           )}
@@ -153,8 +167,11 @@ export function CropListView() {
           isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
+            setCreateError(null);
           }}
           onSave={handleCreatePlanting}
+          externalError={createError}
+          plantings={plantings}
         />
 
         <ConfirmModal

@@ -9,6 +9,7 @@ import { AreaChart } from '../../../shared/components/charts/AreaChart';
 import { DevicesSidebar } from './DevicesSidebar';
 import { AlertsView } from './AlertsView';
 import { LiveMetricsView } from './LiveMetricsView';
+import { IrrigationView } from './IrrigationView';
 import { useActuators, useSensors, useTelemetry } from '../hooks';
 import { useAuth } from '../../auth/context/AuthContext';
 import { FloatingChatButton } from '../../../shared/components/ui/FloatingChatButton';
@@ -27,7 +28,7 @@ export function DevicesView() {
   console.log('Current plotId from URL:', plotId);
   
   const [activeTab, setActiveTab] = useState<'sensors' | 'actuators'>('sensors');
-  const [activeSection, setActiveSection] = useState<'devices' | 'alerts' | 'metrics'>('devices');
+  const [activeSection, setActiveSection] = useState<'devices' | 'alerts' | 'metrics' | 'irrigation'>('devices');
   const [selectedDays, setSelectedDays] = useState<number>(1); // 1 día predeterminado
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -38,6 +39,8 @@ export function DevicesView() {
     const section = searchParams.get('section');
     if (section === 'metrics') {
       setActiveSection('metrics');
+    } else if (section === 'irrigation') {
+      setActiveSection('irrigation');
     }
   }, [searchParams]);
 
@@ -175,6 +178,8 @@ export function DevicesView() {
           <AlertsView />
         ) : activeSection === 'metrics' ? (
           <LiveMetricsView />
+        ) : activeSection === 'irrigation' ? (
+          <IrrigationView />
         ) : (
           <div className="p-4 md:p-8">
             {/* Header */}

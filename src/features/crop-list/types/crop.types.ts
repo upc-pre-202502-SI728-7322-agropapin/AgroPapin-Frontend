@@ -1,10 +1,8 @@
 // CROP
 export const CropStatus = {
-  GERMINATING: "GERMINATING",
   GROWING: "GROWING",
-  FLOWERING: "FLOWERING",
-  FRUITING: "FRUITING",
-  HARVESTED: "HARVESTED"
+  HARVESTED: "HARVESTED",
+  FAILED: "FAILED"
 } as const;
 
 export type CropStatus = typeof CropStatus[keyof typeof CropStatus];
@@ -67,8 +65,14 @@ export interface CreatePlantingResource {
 export interface UpdatePlantingResource {
   plantingDate: string;
   harvestDate: string | null;
-  cropId: string;
-  croptype: CropTypeResource;
+}
+
+export interface UpdatedPlantingResource {
+  id: string;
+  plantingDate: string;
+  actualHarvestDate: string;
+  status: CropStatus;
+  plotId: string;
 }
 
 export interface UpdatePlantingStatusResource {
