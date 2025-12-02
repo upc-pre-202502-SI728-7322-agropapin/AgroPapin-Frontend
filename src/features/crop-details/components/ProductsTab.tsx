@@ -7,6 +7,7 @@ import type { Product, ProductFormData } from '../types/product.types';
 
 interface ProductsTabProps {
   cropId: string;
+  isAdmin?: boolean;
 }
 
 const mockProductsData: Record<string, Product[]> = {
@@ -83,7 +84,7 @@ const mockProductsData: Record<string, Product[]> = {
   ],
 };
 
-export function ProductsTab({ cropId }: ProductsTabProps) {
+export function ProductsTab({ cropId, isAdmin = false }: ProductsTabProps) {
   const [products, setProducts] = useState<Product[]>(
     mockProductsData[cropId] || mockProductsData['1']
   );
@@ -93,11 +94,13 @@ export function ProductsTab({ cropId }: ProductsTabProps) {
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
   const handleEdit = (product: Product) => {
+    if (isAdmin) return;
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
   const handleDelete = (productId: string) => {
+    if (isAdmin) return;
     setProductToDelete(productId);
     setIsDeleteModalOpen(true);
   };
@@ -133,6 +136,7 @@ export function ProductsTab({ cropId }: ProductsTabProps) {
   };
 
   const handleOpenAddModal = () => {
+    if (isAdmin) return;
     setSelectedProduct(null);
     setIsModalOpen(true);
   };
@@ -140,18 +144,21 @@ export function ProductsTab({ cropId }: ProductsTabProps) {
   return (
     <div className="py-6">
      
-      <div className="flex justify-end mb-6">
-        <AddButton
-          onClick={handleOpenAddModal}
-          label="Add Product"
-        />
-      </div>
+      {!isAdmin && (
+        <div className="flex justify-end mb-6">
+          <AddButton
+            onClick={handleOpenAddModal}
+            label="Add Product"
+          />
+        </div>
+      )}
 
       <div className="bg-white rounded-lg overflow-hidden ">
         <ProductsTable
           products={products}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
+          onEdit={isAdmin ? undefined : handleEdit}
+          onDelete={isAdmin ? undefined : handleDelete}
+          showActions={!isAdmin}
         />
       </div>
 

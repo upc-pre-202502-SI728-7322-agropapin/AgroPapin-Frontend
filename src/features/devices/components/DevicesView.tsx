@@ -9,6 +9,8 @@ import { AreaChart } from '../../../shared/components/charts/AreaChart';
 import { DevicesSidebar } from './DevicesSidebar';
 import { AlertsView } from './AlertsView';
 import { useActuators, useSensors, useTelemetry } from '../hooks';
+import { useAuth } from '../../auth/context/AuthContext';
+import { FloatingChatButton } from '../../../shared/components/ui/FloatingChatButton';
 import ActuatorService from '../../../services/device/ActuatorService';
 import SensorService from '../../../services/device/SensorService';
 import type { Device } from '../types/device.types';
@@ -17,6 +19,8 @@ import type { SensorResource } from '../types/sensor.types';
 
 export function DevicesView() {
   const { plotId } = useParams<{ plotId: string }>();
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
   
   console.log('Current plotId from URL:', plotId);
   
@@ -69,6 +73,7 @@ export function DevicesView() {
   });
 
   const handleAddDevice = () => {
+    if (isAdmin) return;
     setSelectedDevice(null);
     setIsModalOpen(true);
   };
@@ -78,16 +83,9 @@ export function DevicesView() {
     // navigate(`/devices/details/${deviceId}`);
   };
 
-  const handleEdit = (deviceId: string) => {
-    const device = devices.find(d => d.id === deviceId);
-    if (device) {
-      // TODO: NO HAY EDIT
-      setSelectedDevice(device);
-      setIsModalOpen(true);
-    }
-  };
 
   const handleDelete = (deviceId: string) => {
+    if (isAdmin) return;
     setDeviceToDelete(deviceId);
     setIsDeleteModalOpen(true);
   };
@@ -164,7 +162,7 @@ export function DevicesView() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
               <h1 className="text-3xl font-bold text-gray-900">Devices</h1>
-              <AddButton onClick={handleAddDevice} label="Add Device" />
+              {!isAdmin && <AddButton onClick={handleAddDevice} label="Add Device" />}
             </div>
 
             {/* Tabs */}
@@ -233,8 +231,8 @@ export function DevicesView() {
               <DevicesList 
                 devices={filteredDevices}
                 onRowClick={handleRowClick}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
+                onDelete={isAdmin ? undefined : handleDelete}
+                isAdmin={isAdmin}
               />
             </div>
             
@@ -264,6 +262,8 @@ export function DevicesView() {
         }}
         deviceName={deviceToDeleteName}
       />
+
+      <FloatingChatButton />
     </div>
   );
 }

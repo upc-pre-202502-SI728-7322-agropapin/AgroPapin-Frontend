@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaArrowLeft, FaPlus } from "react-icons/fa";
 import { FieldService } from "../../../services/field";
 import { usePlots } from "../hooks";
@@ -8,10 +8,15 @@ import { AddButton } from "../../../shared/components/ui/AddButton";
 import { ConfirmModal } from "../../../shared/components/ui/ConfirmModal";
 import { ROUTES } from "../../../shared/constants/routes";
 import { PlotList } from "./PlotList";
+import { useAuth } from "../../auth/context/AuthContext";
+import { FloatingChatButton } from "../../../shared/components/ui/FloatingChatButton";
 import type { Plot, CreatePlotResource, UpdatePlotResource } from "../types/plot.types";
 
 export function PlotListView() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
   const [fieldId, setFieldId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlot, setSelectedPlot] = useState<Plot | null>(null);
@@ -23,6 +28,13 @@ export function PlotListView() {
   useEffect(() => {
     const loadField = async () => {
       try {
+        const fieldIdFromQuery = searchParams.get('fieldId');
+        if (fieldIdFromQuery) {
+          console.log('Loading plots for fieldId from query:', fieldIdFromQuery);
+          setFieldId(fieldIdFromQuery);
+          return;
+        }
+
         const field = await FieldService.getField();
         if (field) {
           setFieldId(field.id || field.fieldId || null);
@@ -35,7 +47,7 @@ export function PlotListView() {
       }
     };
     loadField();
-  }, [navigate]);
+  }, [navigate, searchParams]);
 
   const handleSavePlot = async (data: CreatePlotResource | UpdatePlotResource) => {
     try {
@@ -52,13 +64,14 @@ export function PlotListView() {
   };
 
   const handleOpenAddModal = () => {
+    if (isAdmin) return;
     setSelectedPlot(null);
     setIsModalOpen(true);
   };
 
   const handleInfoClick = (plotId: string) => {
     console.log('ver crops del plot', plotId);
-    navigate(`${ROUTES.CROP_LIST}?plotId=${plotId}`);
+    navigate(`${ROUTES.CROP_LIST}?fieldId=${fieldId}&plotId=${plotId}`);
   };
 
   const handleDevicesClick = (plotId: string) => {
@@ -66,11 +79,13 @@ export function PlotListView() {
   };
 
   const handleEdit = (plot: Plot) => {
+    if (isAdmin) return;
     setSelectedPlot(plot);
     setIsModalOpen(true);
   };
 
   const handleDeleteRequest = (plotId: string) => {
+    if (isAdmin) return;
     setPlotToDelete(plotId);
     setIsDeleteModalOpen(true);
   };
@@ -106,7 +121,7 @@ export function PlotListView() {
           <h1 className="text-4xl font-bold text-gray-900">
             Field Plots
           </h1>
-          <AddButton onClick={handleOpenAddModal} label="Add Plot"/>
+          {!isAdmin && <AddButton onClick={handleOpenAddModal} label="Add Plot"/>}
         </div>
 
         {error && (
@@ -147,8 +162,9 @@ export function PlotListView() {
             plots={plots}
             onInfoClick={handleInfoClick}
             onDevicesClick={handleDevicesClick}
-            onEdit={handleEdit}
-            onDelete={handleDeleteRequest}
+            onEdit={isAdmin ? undefined : handleEdit}
+            onDelete={isAdmin ? undefined : handleDeleteRequest}
+            isAdmin={isAdmin}
           />
         )}
 
@@ -173,6 +189,8 @@ export function PlotListView() {
           confirmButtonColor="bg-red-600 hover:bg-red-700"
         />
       </div>
+
+      <FloatingChatButton />
     </div>
   );
 }

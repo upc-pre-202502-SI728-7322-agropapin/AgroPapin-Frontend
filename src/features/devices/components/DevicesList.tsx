@@ -5,11 +5,12 @@ import type { Device } from '../types/device.types';
 interface DevicesListProps {
   devices: Device[];
   onRowClick: (deviceId: string) => void;
-  onEdit: (deviceId: string) => void;
-  onDelete: (deviceId: string) => void;
+  onEdit?: (deviceId: string) => void;
+  onDelete?: (deviceId: string) => void;
+  isAdmin?: boolean;
 }
 
-export function DevicesList({ devices, onRowClick, onEdit, onDelete }: DevicesListProps) {
+export function DevicesList({ devices, onRowClick, onEdit, onDelete, isAdmin = false }: DevicesListProps) {
   const columns = [
     { key: 'serialNumber', label: 'Serial Number' },
     { key: 'deviceType', label: 'Device Type' },
@@ -42,9 +43,10 @@ export function DevicesList({ devices, onRowClick, onEdit, onDelete }: DevicesLi
       getRowKey={(device) => device.id}
       renderCell={renderCell}
       onRowClick={(device) => onRowClick(device.id)}
-      onEdit={(device) => onEdit(device.id)}
-      onDelete={(device) => onDelete(device.id)}
-      showActions={true}
+      onEdit={onEdit ? (device) => onEdit(device.id) : undefined}
+      onDelete={onDelete ? (device) => onDelete(device.id) : undefined}
+      showActions={!isAdmin}
+      emptyMessage="No devices found. Add your first device to get started."
     />
   );
 }

@@ -1,31 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaCopy, FaCheck } from 'react-icons/fa';
 import { CgProfile } from 'react-icons/cg';
 import { useAuth } from '../../auth/context/AuthContext';
+import { FarmerService } from '../../../services/farmer';
 import { EditProfileModal } from './EditProfileModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import type { UserProfile, UserProfileFormData } from '../types/user-profile.types';
 
-
-const mockUserProfile: UserProfile = {
-  id: '1',
-  firstName: 'Roberto',
-  lastName: 'Juarez',
-  email: 'roberto@gmail.com',
-  country: 'Peru',
-  phone: '+51 999 999 999',
-};
-
 export function UserProfileView() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [profile, setProfile] = useState<UserProfile>(mockUserProfile);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [pendingChanges, setPendingChanges] = useState<UserProfileFormData | null>(null);
   const [isCopied, setIsCopied] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      setLoading(true);
+      const farmerData = await FarmerService.getMyFarmerProfile();
+      setProfile({
+        id: farmerData.farmerId,
+        firstName: farmerData.firstName,
+        lastName: farmerData.lastName,
+        email: farmerData.email,
+        country: farmerData.country,
+        phone: farmerData.phone,
+      });
+    } catch (error) {
+      console.error('Error loading farmer profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSaveClick = (data: UserProfileFormData) => {
     setPendingChanges(data);
@@ -33,14 +49,34 @@ export function UserProfileView() {
     setIsConfirmSaveModalOpen(true);
   };
 
-  const handleConfirmSave = () => {
-    if (pendingChanges) {
-      setProfile({
-        ...profile,
-        ...pendingChanges,
-      });
-      setPendingChanges(null);
-      setIsConfirmSaveModalOpen(false);
+  const handleConfirmSave = async () => {
+    if (pendingChanges && profile) {
+      try {
+        setIsSaving(true);
+        const updatedFarmer = await FarmerService.updateMyFarmerProfile({
+          firstName: pendingChanges.firstName,
+          lastName: pendingChanges.lastName,
+          country: pendingChanges.country,
+          phone: pendingChanges.phone,
+        });
+        
+        setProfile({
+          id: updatedFarmer.farmerId,
+          firstName: updatedFarmer.firstName,
+          lastName: updatedFarmer.lastName,
+          email: updatedFarmer.email,
+          country: updatedFarmer.country,
+          phone: updatedFarmer.phone,
+        });
+        
+        console.log('Profile updated successfully');
+        setPendingChanges(null);
+        setIsConfirmSaveModalOpen(false);
+      } catch (error) {
+        console.error('Error updating profile:', error);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -52,7 +88,6 @@ export function UserProfileView() {
   const handleCopyUserId = async () => {
     if (user?.id) {
       try {
-        // Limpiar el userId removiendo el prefijo "auth0|" si existe
         const cleanUserId = user.id.replace(/^auth0\|/, '');
         await navigator.clipboard.writeText(cleanUserId);
         setIsCopied(true);
@@ -62,6 +97,30 @@ export function UserProfileView() {
       }
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white rounded-lg shadow-lg p-10">
+            <div className="text-center text-gray-600">Loading profile...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white rounded-lg shadow-lg p-10">
+            <div className="text-center text-red-600">Failed to load profile</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
@@ -218,7 +277,7 @@ export function UserProfileView() {
         }}
         title="Save Changes"
         message="Are you sure you want to save these changes to your profile?"
-        confirmText="Save"
+        confirmText={isSaving ? 'Saving...' : 'Save'}
         cancelText="Cancel"
         confirmButtonColor="bg-[#3E7C59] hover:bg-[#2d5f43]"
       />

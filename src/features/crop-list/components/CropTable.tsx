@@ -6,9 +6,10 @@ interface CropTableProps {
   onRowClick: (plantingId: string) => void;
   onEdit: (planting: PlantingResource) => void;
   onDelete: (plantingId: string) => void;
+  isAdmin?: boolean;
 }
 
-export function CropTable({ plantings, onRowClick, onEdit, onDelete }: CropTableProps) {
+export function CropTable({ plantings, onRowClick, onEdit, onDelete, isAdmin = false }: CropTableProps) {
   const columns = [
     { key: 'plantingDate', label: 'Planting Date' },
     { key: 'harvestDate', label: 'Harvest Date' },
@@ -74,9 +75,11 @@ export function CropTable({ plantings, onRowClick, onEdit, onDelete }: CropTable
           data={plantings}
           renderCell={renderCell}
           onRowClick={(planting) => onRowClick(planting.id)}
-          onEdit={onEdit}
-          onDelete={(planting) => onDelete(planting.id)}
+          onEdit={isAdmin ? undefined : onEdit}
+          onDelete={isAdmin ? undefined : (planting) => onDelete(planting.id)}
           getRowKey={(planting) => planting.id}
+          showActions={!isAdmin}
+          emptyMessage="No crops found. Start by adding your first crop."
       />
   );
 }

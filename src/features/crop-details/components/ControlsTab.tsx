@@ -7,6 +7,7 @@ import type { Control, ControlFormData } from '../types/control.types';
 
 interface ControlsTabProps {
   cropId: string;
+  isAdmin?: boolean;
 }
 
 const mockControlsData: Record<string, Control[]> = {
@@ -83,7 +84,7 @@ const mockControlsData: Record<string, Control[]> = {
   ],
 };
 
-export function ControlsTab({ cropId }: ControlsTabProps) {
+export function ControlsTab({ cropId, isAdmin = false }: ControlsTabProps) {
   const [controls, setControls] = useState<Control[]>(
     mockControlsData[cropId] || mockControlsData['1']
   );
@@ -93,11 +94,13 @@ export function ControlsTab({ cropId }: ControlsTabProps) {
   const [controlToDelete, setControlToDelete] = useState<string | null>(null);
 
   const handleEdit = (control: Control) => {
+    if (isAdmin) return;
     setSelectedControl(control);
     setIsModalOpen(true);
   };
 
   const handleDelete = (controlId: string) => {
+    if (isAdmin) return;
     setControlToDelete(controlId);
     setIsDeleteModalOpen(true);
   };
@@ -133,6 +136,7 @@ export function ControlsTab({ cropId }: ControlsTabProps) {
   };
 
   const handleOpenAddModal = () => {
+    if (isAdmin) return;
     setSelectedControl(null);
     setIsModalOpen(true);
   };
@@ -140,12 +144,14 @@ export function ControlsTab({ cropId }: ControlsTabProps) {
   return (
     <div className="py-6">
 
-      <div className="flex justify-end mb-6">
-        <AddButton
-          onClick={handleOpenAddModal}
-          label="Add Control"
-        />
-      </div>
+      {!isAdmin && (
+        <div className="flex justify-end mb-6">
+          <AddButton
+            onClick={handleOpenAddModal}
+            label="Add Control"
+          />
+        </div>
+      )}
 
       <div className="bg-white rounded-lg overflow-hidden ">
         <ControlsTable

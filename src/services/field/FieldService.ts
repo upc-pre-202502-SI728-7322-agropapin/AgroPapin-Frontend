@@ -17,6 +17,18 @@ export class FieldService {
     }
   }
 
+  static async getFieldByUserId(userId: string): Promise<FieldResponse | null> {
+    try {
+      const response = await axiosClient.get<FieldResponse>(`/field/user/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 403 || error.response?.status === 404) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
   //POST
   static async createField(fieldData: CreateFieldRequest): Promise<FieldResponse> {
     try {

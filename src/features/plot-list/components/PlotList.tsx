@@ -2,7 +2,7 @@ import type { PlotListProps } from "../types/plot.types";
 import { PlotCard } from "./PlotCard";
 
 
-export function PlotList({ plots, onInfoClick, onDevicesClick, onEdit, onDelete }: PlotListProps) {
+export function PlotList({ plots, onInfoClick, onDevicesClick, onEdit, onDelete, isAdmin = false }: PlotListProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {plots.map((plot) => (
@@ -13,6 +13,7 @@ export function PlotList({ plots, onInfoClick, onDevicesClick, onEdit, onDelete 
           onDevicesClick={onDevicesClick}
           onEdit={onEdit}
           onDelete={onDelete}
+          isAdmin={isAdmin}
         />
       ))}
     </div>

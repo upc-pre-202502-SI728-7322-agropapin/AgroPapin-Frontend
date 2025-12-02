@@ -6,6 +6,7 @@ import { CropCareTab } from './CropCareTab';
 import { ControlsTab } from './ControlsTab';
 import { PestsTab } from './PestsTab';
 import { ProductsTab } from './ProductsTab';
+import { useAuth } from '../../auth/context/AuthContext';
 import type { CropDetail } from '../types/crop-details.types';
 import {FaArrowLeft} from "react-icons/fa";
 
@@ -47,6 +48,8 @@ const mockCropData: Record<string, CropDetail> = {
 export function CropDetailView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
   const [activeTab, setActiveTab] = useState('general');
 
   // MOCKUP DATA
@@ -66,11 +69,11 @@ export function CropDetailView() {
       case 'care':
         return <CropCareTab cropId={crop.id} />;
       case 'controls':
-        return <ControlsTab cropId={crop.id} />;
+        return <ControlsTab cropId={crop.id} isAdmin={isAdmin} />;
       case 'pests':
         return <PestsTab cropId={crop.id} />;
       case 'products':
-        return <ProductsTab cropId={crop.id} />;
+        return <ProductsTab cropId={crop.id} isAdmin={isAdmin} />;
       default:
         return <GeneralInfoTab crop={crop} />;
     }

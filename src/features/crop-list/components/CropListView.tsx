@@ -7,12 +7,15 @@ import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import { AddButton } from '../../../shared/components/ui/AddButton';
 import { usePlantings } from '../hooks';
 import { FieldService } from '../../../services/field';
+import { useAuth } from '../../auth/context/AuthContext';
 import type { PlantingResource, CreatePlantingResource } from '../types/crop.types';
 import { ROUTES } from '../../../shared/constants/routes';
 
 export function CropListView() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedPlanting, setSelectedPlanting] = useState<PlantingResource | null>(null);
@@ -26,25 +29,42 @@ export function CropListView() {
   useEffect(() => {
     const loadFieldAndPlot = async () => {
       try {
-        const field = await FieldService.getField();
-        if (field) {
-          setFieldId(field.id || field.fieldId || null);
-        }
         
-
+        const fieldIdFromUrl = searchParams.get('fieldId');
         const plotIdFromUrl = searchParams.get('plotId');
-        if (plotIdFromUrl) {
+        
+        if (fieldIdFromUrl && plotIdFromUrl) {
+          setFieldId(fieldIdFromUrl);
+          setPlotId(plotIdFromUrl);
+          console.log('field id obtenido:', fieldIdFromUrl);
+          console.log('plot id obtenido:', plotIdFromUrl);
+        } else if (plotIdFromUrl) {
+          // Si solo hay plotId, obtener el field del farmer
           setPlotId(plotIdFromUrl);
           console.log('plot id obtenido:', plotIdFromUrl);
+          if (!isAdmin) {
+            const field = await FieldService.getField();
+            if (field) {
+              setFieldId(field.id || field.fieldId || null);
+            }
+          }
         } else {
-          console.warn('plantid no se encontró en la url');
+          if (!isAdmin) {
+            const field = await FieldService.getField();
+            if (field) {
+              setFieldId(field.id || field.fieldId || null);
+            } else {
+              console.warn('usuario no tiene field');
+              navigate(ROUTES.CREATE_FIELD);
+            }
+          }
         }
       } catch (err) {
         console.error('Error loading field:', err);
       }
     };
     loadFieldAndPlot();
-  }, [searchParams]);
+  }, [searchParams, isAdmin, navigate]);
 
   const handleRowClick = (plantingId: string) => {
     navigate(ROUTES.CROP_DETAIL.replace(':id', plantingId));
@@ -119,7 +139,7 @@ export function CropListView() {
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
                 />
               </div>
-              <AddButton onClick={handleOpenAddModal} label="Add Crop" />
+              {!isAdmin && <AddButton onClick={handleOpenAddModal} label="Add Crop" />}
             </div>
           </div>
 
@@ -129,18 +149,13 @@ export function CropListView() {
             </div>
           )}
 
-          {!error && Array.isArray(plantings) && plantings.length === 0 && (
-            <div className="text-center py-8 text-gray-600">
-              No crops found. Start by adding your first crop.
-            </div>
-          )}
-
-          {!error && Array.isArray(plantings) && plantings.length > 0 && (
+          {!error && Array.isArray(plantings) && (
             <CropTable
               plantings={plantings}
               onRowClick={handleRowClick}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              isAdmin={isAdmin}
             />
           )}
         </div>

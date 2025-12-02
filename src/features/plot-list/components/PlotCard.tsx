@@ -3,7 +3,7 @@ import fieldImage from "../../../assets/campo-predeterminado.png";
 import { LuPencil } from "react-icons/lu";
 import { IoTrashOutline } from "react-icons/io5";
 
-export function PlotCard({ plot, onInfoClick, onDevicesClick, onEdit, onDelete }: PlotCardProps) {
+export function PlotCard({ plot, onInfoClick, onDevicesClick, onEdit, onDelete, isAdmin = false }: PlotCardProps) {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'EMPTY':
@@ -24,14 +24,20 @@ export function PlotCard({ plot, onInfoClick, onDevicesClick, onEdit, onDelete }
           <h3 className="text-lg font-semibold text-gray-800">{plot.plotName}</h3>
           <p className="text-sm text-gray-600">{plot.area} m²</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={(e) => {e.stopPropagation();onEdit(plot);}} className="text-orange-500 hover:text-orange-700 transition-colors p-2" title="Edit plot">
-            <LuPencil size={22} />
-          </button>
-          <button onClick={(e) => {e.stopPropagation();onDelete(plot.plotId);}}className="text-red-500 hover:text-red-700 transition-colors p-2" title="Delete plot">
-            <IoTrashOutline size={22} />
-          </button>
-        </div>
+        {!isAdmin && (
+          <div className="flex gap-2">
+            {onEdit && (
+              <button onClick={(e) => {e.stopPropagation();onEdit(plot);}} className="text-orange-500 hover:text-orange-700 transition-colors p-2" title="Edit plot">
+                <LuPencil size={22} />
+              </button>
+            )}
+            {onDelete && (
+              <button onClick={(e) => {e.stopPropagation();onDelete(plot.plotId);}}className="text-red-500 hover:text-red-700 transition-colors p-2" title="Delete plot">
+                <IoTrashOutline size={22} />
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="relative h-48 overflow-hidden">

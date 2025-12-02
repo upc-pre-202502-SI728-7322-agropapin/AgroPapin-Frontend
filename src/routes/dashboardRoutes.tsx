@@ -2,6 +2,7 @@ import type { RouteObject } from 'react-router-dom';
 import { ROUTES } from '../shared/constants/routes';
 import FarmerDashboardPage from '../pages/dashboard/FarmerDashboardPage';
 import AdminDashboardPage from '../pages/dashboard/AdminDashboardPage';
+import CreateCooperativePage from '../pages/cooperative/CreateCooperativePage';
 import FieldInformationPage from '../pages/field-info/FieldInformationPage';
 import CreateFieldPage from '../pages/field-info/CreateFieldPage';
 import CropListPage from '../pages/crop-list/CropListPage';
@@ -15,6 +16,8 @@ import IrrigationControlPage from '../pages/irrigation-control/IrrigationControl
 import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import MainLayout from "../shared/components/layouts/MainLayout.tsx";
 import PlotListPage from '../pages/plot-list/PlotListPage.tsx';
+import ManageMembersPage from '../pages/cooperative/ManageMembersPage.tsx';
+import InventoryManagementPage from '../pages/inventory/InventoryManagementPage.tsx';
 
 //rutas protegidas del dashboard
 export const dashboardRoutes: RouteObject[] = [
@@ -37,6 +40,14 @@ export const dashboardRoutes: RouteObject[] = [
                 element: (
                     <ProtectedRoute allowedRoles={['ROLE_ADMINISTRATOR']}>
                         <AdminDashboardPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: ROUTES.CREATE_COOPERATIVE,
+                element: (
+                    <ProtectedRoute allowedRoles={['ROLE_ADMINISTRATOR']}>
+                        <CreateCooperativePage />
                     </ProtectedRoute>
                 ),
             },
@@ -125,6 +136,22 @@ export const dashboardRoutes: RouteObject[] = [
                 element: (
                     <ProtectedRoute>
                         <PlotListPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: ROUTES.MANAGE_MEMBERS,
+                element: (
+                    <ProtectedRoute allowedRoles={['ROLE_ADMINISTRATOR']}>
+                        <ManageMembersPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: ROUTES.INVENTORY,
+                element: (
+                    <ProtectedRoute allowedRoles={['ROLE_ADMINISTRATOR']}>
+                        <InventoryManagementPage />
                     </ProtectedRoute>
                 ),
             }
