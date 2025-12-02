@@ -27,6 +27,12 @@ class SensorService {
     const response = await axiosClient.patch<SensorResource>(`/sensors/plot/${plotId}/device/${sensorId}/status`,data);
     return response.data;
   }
+
+  // DELETE
+  async deleteSensor(sensorId: string): Promise<{ message: string }> {
+    const response = await axiosClient.delete<{ message: string }>(`/sensors/device/${sensorId}`);
+    return response.data;
+  }
 }
 
 export default new SensorService();

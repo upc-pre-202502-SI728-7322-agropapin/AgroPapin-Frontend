@@ -11,6 +11,7 @@ export function PlotList({ plots, onInfoClick, onDevicesClick, onEdit, onDelete,
           plot={plot}
           onInfoClick={onInfoClick}
           onDevicesClick={onDevicesClick}
+          onMetricsClick={onMetricsClick}
           onEdit={onEdit}
           onDelete={onDelete}
           isAdmin={isAdmin}

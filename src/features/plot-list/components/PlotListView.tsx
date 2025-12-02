@@ -78,6 +78,10 @@ export function PlotListView() {
     navigate(ROUTES.DEVICES.replace(':plotId', plotId));
   };
 
+  const handleMetricsClick = (plotId: string) => {
+    navigate(`${ROUTES.DEVICES.replace(':plotId', plotId)}?section=metrics`);
+  };
+
   const handleEdit = (plot: Plot) => {
     if (isAdmin) return;
     setSelectedPlot(plot);

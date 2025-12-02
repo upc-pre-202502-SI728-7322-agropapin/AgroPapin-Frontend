@@ -11,6 +11,7 @@ export const ROUTES = {
     CROP_LIST: '/crop-list',
     CROP_DETAIL: '/crop-detail/:id',
     DEVICES: '/plots/:plotId/devices',
+    LIVE_METRICS: '/plots/:plotId/metrics',
     USER_PROFILE: '/profile',
     CHAT: '/chat',
     IRRIGATION_CONTROL: '/irrigation-control',

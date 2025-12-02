@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { AddButton } from '../../../shared/components/ui/AddButton';
 import { Tabs } from '../../../shared/components/ui/Tabs';
 import { DevicesList } from './DevicesList';
@@ -8,6 +8,7 @@ import { DeleteDeviceModal } from './DeleteDeviceModal';
 import { AreaChart } from '../../../shared/components/charts/AreaChart';
 import { DevicesSidebar } from './DevicesSidebar';
 import { AlertsView } from './AlertsView';
+import { LiveMetricsView } from './LiveMetricsView';
 import { useActuators, useSensors, useTelemetry } from '../hooks';
 import { useAuth } from '../../auth/context/AuthContext';
 import { FloatingChatButton } from '../../../shared/components/ui/FloatingChatButton';
@@ -25,16 +26,23 @@ export function DevicesView() {
   console.log('Current plotId from URL:', plotId);
   
   const [activeTab, setActiveTab] = useState<'sensors' | 'actuators'>('sensors');
-  const [activeSection, setActiveSection] = useState<'devices' | 'alerts'>('devices');
+  const [activeSection, setActiveSection] = useState<'devices' | 'alerts' | 'metrics'>('devices');
   const [selectedDays, setSelectedDays] = useState<number>(1); // 1 día predeterminado
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
   const [deviceToDelete, setDeviceToDelete] = useState<string | null>(null);
 
+  useEffect(() => {
+    const section = searchParams.get('section');
+    if (section === 'metrics') {
+      setActiveSection('metrics');
+    }
+  }, [searchParams]);
+
   const { actuators, refetch: refetchActuators } = useActuators(plotId);
   const { sensors, refetch: refetchSensors } = useSensors(plotId);
-  const { telemetryData } = useTelemetry(plotId, selectedDays);
+  const { telemetryData, isLoading, refetch: refetchTelemetry } = useTelemetry(plotId, selectedDays);
 
   console.log('Telemetry data in DevicesView:', telemetryData);
   console.log('Number of telemetry points:', telemetryData.length);
@@ -91,12 +99,24 @@ export function DevicesView() {
   };
 
   const handleConfirmDelete = async () => {
-    if (deviceToDelete) {
-      // TODO: NO HAY DELETE
+    if (!deviceToDelete) return;
+
+    try {
+      const device = devices.find(d => d.id === deviceToDelete);
+      if (!device) return;
+
+      if (device.type === 'sensor') {
+        await SensorService.deleteSensor(deviceToDelete);
+      } else {
+        await ActuatorService.deleteActuator(deviceToDelete);
+      }
+
       setDeviceToDelete(null);
       setIsDeleteModalOpen(false);
       await refetchActuators();
       await refetchSensors();
+    } catch (error: any) {
+      alert('Error al eliminar el dispositivo: ' + (error.response?.data?.message || 'Error desconocido'));
     }
   };
 
@@ -116,7 +136,6 @@ export function DevicesView() {
           plotId: plotId,
           model: data.model,
           version: data.version,
-          sensorType: data.deviceType as any,
         });
       } else {
         await ActuatorService.createActuator({
@@ -135,11 +154,7 @@ export function DevicesView() {
       await refetchSensors();
     } catch (error: any) {
       const errorMessage = error.response?.data?.message;
-      if (errorMessage && errorMessage.includes('Duplicate entry')) {
-        alert('Ya existe un dispositivo de este tipo para esta parcela. Elimina el existente primero.');
-      } else {
-        alert('Error al crear el dispositivo: ' + (errorMessage || 'Error desconocido'));
-      }
+      alert('Error al crear el dispositivo: ' + (errorMessage || 'Error desconocido'));
     }
   };
 
@@ -157,6 +172,8 @@ export function DevicesView() {
       <div className="flex-1 min-w-0">
         {activeSection === 'alerts' ? (
           <AlertsView />
+        ) : activeSection === 'metrics' ? (
+          <LiveMetricsView />
         ) : (
           <div className="p-4 md:p-8">
             {/* Header */}
@@ -181,7 +198,27 @@ export function DevicesView() {
                   <h2 className="text-xl font-bold text-gray-900">
                     Sensor Metrics (Last {selectedDays} {selectedDays === 1 ? 'Day' : 'Days'})
                   </h2>
-                  <div className="relative">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={refetchTelemetry}
+                      disabled={isLoading}
+                      className="p-2 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#3E7C59] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                      title="Refresh charts"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
+                      </svg>
+                    </button>
                     <select
                       value={selectedDays}
                       onChange={(e) => setSelectedDays(Number(e.target.value))}
@@ -249,8 +286,6 @@ export function DevicesView() {
         }}
         onSave={handleSaveDevice}
         device={selectedDevice}
-        existingSensors={sensors}
-        existingActuators={actuators}
       />
 
       <DeleteDeviceModal

@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { ProductsTable } from './ProductsTable';
 import { ProductModal } from './ProductModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import { AddButton } from '../../../shared/components/ui/AddButton';
-import type { Product, ProductFormData } from '../types/product.types';
+import { ProductService } from '../../../services/product';
+import type { Product, ProductFormData, ProductResource, CreateProductResource, UpdateProductResource } from '../types/product.types';
 
 interface ProductsTabProps {
   cropId: string;
@@ -93,6 +95,25 @@ export function ProductsTab({ cropId, isAdmin = false }: ProductsTabProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (!plotId || !plantingId) return;
+      
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await ProductService.getProductsByPlantingId(plotId, plantingId);
+        setProducts(data.map(mapProductResourceToProduct));
+      } catch (err) {
+        setError('Error loading products');
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [plotId, plantingId]);
+
   const handleEdit = (product: Product) => {
     if (isAdmin) return;
     setSelectedProduct(product);
@@ -105,34 +126,62 @@ export function ProductsTab({ cropId, isAdmin = false }: ProductsTabProps) {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (productToDelete) {
+  const handleConfirmDelete = async () => {
+    if (!productToDelete || !plotId) return;
+
+    try {
+      await ProductService.deleteProduct(plotId, productToDelete);
       setProducts(products.filter((product) => product.id !== productToDelete));
       setProductToDelete(null);
       setIsDeleteModalOpen(false);
+    } catch (err) {
+      console.error('Error deleting product:', err);
+      setError('Error deleting product');
     }
   };
 
-  const handleSaveProduct = (data: ProductFormData) => {
-    if (selectedProduct) {
-      // Edit
-      setProducts(
-        products.map((product) =>
-          product.id === selectedProduct.id
-            ? { ...product, ...data }
-            : product
-        )
-      );
-    } else {
-      // Create
-      const newProduct: Product = {
-        id: String(products.length + 1),
-        date: new Date().toLocaleDateString('en-GB'),
-        ...data,
-      };
-      setProducts([newProduct, ...products]);
+  const handleSaveProduct = async (data: ProductFormData) => {
+    if (!plotId || !plantingId) return;
+
+    try {
+      // Parse quantity and unit from the quantity string (e.g., "10 Kg" -> amount: 10, unit: "Kg")
+      const quantityParts = data.quantity.split(' ');
+      const amount = parseFloat(quantityParts[0]) || 0;
+      const unit = quantityParts.slice(1).join(' ') || 'units';
+
+      if (selectedProduct) {
+        // Edit
+        const updateData: UpdateProductResource = {
+          name: data.name,
+          applicationDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+          type: data.type,
+          amount,
+          unit,
+        };
+        const updated = await ProductService.updateProduct(plotId, selectedProduct.id, updateData);
+        setProducts(
+          products.map((product) =>
+            product.id === selectedProduct.id ? mapProductResourceToProduct(updated) : product
+          )
+        );
+      } else {
+        // Create
+        const createData: CreateProductResource = {
+          name: data.name,
+          applicationDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+          type: data.type,
+          amount,
+          unit,
+          plantingId: plantingId,
+        };
+        const created = await ProductService.createProduct(plotId, createData);
+        setProducts([mapProductResourceToProduct(created), ...products]);
+      }
+      setSelectedProduct(null);
+    } catch (err) {
+      console.error('Error saving product:', err);
+      setError('Error saving product');
     }
-    setSelectedProduct(null);
   };
 
   const handleOpenAddModal = () => {

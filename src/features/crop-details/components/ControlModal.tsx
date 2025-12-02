@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import type { Control, ControlFormData } from '../types/control.types';
-import { validateField } from '../../../shared/utils/validations';
 
 interface ControlModalProps {
   isOpen: boolean;
@@ -15,8 +14,6 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
     stemCondition: '',
     soilMoisture: '',
   });
-
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (control) {
@@ -36,14 +33,19 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    const leavesError = validateField({ value: formData.leaves, required: true });
-    if (leavesError) return setError(leavesError);
-    const stemError = validateField({ value: formData.stemCondition, required: true });
-    if (stemError) return setError(stemError);
-    const soilError = validateField({ value: formData.soilMoisture, required: true });
-    if (soilError) return setError(soilError);
-    onSave(formData);
+    
+    // Trim whitespace
+    const trimmedData: ControlFormData = {
+      leaves: formData.leaves.trim(),
+      stemCondition: formData.stemCondition.trim(),
+      soilMoisture: formData.soilMoisture.trim(),
+    };
+    
+    if (!trimmedData.leaves || !trimmedData.stemCondition || !trimmedData.soilMoisture) {
+      return;
+    }
+    
+    onSave(trimmedData);
     onClose();
   };
 
@@ -71,6 +73,8 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
               onChange={(e) => setFormData({ ...formData, leaves: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
               placeholder="e.g., Shows two spots or areas."
+              minLength={3}
+              maxLength={200}
               required
             />
           </div>
@@ -85,6 +89,8 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
               onChange={(e) => setFormData({ ...formData, stemCondition: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
               placeholder="e.g., Shows lesions and discoloration."
+              minLength={3}
+              maxLength={200}
               required
             />
           </div>
@@ -99,13 +105,12 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
               onChange={(e) => setFormData({ ...formData, soilMoisture: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
               placeholder="e.g., The soil is very wet."
+              minLength={3}
+              maxLength={200}
               required
             />
           </div>
 
-          {error && (
-            <p className="mt-2 text-sm text-red-600">{error}</p>
-          )}
           <div className="flex gap-4">
             <button
               type="submit"

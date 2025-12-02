@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Product, ProductFormData } from '../types/product.types';
-import { validateField } from '../../../shared/utils/validations';
+import type { Product, ProductFormData, ProductType } from '../types/product.types';
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -11,7 +10,7 @@ interface ProductModalProps {
 
 export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
   const [formData, setFormData] = useState<ProductFormData>({
-    type: '',
+    type: 'FERTILIZER',
     name: '',
     quantity: '',
   });
@@ -21,13 +20,13 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
   useEffect(() => {
     if (product) {
       setFormData({
-        type: product.type,
+        type: product.type as ProductType,
         name: product.name,
         quantity: product.quantity,
       });
     } else {
       setFormData({
-        type: '',
+        type: 'FERTILIZER',
         name: '',
         quantity: '',
       });
@@ -36,14 +35,24 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    const typeError = validateField({ value: formData.type, required: true });
-    if (typeError) return setError(typeError);
-    const nameError = validateField({ value: formData.name, required: true });
-    if (nameError) return setError(nameError);
-    const quantityError = validateField({ value: formData.quantity, required: true, numeric: true, positive: true });
-    if (quantityError) return setError(quantityError);
-    onSave(formData);
+    
+    const trimmedData: ProductFormData = {
+      type: formData.type,
+      name: formData.name.trim(),
+      quantity: formData.quantity.trim(),
+    };
+    
+    if (!trimmedData.name || !trimmedData.quantity) {
+      return;
+    }
+    
+    const quantityPattern = /^\d+(\.\d+)?\s+[a-zA-Z]+$/;
+    if (!quantityPattern.test(trimmedData.quantity)) {
+      alert('Quantity must be in format: "number unit" (e.g., "10 Kg", "2.5 L")');
+      return;
+    }
+    
+    onSave(trimmedData);
     onClose();
   };
 
@@ -65,14 +74,18 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
             <label className="block text-gray-700 font-medium mb-2">
               Type
             </label>
-            <input
-              type="text"
+            <select
               value={formData.type}
-              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value as ProductType })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
-              placeholder="e.g., Fertilizer"
               required
-            />
+            >
+              <option value="FERTILIZER">Fertilizer</option>
+              <option value="PESTICIDE">Pesticide</option>
+              <option value="FUNGICIDE">Fungicide</option>
+              <option value="HERBICIDE">Herbicide</option>
+              <option value="SOIL_AMENDMENT">Soil Amendment</option>
+            </select>
           </div>
 
           <div className="mb-4">
@@ -85,6 +98,8 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
               placeholder="e.g., Aminofol"
+              minLength={2}
+              maxLength={100}
               required
             />
           </div>
@@ -98,13 +113,13 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
               value={formData.quantity}
               onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
-              placeholder="e.g., 20"
+              placeholder="e.g., 20 Kg"
+              pattern="^\d+(\.\d+)?\s+[a-zA-Z]+$"
+              title="Format: number + space + unit (e.g., 20 Kg, 2.5 L)"
               required
               min="0"
             />
-            {error && (
-              <p className="mt-2 text-sm text-red-600">{error}</p>
-            )}
+            <p className="text-xs text-gray-500 mt-1">Format: number + space + unit (e.g., 20 Kg, 2.5 L)</p>
           </div>
 
           <div className="flex gap-4">

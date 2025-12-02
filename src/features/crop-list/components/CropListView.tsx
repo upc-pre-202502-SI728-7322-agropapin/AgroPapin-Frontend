@@ -18,12 +18,11 @@ export function CropListView() {
   const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedPlanting, setSelectedPlanting] = useState<PlantingResource | null>(null);
   const [plantingToDelete, setPlantingToDelete] = useState<string | null>(null);
   const [fieldId, setFieldId] = useState<string | null>(null);
   const [plotId, setPlotId] = useState<string | null>(null);
 
-  const { plantings, error, createPlanting, updatePlanting, deletePlanting, fetchPlantings } = usePlantings(fieldId, plotId);
+  const { plantings, error, createPlanting, deletePlanting, fetchPlantings } = usePlantings(fieldId, plotId);
 
 
   useEffect(() => {
@@ -67,13 +66,15 @@ export function CropListView() {
   }, [searchParams, isAdmin, navigate]);
 
   const handleRowClick = (plantingId: string) => {
-    navigate(ROUTES.CROP_DETAIL.replace(':id', plantingId));
+    if (!fieldId || !plotId) return;
+    const url = ROUTES.CROP_DETAIL
+      .replace(':fieldId', fieldId)
+      .replace(':plotId', plotId)
+      .replace(':plantingId', plantingId);
+    navigate(url);
   };
 
-  const handleEdit = (planting: PlantingResource) => {
-    setSelectedPlanting(planting);
-    setIsModalOpen(true);
-  };
+
 
   const handleDelete = (plantingId: string) => {
     setPlantingToDelete(plantingId);
@@ -89,24 +90,13 @@ export function CropListView() {
     }
   };
 
-  const handleSavePlanting = async (data: CreatePlantingResource) => {
-    if (selectedPlanting) {
-      console.log('PLOT INICIAL:', selectedPlanting.plotId);
-      const updateData = {
-        plantingDate: data.plantingDate,
-        harvestDate: data.actualHarvestDate,
-        cropId: data.cropTypeId
-      };
-      console.log('DATOS ENVIADOS', updateData);
-      await updatePlanting(selectedPlanting.id, updateData);
-    } else {
-      await createPlanting(data);
-    }
-    setSelectedPlanting(null);
+  const handleCreatePlanting = async (data: CreatePlantingResource) => {
+    await createPlanting(data);
   };
 
+
+
   const handleOpenAddModal = () => {
-    setSelectedPlanting(null);
     setIsModalOpen(true);
   };
 
@@ -132,12 +122,12 @@ export function CropListView() {
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
               <div className="relative w-full sm:w-80">
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
-                <input
-                  type="text"
-                  placeholder="Search Crops"
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
-                />
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
+          <input
+            type="text"
+            placeholder="Search Crops"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
+          />
               </div>
               {!isAdmin && <AddButton onClick={handleOpenAddModal} label="Add Crop" />}
             </div>
@@ -153,7 +143,6 @@ export function CropListView() {
             <CropTable
               plantings={plantings}
               onRowClick={handleRowClick}
-              onEdit={handleEdit}
               onDelete={handleDelete}
               isAdmin={isAdmin}
             />
@@ -164,10 +153,8 @@ export function CropListView() {
           isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
-            setSelectedPlanting(null);
           }}
-          onSave={handleSavePlanting}
-          planting={selectedPlanting}
+          onSave={handleCreatePlanting}
         />
 
         <ConfirmModal

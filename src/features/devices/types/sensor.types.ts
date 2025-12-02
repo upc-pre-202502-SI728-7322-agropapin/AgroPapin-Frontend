@@ -16,7 +16,6 @@ export interface CreateSensorResource {
   plotId: string;
   model: string;
   version: string;
-  sensorType: SensorType;
 }
 
 export interface UpdateDeviceStatusResource {
