@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ControlsTable } from './ControlsTable';
 import { ControlModal } from './ControlModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import { AddButton } from '../../../shared/components/ui/AddButton';
-import type { Control, ControlFormData } from '../types/control.types';
+import { ControlService } from '../../../services/control';
+import type { Control, ControlFormData, ControlResource, CreateControlResource, UpdateControlResource } from '../types/control.types';
 
 interface ControlsTabProps {
   cropId: string;
+  plotId: string;
+  plantingId: string;
+  isAdmin?: boolean;
 }
 
 const mockControlsData: Record<string, Control[]> = {
@@ -83,7 +87,7 @@ const mockControlsData: Record<string, Control[]> = {
   ],
 };
 
-export function ControlsTab({ cropId }: ControlsTabProps) {
+export function ControlsTab({ cropId, plotId, plantingId, isAdmin = false }: ControlsTabProps) {
   const [controls, setControls] = useState<Control[]>(
     mockControlsData[cropId] || mockControlsData['1']
   );
@@ -91,68 +95,141 @@ export function ControlsTab({ cropId }: ControlsTabProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedControl, setSelectedControl] = useState<Control | null>(null);
   const [controlToDelete, setControlToDelete] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const mapControlResourceToControl = (resource: ControlResource): Control => ({
+    id: resource.controlId,
+    date: new Date(resource.date).toLocaleDateString(),
+    leaves: resource.stateLeaves || 'N/A',
+    stemCondition: resource.stateStem || 'N/A',
+    soilMoisture: resource.soilMoisture || 'N/A',
+  });
+
+  useEffect(() => {
+    const fetchControls = async () => {
+      if (!plotId || !plantingId) return;
+      
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await ControlService.getControlsByPlantingId(plotId, plantingId);
+        setControls(data.map(mapControlResourceToControl));
+      } catch (err) {
+        setError('Error loading controls');
+        console.error('Error fetching controls:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchControls();
+  }, [plotId, plantingId]);
 
   const handleEdit = (control: Control) => {
+    if (isAdmin) return;
     setSelectedControl(control);
     setIsModalOpen(true);
   };
 
   const handleDelete = (controlId: string) => {
+    if (isAdmin) return;
     setControlToDelete(controlId);
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (controlToDelete) {
+  const handleConfirmDelete = async () => {
+    if (!controlToDelete || !plotId) return;
+
+    try {
+      await ControlService.deleteControl(plotId, controlToDelete);
       setControls(controls.filter((control) => control.id !== controlToDelete));
       setControlToDelete(null);
       setIsDeleteModalOpen(false);
+    } catch (err) {
+      console.error('Error deleting control:', err);
+      setError('Error deleting control');
     }
   };
 
-  const handleSaveControl = (data: ControlFormData) => {
-    if (selectedControl) {
-      // Edit
-      setControls(
-        controls.map((control) =>
-          control.id === selectedControl.id
-            ? { ...control, ...data }
-            : control
-        )
-      );
-    } else {
-      // Create
-      const newControl: Control = {
-        id: String(controls.length + 1),
-        date: new Date().toLocaleDateString('en-GB'),
-        ...data,
-      };
-      setControls([newControl, ...controls]);
+  const handleSaveControl = async (data: ControlFormData) => {
+    if (!plotId || !plantingId) return;
+
+    try {
+      if (selectedControl) {
+        // Edit
+        const updateData: UpdateControlResource = {
+          date: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+          stateLeaves: data.leaves,
+          stateStem: data.stemCondition,
+          soilMoisture: data.soilMoisture,
+        };
+        const updated = await ControlService.updateControl(plotId, selectedControl.id, updateData);
+        setControls(
+          controls.map((control) =>
+            control.id === selectedControl.id ? mapControlResourceToControl(updated) : control
+          )
+        );
+      } else {
+        // Create
+        const createData: CreateControlResource = {
+          date: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+          stateLeaves: data.leaves,
+          stateStem: data.stemCondition,
+          soilMoisture: data.soilMoisture,
+          plantingId: plantingId,
+        };
+        const created = await ControlService.createControl(plotId, createData);
+        setControls([mapControlResourceToControl(created), ...controls]);
+      }
+      setSelectedControl(null);
+    } catch (err) {
+      console.error('Error saving control:', err);
+      setError('Error saving control');
     }
-    setSelectedControl(null);
   };
 
   const handleOpenAddModal = () => {
+    if (isAdmin) return;
     setSelectedControl(null);
     setIsModalOpen(true);
   };
 
   return (
     <div className="py-6">
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+          {error}
+        </div>
+      )}
 
-      <div className="flex justify-end mb-6">
-        <AddButton
-          onClick={handleOpenAddModal}
-          label="Add Control"
-        />
-      </div>
+      {loading && (
+        <div className="mb-4 text-center text-gray-600">
+          Loading controls...
+        </div>
+      )}
+
+      {!isAdmin && (
+        <div className="flex justify-end mb-6">
+          <AddButton
+            onClick={handleOpenAddModal}
+            label="Add Control"
+          />
+        </div>
+      )}
 
       <div className="bg-white rounded-lg overflow-hidden ">
-        <ControlsTable
-          controls={controls}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        {controls.length === 0 && !loading && !error ? (
+          <div className="text-center py-12 text-gray-500">
+            <p className="text-lg mb-2">No controls registered yet</p>
+            <p className="text-sm">Click "Add Control" to register your first control</p>
+          </div>
+        ) : (
+          <ControlsTable
+            controls={controls}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
       </div>
 
       <ControlModal

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { Message } from '../types/chat.types';
 import { ChatBubble } from './ChatBubble';
-import agropapinLogo from "../../../assets/agropapinConversacion.png"
+import agropapinLogo from "../../../assets/agropapin.png"
 
 interface ChatWindowProps {
   messages: Message[];

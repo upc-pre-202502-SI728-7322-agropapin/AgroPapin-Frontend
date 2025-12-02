@@ -29,3 +29,18 @@ export interface ScheduleIrrigationForm {
   startDate: Date;
   endDate: Date;
 }
+
+export interface ActivateIrrigationRequest {
+  actuatorId: string;
+  minutes: number;
+}
+
+export interface IrrigationLogResource {
+  logId: string;
+  plotId: string;
+  decisionTimestamp: string;
+  decision: string;
+  reason: string;
+  humidityReading: number;
+  humidityThreshold: number;
+}

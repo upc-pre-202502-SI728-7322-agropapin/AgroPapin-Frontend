@@ -4,29 +4,33 @@ import type { Device } from '../types/device.types';
 
 interface DevicesListProps {
   devices: Device[];
-  onRowClick: (deviceId: string) => void;
-  onEdit: (deviceId: string) => void;
-  onDelete: (deviceId: string) => void;
+  onRowClick?: (deviceId: string) => void;
+  onEdit?: (deviceId: string) => void;
+  onDelete?: (deviceId: string) => void;
+  isAdmin?: boolean;
 }
 
-export function DevicesList({ devices, onRowClick, onEdit, onDelete }: DevicesListProps) {
+export function DevicesList({ devices, onRowClick, onEdit, onDelete, isAdmin = false }: DevicesListProps) {
   const columns = [
-    { key: 'name', label: 'Name' },
-    { key: 'type', label: 'Type' },
+    { key: 'serialNumber', label: 'Serial Number' },
+    { key: 'deviceType', label: 'Device Type' },
+    { key: 'model', label: 'Model' },
+    { key: 'version', label: 'Version' },
     { key: 'status', label: 'Status' },
-    { key: 'location', label: 'Location' },
   ];
 
   const renderCell = (device: Device, columnKey: string) => {
     switch (columnKey) {
-      case 'name':
-        return <div className="text-sm font-medium text-gray-900">{device.name}</div>;
-      case 'type':
-        return <div className="text-sm text-gray-600 capitalize">{device.type}</div>;
+      case 'serialNumber':
+        return <div className="text-sm font-medium text-gray-900">{device.serialNumber}</div>;
+      case 'deviceType':
+        return <div className="text-sm text-gray-600">{device.deviceType}</div>;
+      case 'model':
+        return <div className="text-sm text-gray-600">{device.model}</div>;
+      case 'version':
+        return <div className="text-sm text-gray-600">{device.version}</div>;
       case 'status':
         return <StatusBadge status={device.status} />;
-      case 'location':
-        return <div className="text-sm text-gray-600">{device.location}</div>;
       default:
         return null;
     }
@@ -38,10 +42,11 @@ export function DevicesList({ devices, onRowClick, onEdit, onDelete }: DevicesLi
       data={devices}
       getRowKey={(device) => device.id}
       renderCell={renderCell}
-      onRowClick={(device) => onRowClick(device.id)}
-      onEdit={(device) => onEdit(device.id)}
-      onDelete={(device) => onDelete(device.id)}
-      showActions={true}
+      onRowClick={onRowClick ? (device) => onRowClick(device.id) : undefined}
+      onEdit={onEdit ? (device) => onEdit(device.id) : undefined}
+      onDelete={onDelete ? (device) => onDelete(device.id) : undefined}
+      showActions={!isAdmin}
+      emptyMessage="No devices found. Add your first device to get started."
     />
   );
 }

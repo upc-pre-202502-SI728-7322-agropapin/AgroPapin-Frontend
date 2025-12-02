@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProductsTable } from './ProductsTable';
 import { ProductModal } from './ProductModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import { AddButton } from '../../../shared/components/ui/AddButton';
-import type { Product, ProductFormData } from '../types/product.types';
+import { ProductService } from '../../../services/product';
+import type { Product, ProductFormData, ProductResource, CreateProductResource, UpdateProductResource } from '../types/product.types';
 
 interface ProductsTabProps {
   cropId: string;
+  plotId: string;
+  plantingId: string;
+  isAdmin?: boolean;
 }
 
 const mockProductsData: Record<string, Product[]> = {
@@ -83,7 +87,7 @@ const mockProductsData: Record<string, Product[]> = {
   ],
 };
 
-export function ProductsTab({ cropId }: ProductsTabProps) {
+export function ProductsTab({ cropId, plotId, plantingId, isAdmin = false }: ProductsTabProps) {
   const [products, setProducts] = useState<Product[]>(
     mockProductsData[cropId] || mockProductsData['1']
   );
@@ -92,47 +96,98 @@ export function ProductsTab({ cropId }: ProductsTabProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
+  const mapProductResourceToProduct = (resource: ProductResource): Product => ({
+    id: resource.productId,
+    date: new Date(resource.applicationDate).toLocaleDateString(),
+    type: resource.type || 'N/A',
+    name: resource.name || 'N/A',
+    quantity: resource.amount ? `${resource.amount} ${resource.unit || ''}`.trim() : 'N/A',
+  });
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (!plotId || !plantingId) return;
+      
+      try {
+        const data = await ProductService.getProductsByPlantingId(plotId, plantingId);
+        setProducts(data.map(mapProductResourceToProduct));
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      }
+    };
+    fetchProducts();
+  }, [plotId, plantingId]);
+
   const handleEdit = (product: Product) => {
+    if (isAdmin) return;
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
   const handleDelete = (productId: string) => {
+    if (isAdmin) return;
     setProductToDelete(productId);
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (productToDelete) {
-      setProducts(products.filter((product) => product.id !== productToDelete));
+  const handleConfirmDelete = async () => {
+    if (!productToDelete || !plotId) return;
+
+    try {
+      await ProductService.deleteProduct(plotId, productToDelete);
+      setProducts(products.filter(p => p.id !== productToDelete));
       setProductToDelete(null);
       setIsDeleteModalOpen(false);
+    } catch (err) {
+      console.error('Error deleting product:', err);
     }
   };
 
-  const handleSaveProduct = (data: ProductFormData) => {
-    if (selectedProduct) {
-      // Edit
-      setProducts(
-        products.map((product) =>
-          product.id === selectedProduct.id
-            ? { ...product, ...data }
-            : product
-        )
-      );
-    } else {
-      // Create
-      const newProduct: Product = {
-        id: String(products.length + 1),
-        date: new Date().toLocaleDateString('en-GB'),
-        ...data,
-      };
-      setProducts([newProduct, ...products]);
+  const handleSaveProduct = async (data: ProductFormData) => {
+    if (!plotId || !plantingId) return;
+
+    try {
+      // Parse quantity and unit from the quantity string (e.g., "10 Kg" -> amount: 10, unit: "Kg")
+      const quantityParts = data.quantity.split(' ');
+      const amount = parseFloat(quantityParts[0]) || 0;
+      const unit = quantityParts.slice(1).join(' ') || 'units';
+
+      if (selectedProduct) {
+        // Edit
+        const updateData: UpdateProductResource = {
+          name: data.name,
+          applicationDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+          type: data.type,
+          amount,
+          unit,
+        };
+        const updated = await ProductService.updateProduct(plotId, selectedProduct.id, updateData);
+        setProducts(
+          products.map((product) =>
+            product.id === selectedProduct.id ? mapProductResourceToProduct(updated) : product
+          )
+        );
+      } else {
+        // Create
+        const createData: CreateProductResource = {
+          name: data.name,
+          applicationDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+          type: data.type,
+          amount,
+          unit,
+          plantingId: plantingId,
+        };
+        const created = await ProductService.createProduct(plotId, createData);
+        setProducts([mapProductResourceToProduct(created), ...products]);
+      }
+      setSelectedProduct(null);
+    } catch (err) {
+      console.error('Error saving product:', err);
     }
-    setSelectedProduct(null);
   };
 
   const handleOpenAddModal = () => {
+    if (isAdmin) return;
     setSelectedProduct(null);
     setIsModalOpen(true);
   };
@@ -140,18 +195,21 @@ export function ProductsTab({ cropId }: ProductsTabProps) {
   return (
     <div className="py-6">
      
-      <div className="flex justify-end mb-6">
-        <AddButton
-          onClick={handleOpenAddModal}
-          label="Add Product"
-        />
-      </div>
+      {!isAdmin && (
+        <div className="flex justify-end mb-6">
+          <AddButton
+            onClick={handleOpenAddModal}
+            label="Add Product"
+          />
+        </div>
+      )}
 
       <div className="bg-white rounded-lg overflow-hidden ">
         <ProductsTable
           products={products}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
+          onEdit={isAdmin ? undefined : handleEdit}
+          onDelete={isAdmin ? undefined : handleDelete}
+          showActions={!isAdmin}
         />
       </div>
 

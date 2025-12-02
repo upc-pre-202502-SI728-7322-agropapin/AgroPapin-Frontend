@@ -1,28 +1,62 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEdit, FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaCopy, FaCheck } from 'react-icons/fa';
 import { CgProfile } from 'react-icons/cg';
+import { useAuth } from '../../auth/context/AuthContext';
+import { FarmerService } from '../../../services/farmer';
+import { AdministratorService } from '../../../services/administrator';
 import { EditProfileModal } from './EditProfileModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import type { UserProfile, UserProfileFormData } from '../types/user-profile.types';
 
-
-const mockUserProfile: UserProfile = {
-  id: '1',
-  firstName: 'Roberto',
-  lastName: 'Juarez',
-  email: 'roberto@gmail.com',
-  country: 'Peru',
-  phone: '+51 999 999 999',
-};
-
 export function UserProfileView() {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<UserProfile>(mockUserProfile);
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isConfirmSaveModalOpen, setIsConfirmSaveModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [pendingChanges, setPendingChanges] = useState<UserProfileFormData | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      setLoading(true);
+      
+      if (isAdmin) {
+        const adminData = await AdministratorService.getMyAdministratorProfile();
+        setProfile({
+          id: adminData.administratorId,
+          firstName: adminData.firstName,
+          lastName: adminData.lastName,
+          email: adminData.email,
+          country: adminData.country,
+          phone: adminData.phoneNumber,
+        });
+      } else {
+        const farmerData = await FarmerService.getMyFarmerProfile();
+        setProfile({
+          id: farmerData.farmerId,
+          firstName: farmerData.firstName,
+          lastName: farmerData.lastName,
+          email: farmerData.email,
+          country: farmerData.country,
+          phone: farmerData.phone,
+        });
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSaveClick = (data: UserProfileFormData) => {
     setPendingChanges(data);
@@ -30,14 +64,53 @@ export function UserProfileView() {
     setIsConfirmSaveModalOpen(true);
   };
 
-  const handleConfirmSave = () => {
-    if (pendingChanges) {
-      setProfile({
-        ...profile,
-        ...pendingChanges,
-      });
-      setPendingChanges(null);
-      setIsConfirmSaveModalOpen(false);
+  const handleConfirmSave = async () => {
+    if (pendingChanges && profile) {
+      try {
+        setIsSaving(true);
+        
+        if (isAdmin) {
+          const updatedAdmin = await AdministratorService.updateMyAdministratorProfile({
+            firstName: pendingChanges.firstName,
+            lastName: pendingChanges.lastName,
+            country: pendingChanges.country,
+            phoneNumber: pendingChanges.phone,
+          });
+          
+          setProfile({
+            id: updatedAdmin.administratorId,
+            firstName: updatedAdmin.firstName,
+            lastName: updatedAdmin.lastName,
+            email: updatedAdmin.email,
+            country: updatedAdmin.country,
+            phone: updatedAdmin.phoneNumber,
+          });
+        } else {
+          const updatedFarmer = await FarmerService.updateMyFarmerProfile({
+            firstName: pendingChanges.firstName,
+            lastName: pendingChanges.lastName,
+            country: pendingChanges.country,
+            phone: pendingChanges.phone,
+          });
+          
+          setProfile({
+            id: updatedFarmer.farmerId,
+            firstName: updatedFarmer.firstName,
+            lastName: updatedFarmer.lastName,
+            email: updatedFarmer.email,
+            country: updatedFarmer.country,
+            phone: updatedFarmer.phone,
+          });
+        }
+        
+        console.log('Profile updated successfully');
+        setPendingChanges(null);
+        setIsConfirmSaveModalOpen(false);
+      } catch (error) {
+        console.error('Error updating profile:', error);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -45,6 +118,43 @@ export function UserProfileView() {
     console.log('cuenta eliminada');
     setIsDeleteModalOpen(false);
   };
+
+  const handleCopyUserId = async () => {
+    if (user?.id) {
+      try {
+        const cleanUserId = user.id.replace(/^auth0\|/, '');
+        await navigator.clipboard.writeText(cleanUserId);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      } catch (error) {
+        console.error('Error al copiar el userId:', error);
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white rounded-lg shadow-lg p-10">
+            <div className="text-center text-gray-600">Loading profile...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-white rounded-lg shadow-lg p-10">
+            <div className="text-center text-red-600">Failed to load profile</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
@@ -130,10 +240,41 @@ export function UserProfileView() {
                   onClick={() => setIsEditModalOpen(true)}
                   className="w-full bg-[#3E7C59] text-white py-2.5 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold flex items-center justify-center gap-2"
                 >
-                  <FaEdit />
                   Edit Information
                 </button>
               </div>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">User ID</h2>
+            <p className="text-gray-600 mb-4">
+              Use this ID to identify your account in the system and get added in a cooperative.
+            </p>
+            <div className="flex items-center gap-3">
+              <input
+                type="text"
+                value={user?.id ? user.id.replace(/^auth0\|/, '') : ''}
+                readOnly
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 font-mono text-sm"
+              />
+              <button
+                onClick={handleCopyUserId}
+                className="flex items-center gap-2 bg-[#3E7C59] text-white py-2.5 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold"
+                type="button"
+              >
+                {isCopied ? (
+                  <>
+                    <FaCheck size={16} />
+                    <span>Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <FaCopy size={16} />
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
@@ -170,7 +311,7 @@ export function UserProfileView() {
         }}
         title="Save Changes"
         message="Are you sure you want to save these changes to your profile?"
-        confirmText="Save"
+        confirmText={isSaving ? 'Saving...' : 'Save'}
         cancelText="Cancel"
         confirmButtonColor="bg-[#3E7C59] hover:bg-[#2d5f43]"
       />

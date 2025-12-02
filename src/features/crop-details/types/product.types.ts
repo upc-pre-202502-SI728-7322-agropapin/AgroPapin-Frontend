@@ -1,3 +1,33 @@
+export type ProductType = 'FERTILIZER' | 'PESTICIDE' | 'FUNGICIDE' | 'HERBICIDE' | 'SOIL_AMENDMENT';
+
+export interface ProductResource {
+  productId: string;
+  name: string;
+  applicationDate: string;
+  type: ProductType;
+  amount: number;
+  unit: string;
+  plantingId: string;
+  plotId: string;
+}
+
+export interface CreateProductResource {
+  name: string;
+  applicationDate: string;
+  type: ProductType;
+  amount: number;
+  unit: string;
+  plantingId: string;
+}
+
+export interface UpdateProductResource {
+  name: string;
+  applicationDate: string;
+  type: ProductType;
+  amount: number;
+  unit: string;
+}
+
 export interface Product {
   id: string;
   date: string;
@@ -7,7 +37,7 @@ export interface Product {
 }
 
 export interface ProductFormData {
-  type: string;
   name: string;
+  type: ProductType;
   quantity: string;
 }

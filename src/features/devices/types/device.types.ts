@@ -1,12 +1,14 @@
 export type DeviceType = 'sensor' | 'actuator';
-export type DeviceStatus = 'active' | 'inactive';
+export type DeviceStatus = 'online' | 'offline' | 'maintenance' | 'provisioned';
 
 export interface Device {
   id: string;
-  name: string;
+  serialNumber: string;
+  deviceType: string;
+  model: string;
+  version: string;
   type: DeviceType;
   status: DeviceStatus;
-  location: string;
 }
 
 export interface ChartData {

@@ -1,12 +1,27 @@
-export interface Field {
-  id: string;
-  name: string;
-  imageUrl: string;
-  cropType: string;
+export interface CreateFieldRequest {
+  fieldName: string;
+  location: string;
+  area: string;
 }
 
-export interface FieldCardProps {
-  field: Field;
-  onInfoClick: (fieldId: string) => void;
-  onDevicesClick: (fieldId: string) => void;
+export interface UpdateFieldRequest {
+  fieldName: string;
+  location: string;
+  area: string;
+}
+
+export interface FieldResponse {
+  id: string;
+  fieldName: string;
+  location: string;
+  totalArea: string;
+  status: string;
+  fieldId?: string;
+}
+
+export interface FieldModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: CreateFieldRequest | UpdateFieldRequest) => Promise<void>;
+  field?: FieldResponse | null;
 }

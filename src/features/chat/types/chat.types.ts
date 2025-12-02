@@ -4,11 +4,14 @@ export interface Message {
   sender: 'user' | 'bot';
   timestamp: Date;
 }
+export interface ChatRequest {
+  question: string;
+  plotId?: string | null;
+  fieldId?: string | null;
+  userId?: string;
+  role?: string;
+}
 
-export interface ChatSession {
-  id: string;
-  title: string;
-  lastMessage: string;
-  timestamp: Date;
-  messages: Message[];
+export interface ChatResponse {
+  response: string;
 }

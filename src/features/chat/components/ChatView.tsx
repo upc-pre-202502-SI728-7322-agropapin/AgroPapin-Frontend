@@ -1,110 +1,55 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
-import { ChatHistoryPanel } from './ChatHistoryPanel';
 import { ChatWindow } from './ChatWindow';
 import { ChatInput } from './ChatInput';
-import type { ChatSession, Message } from '../types/chat.types';
-import agropapinLogo from "../../../assets/agropapinChat.png"
+import { useAuth } from '../../auth/context/AuthContext';
+import AgentService from '../../../services/agent/AgentService';
+import type { Message } from '../types/chat.types';
+import agropapinLogo from "../../../assets/agropapin.png"
 
-const mockSessions: ChatSession[] = [
-  {
-    id: '1',
-    title: 'Crop Rotation Tips',
-    lastMessage: 'Thank you for the advice!',
-    timestamp: new Date('2024-01-15T10:30:00'),
-    messages: [
-      {
-        id: '1-1',
-        content: 'What are the best practices for crop rotation?',
-        sender: 'user',
-        timestamp: new Date('2024-01-15T10:25:00'),
-      },
-      {
-        id: '1-2',
-        content: 'Crop rotation is essential for maintaining soil health. Here are some key practices:\n\n1. Rotate crops from different plant families\n2. Include legumes to fix nitrogen\n3. Alternate deep and shallow-rooted crops\n4. Plan rotations for at least 3-4 years',
-        sender: 'bot',
-        timestamp: new Date('2024-01-15T10:26:00'),
-      },
-      {
-        id: '1-3',
-        content: 'Thank you for the advice!',
-        sender: 'user',
-        timestamp: new Date('2024-01-15T10:30:00'),
-      },
-    ],
-  },
-  {
-    id: '2',
-    title: 'Pest Control',
-    lastMessage: 'Try neem oil as a natural solution.',
-    timestamp: new Date('2024-01-14T15:20:00'),
-    messages: [
-      {
-        id: '2-1',
-        content: 'How can I control aphids naturally?',
-        sender: 'user',
-        timestamp: new Date('2024-01-14T15:15:00'),
-      },
-      {
-        id: '2-2',
-        content: 'Try neem oil as a natural solution. Mix 2 tablespoons of neem oil with 1 gallon of water and spray on affected plants. Also, encourage beneficial insects like ladybugs.',
-        sender: 'bot',
-        timestamp: new Date('2024-01-14T15:20:00'),
-      },
-    ],
-  },
-];
-
-// respuestas automáticas del bot
+// respuestas automáticas del bot (fallback)
 const getBotResponse = (userMessage: string): string => {
   const lowerMessage = userMessage.toLowerCase();
   
-  if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
+  if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hola')) {
     return 'Hello! I\'m your farming assistant. How can I help you today?';
   }
   
-  if (lowerMessage.includes('pest') || lowerMessage.includes('insect')) {
+  if (lowerMessage.includes('pest') || lowerMessage.includes('insect') || lowerMessage.includes('plaga')) {
     return 'For pest control, I recommend integrated pest management (IPM). This includes monitoring, using beneficial insects, crop rotation, and organic pesticides as a last resort. What specific pest are you dealing with?';
   }
   
-  if (lowerMessage.includes('water') || lowerMessage.includes('irrigation')) {
-    return 'Proper watering is crucial for crop health. Consider drip irrigation for efficiency, water early morning or late evening to reduce evaporation, and monitor soil moisture regularly. Different crops have different water requirements.';
+  if (lowerMessage.includes('water') || lowerMessage.includes('irrigation') || lowerMessage.includes('riego')) {
+    return 'Proper watering is crucial for crop health. Consider drip irrigation for efficiency, water early morning or late evening to reduce evaporation, and monitor soil moisture regularly.';
   }
   
-  if (lowerMessage.includes('fertilizer') || lowerMessage.includes('nutrient')) {
-    return 'I recommend getting a soil test first to understand your soil\'s needs. Common organic fertilizers include compost, manure, bone meal, and fish emulsion. The NPK ratio depends on your crop type.';
+  if (lowerMessage.includes('fertilizer') || lowerMessage.includes('nutrient') || lowerMessage.includes('fertilizante')) {
+    return 'I recommend getting a soil test first to understand your soil\'s needs. Common organic fertilizers include compost, manure, bone meal, and fish emulsion.';
   }
   
-  return 'That\'s an interesting question! Based on your farming needs, I\'d recommend consulting with local agricultural experts or checking your crop-specific guidelines. Is there anything specific about your crops I can help with?';
+  return 'That\'s an interesting question! Based on your farming needs, I\'d recommend consulting with local agricultural experts. Is there anything specific about your crops I can help with?';
 };
 
-export function ChatView() {
+interface ChatViewProps {
+  isFloating?: boolean;
+  plotId?: string | null;    // Para preguntas específicas de parcela (zoom in)
+  fieldId?: string | null;   // Para preguntas generales de campo (zoom out)
+}
+
+export function ChatView({ isFloating = false, plotId = null, fieldId = null }: ChatViewProps) {
   const navigate = useNavigate();
-  const [sessions, setSessions] = useState<ChatSession[]>(mockSessions);
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(mockSessions[0]?.id || null);
+  const location = useLocation();
+  const params = useParams();
+  const { user } = useAuth();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const activeSession = sessions.find((s) => s.id === activeSessionId);
+  // detectar el contexto por la URL
+  const contextPlotId = plotId || params.plotId || undefined;
+  const contextFieldId = fieldId || (location.state as any)?.fieldId || undefined;
 
-  const handleNewChat = () => {
-    const newSession: ChatSession = {
-      id: Date.now().toString(),
-      title: 'New Conversation',
-      lastMessage: '',
-      timestamp: new Date(),
-      messages: [],
-    };
-    setSessions([newSession, ...sessions]);
-    setActiveSessionId(newSession.id);
-  };
-
-  const handleSendMessage = (content: string) => {
-    if (!activeSessionId) {
-      handleNewChat();
-      return;
-    }
-
+  const handleSendMessage = async (content: string) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       content,
@@ -112,97 +57,97 @@ export function ChatView() {
       timestamp: new Date(),
     };
 
-    // Actualizar la sesión con el nuevo mensaje
-    setSessions((prevSessions) =>
-      prevSessions.map((session) =>
-        session.id === activeSessionId
-          ? {
-              ...session,
-              messages: [...session.messages, newMessage],
-              lastMessage: content,
-              timestamp: new Date(),
-              title: session.messages.length === 0 ? content.slice(0, 30) + '...' : session.title,
-            }
-          : session
-      )
-    );
-
-    // Simular respuesta del bot
+    setMessages(prev => [...prev, newMessage]);
     setIsLoading(true);
-    setTimeout(() => {
+
+    try {
+      const response = await AgentService.chat({
+        question: content,
+        plotId: contextPlotId,
+        fieldId: contextFieldId,
+        userId: user?.id,
+        role: user?.roles?.includes('ROLE_ADMINISTRATOR') ? 'ADMIN' : 'FARMER',
+      });
+
+      const botResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        content: response,
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+
+      setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      console.error('Error getting agent response:', error);
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         content: getBotResponse(content),
         sender: 'bot',
         timestamp: new Date(),
       };
-
-      setSessions((prevSessions) =>
-        prevSessions.map((session) =>
-          session.id === activeSessionId
-            ? {
-                ...session,
-                messages: [...session.messages, botResponse],
-                lastMessage: botResponse.content,
-                timestamp: new Date(),
-              }
-            : session
-        )
-      );
+      setMessages(prev => [...prev, botResponse]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
     <div className="flex h-full bg-white">
-      <div className="flex flex-col w-full">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors font-medium"
-          >
-            <FaArrowLeft size={16} />
-            <span>Back</span>
-          </button>
-        </div>
-        <div className="flex flex-1">
-          <ChatHistoryPanel
-            sessions={sessions}
-            activeSessionId={activeSessionId}
-            onSessionSelect={setActiveSessionId}
-            onNewChat={handleNewChat}
-          />
-      
+      <div className="flex flex-col w-full h-full">
+        {!isFloating && (
+          <div className="px-6 py-4 border-b border-gray-200">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors font-medium"
+            >
+              <FaArrowLeft size={16} />
+              <span>Back</span>
+            </button>
+          </div>
+        )}
+        <div className="flex flex-1 overflow-hidden">
           <div className="flex-1 flex flex-col">
-            {activeSession ? (
+            {messages.length > 0 ? (
               <>
-                <div className="border-b border-gray-200 px-6 py-4 bg-white">
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    {activeSession.title}
-                  </h2>
-                </div>
-                <ChatWindow messages={activeSession.messages} isLoading={isLoading} />
+                <ChatWindow messages={messages} isLoading={isLoading} />
                 <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
               </>
             ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-4"> 
-                    <img src={agropapinLogo} className="h-10" alt="Agrotech's logo"/>
+              <>
+                {isFloating ? (
+                  <div className="flex-1 flex flex-col">
+                    <div className="flex-1 flex items-center justify-center p-4">
+                      <div className="text-center">
+                        <div className="flex justify-center mb-3"> 
+                          <img src={agropapinLogo} className="h-12 w-12 object-contain" alt="AgroPapin logo"/>
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-700 mb-1">
+                          Ask me anything!
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          I'm here to help with farming
+                        </p>
+                      </div>
+                    </div>
+                    <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-700 mb-2">
-                    Say hi to Agropapin!
-                  </h3>
-                  <p className="text-gray-500 mb-6">
-                    Start a new conversation to get farming advice
-                  </p>
-                  <button
-                    onClick={handleNewChat}
-                    className="bg-[#3E7C59] text-white px-6 py-3 rounded-lg hover:bg-[#2d5f43] transition-colors">
-                    Start New Chat
-                  </button>
-                </div>
-              </div>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center px-4">
+                      <div className="flex justify-center mb-4"> 
+                        <img src={agropapinLogo} className="h-16 w-16 object-contain" alt="AgroPapin logo"/>
+                      </div>
+                      <h3 className="text-2xl font-semibold text-gray-700 mb-2">
+                        Say hi to AgroPapin!
+                      </h3>
+                      <p className="text-gray-500 mb-6">
+                        Ask me anything about farming and I'll help you
+                      </p>
+                      <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

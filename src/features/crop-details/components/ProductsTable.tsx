@@ -3,11 +3,12 @@ import type { Product } from '../types/product.types';
 
 interface ProductsTableProps {
   products: Product[];
-  onEdit: (product: Product) => void;
-  onDelete: (productId: string) => void;
+  onEdit?: (product: Product) => void;
+  onDelete?: (productId: string) => void;
+  showActions?: boolean;
 }
 
-export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps) {
+export function ProductsTable({ products, onEdit, onDelete, showActions = true }: ProductsTableProps) {
   const columns = [
     { key: 'date', label: 'Date' },
     { key: 'type', label: 'Type' },
@@ -36,8 +37,10 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
       data={products}
       renderCell={renderCell}
       onEdit={onEdit}
-      onDelete={(product) => onDelete(product.id)}
+      onDelete={onDelete ? (product) => onDelete(product.id) : undefined}
       getRowKey={(product) => product.id}
+      showActions={showActions}
+      emptyMessage="No products found. Add your first product to track your harvest."
     />
   );
 }

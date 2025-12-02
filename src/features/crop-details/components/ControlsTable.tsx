@@ -3,11 +3,12 @@ import type { Control } from '../types/control.types';
 
 interface ControlsTableProps {
   controls: Control[];
-  onEdit: (control: Control) => void;
-  onDelete: (controlId: string) => void;
+  onEdit?: (control: Control) => void;
+  onDelete?: (controlId: string) => void;
+  showActions?: boolean;
 }
 
-export function ControlsTable({ controls, onEdit, onDelete }: ControlsTableProps) {
+export function ControlsTable({ controls, onEdit, onDelete, showActions = true }: ControlsTableProps) {
   const columns = [
     { key: 'date', label: 'Date' },
     { key: 'leaves', label: 'Leaves' },
@@ -36,8 +37,10 @@ export function ControlsTable({ controls, onEdit, onDelete }: ControlsTableProps
       data={controls}
       renderCell={renderCell}
       onEdit={onEdit}
-      onDelete={(control) => onDelete(control.id)}
+      onDelete={onDelete ? (control) => onDelete(control.id) : undefined}
       getRowKey={(control) => control.id}
+      showActions={showActions}
+      emptyMessage="No pest and disease controls recorded yet."
     />
   );
 }

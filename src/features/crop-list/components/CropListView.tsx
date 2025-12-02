@@ -1,106 +1,119 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FaSearch, FaArrowLeft } from 'react-icons/fa';
 import { CropTable } from './CropTable';
 import { CropModal } from './CropModal';
-import { DeleteConfirmModal } from './DeleteConfirmModal';
+import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import { AddButton } from '../../../shared/components/ui/AddButton';
-import type { Crop, CropFormData } from '../types/crop.types';
+import { usePlantings } from '../hooks';
+import { FieldService } from '../../../services/field';
+import { useAuth } from '../../auth/context/AuthContext';
+import type { CreatePlantingResource } from '../types/crop.types';
 import { ROUTES } from '../../../shared/constants/routes';
 
 export function CropListView() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedCrop, setSelectedCrop] = useState<Crop | null>(null);
-  const [cropToDelete, setCropToDelete] = useState<string | null>(null);
+  const [plantingToDelete, setPlantingToDelete] = useState<string | null>(null);
+  const [fieldId, setFieldId] = useState<string | null>(null);
+  const [plotId, setPlotId] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
 
-  const [crops, setCrops] = useState<Crop[]>([
-    {
-      id: '1',
-      name: 'Lemon',
-      plantedDate: '19/07/2024',
-      estimatedHarvestDate: '19/12/2024',
-      phase: 'Germinating',
-      plantedArea: 100,
-    },
-    {
-      id: '2',
-      name: 'Rice',
-      plantedDate: '19/07/2024',
-      estimatedHarvestDate: '19/12/2024',
-      phase: 'Germinating',
-      plantedArea: 700,
-    },
-    {
-      id: '3',
-      name: 'Rice',
-      plantedDate: '19/07/2024',
-      estimatedHarvestDate: '19/12/2024',
-      phase: 'Germinating',
-      plantedArea: 700,
-    },
-    {
-      id: '4',
-      name: 'Rice',
-      plantedDate: '19/07/2024',
-      estimatedHarvestDate: '19/12/2024',
-      phase: 'Germinating',
-      plantedArea: 700,
-    },
-  ]);
+  const { plantings, error, createPlanting, deletePlanting, markAsHarvested, fetchPlantings } = usePlantings(fieldId, plotId);
 
-  const handleRowClick = (cropId: string) => {
-    navigate(ROUTES.CROP_DETAIL.replace(':id', cropId));
+
+  useEffect(() => {
+    const loadFieldAndPlot = async () => {
+      try {
+        
+        const fieldIdFromUrl = searchParams.get('fieldId');
+        const plotIdFromUrl = searchParams.get('plotId');
+        
+        if (fieldIdFromUrl && plotIdFromUrl) {
+          setFieldId(fieldIdFromUrl);
+          setPlotId(plotIdFromUrl);
+          console.log('field id obtenido:', fieldIdFromUrl);
+          console.log('plot id obtenido:', plotIdFromUrl);
+        } else if (plotIdFromUrl) {
+          // Si solo hay plotId, obtener el field del farmer
+          setPlotId(plotIdFromUrl);
+          console.log('plot id obtenido:', plotIdFromUrl);
+          if (!isAdmin) {
+            const field = await FieldService.getField();
+            if (field) {
+              setFieldId(field.id || field.fieldId || null);
+            }
+          }
+        } else {
+          if (!isAdmin) {
+            const field = await FieldService.getField();
+            if (field) {
+              setFieldId(field.id || field.fieldId || null);
+            } else {
+              console.warn('usuario no tiene field');
+              navigate(ROUTES.CREATE_FIELD);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error loading field:', err);
+      }
+    };
+    loadFieldAndPlot();
+  }, [searchParams, isAdmin, navigate]);
+
+  const handleRowClick = (plantingId: string) => {
+    if (!fieldId || !plotId) return;
+    const url = ROUTES.CROP_DETAIL
+      .replace(':fieldId', fieldId)
+      .replace(':plotId', plotId)
+      .replace(':plantingId', plantingId);
+    navigate(url);
   };
 
-  const handleEdit = (crop: Crop) => {
-    setSelectedCrop(crop);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (cropId: string) => {
-    setCropToDelete(cropId);
+  const handleDelete = (plantingId: string) => {
+    setPlantingToDelete(plantingId);
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (cropToDelete) {
-      setCrops(crops.filter(crop => crop.id !== cropToDelete));
-      setCropToDelete(null);
+  const handleConfirmDelete = async () => {
+    if (plantingToDelete) {
+      await deletePlanting(plantingToDelete);
+      await fetchPlantings();
+      setPlantingToDelete(null);
       setIsDeleteModalOpen(false);
     }
   };
 
-  const handleSaveCrop = (data: CropFormData) => {
-    if (selectedCrop) {
-      // Edit
-      setCrops(crops.map(crop => 
-        crop.id === selectedCrop.id 
-          ? { ...crop, name: data.name, plantedArea: data.plantedArea }
-          : crop
-      ));
-    } else {
-      // Create
-      const newCrop: Crop = {
-        id: String(crops.length + 1),
-        name: data.name,
-        plantedDate: new Date().toLocaleDateString('en-US'),
-        estimatedHarvestDate: new Date(Date.now() + 150 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US'),
-        phase: 'Germinating',
-        plantedArea: data.plantedArea,
-      };
-      setCrops([...crops, newCrop]);
+  const handleHarvest = async (plantingId: string) => {
+    try {
+      await markAsHarvested(plantingId);
+      await fetchPlantings();
+    } catch (err) {
+      console.error('Error marking as harvested:', err);
     }
-    setSelectedCrop(null);
+  };
+
+  const handleCreatePlanting = async (data: CreatePlantingResource) => {
+    setCreateError(null);
+    try {
+      await createPlanting(data);
+      setIsModalOpen(false);
+    } catch (err: any) {
+      setCreateError(err.message || 'Failed to create planting. Please try again.');
+    }
   };
 
   const handleOpenAddModal = () => {
-    setSelectedCrop(null);
+    setCreateError(null);
     setIsModalOpen(true);
   };
 
-  const cropToDeleteName = crops.find(c => c.id === cropToDelete)?.name || '';
+  const plantingToDeleteName = (Array.isArray(plantings) ? plantings.find(p => p.id === plantingToDelete)?.id : undefined) || 'this planting';
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
@@ -117,57 +130,62 @@ export function CropListView() {
           Crops in Progress List
         </h1>
 
-
         {/* Card container */}
         <div className="bg-white rounded-lg shadow-lg p-8">
-
           <div className="mb-8">
-
-
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
               <div className="relative w-full sm:w-80">
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
-                <input
-                    type="text"
-                    placeholder="Search Crops"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
-                />
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
+          <input
+            type="text"
+            placeholder="Search Crops"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
+          />
               </div>
-              <AddButton
-                onClick={handleOpenAddModal}
-                label="Add Crop"
-              />
+              {!isAdmin && <AddButton onClick={handleOpenAddModal} label="Add Crop" />}
             </div>
           </div>
 
+          {error && (
+            <div className="text-center py-8 text-red-600">
+              {error}
+            </div>
+          )}
 
-          <CropTable
-              crops={crops}
+          {!error && Array.isArray(plantings) && (
+            <CropTable
+              plantings={plantings}
               onRowClick={handleRowClick}
-              onEdit={handleEdit}
               onDelete={handleDelete}
-          />
+              onHarvest={handleHarvest}
+              isAdmin={isAdmin}
+            />
+          )}
         </div>
 
-
         <CropModal
-            isOpen={isModalOpen}
-            onClose={() => {
-              setIsModalOpen(false);
-              setSelectedCrop(null);
-            }}
-            onSave={handleSaveCrop}
-            crop={selectedCrop}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setCreateError(null);
+          }}
+          onSave={handleCreatePlanting}
+          externalError={createError}
+          plantings={plantings}
         />
 
-        <DeleteConfirmModal
-            isOpen={isDeleteModalOpen}
-            onConfirm={handleConfirmDelete}
-            onCancel={() => {
-              setIsDeleteModalOpen(false);
-              setCropToDelete(null);
-            }}
-            cropName={cropToDeleteName}
+        <ConfirmModal
+          isOpen={isDeleteModalOpen}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => {
+            setIsDeleteModalOpen(false);
+            setPlantingToDelete(null);
+          }}
+          title="Delete Crop"
+          message={`Are you sure you want to delete ${plantingToDeleteName}? This action cannot be undone.`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          confirmButtonColor="bg-red-600 hover:bg-red-700"
         />
       </div>
     </div>

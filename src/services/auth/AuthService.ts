@@ -42,3 +42,13 @@ export const signUpAdministrator = async (userData: {
   );
   return data;
 };
+
+// petición al webhook para guardar al usuario registrado en la bd local
+export const registerUserWebhook = async (webhookData: {auth0UserId: string;email: string;roleType: string;}) => {
+  const { data } = await axiosClient.post(`http://localhost:8080/internal/webhooks/user-registered`, {
+    auth0_user_id: webhookData.auth0UserId,
+    email: webhookData.email,
+    role_type: webhookData.roleType,
+  });
+  return data;
+};
