@@ -65,6 +65,10 @@ export function PlotListView() {
     navigate(ROUTES.DEVICES.replace(':plotId', plotId));
   };
 
+  const handleMetricsClick = (plotId: string) => {
+    navigate(`${ROUTES.DEVICES.replace(':plotId', plotId)}?section=metrics`);
+  };
+
   const handleEdit = (plot: Plot) => {
     setSelectedPlot(plot);
     setIsModalOpen(true);
@@ -147,6 +151,7 @@ export function PlotListView() {
             plots={plots}
             onInfoClick={handleInfoClick}
             onDevicesClick={handleDevicesClick}
+            onMetricsClick={handleMetricsClick}
             onEdit={handleEdit}
             onDelete={handleDeleteRequest}
           />

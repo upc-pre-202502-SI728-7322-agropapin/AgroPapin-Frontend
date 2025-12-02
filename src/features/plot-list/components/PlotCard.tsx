@@ -3,7 +3,7 @@ import fieldImage from "../../../assets/campo-predeterminado.png";
 import { LuPencil } from "react-icons/lu";
 import { IoTrashOutline } from "react-icons/io5";
 
-export function PlotCard({ plot, onInfoClick, onDevicesClick, onEdit, onDelete }: PlotCardProps) {
+export function PlotCard({ plot, onInfoClick, onDevicesClick, onMetricsClick, onEdit, onDelete }: PlotCardProps) {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'EMPTY':
@@ -49,12 +49,17 @@ export function PlotCard({ plot, onInfoClick, onDevicesClick, onEdit, onDelete }
         </div>
       </div>
 
-      <div className="p-4 flex gap-3 justify-center">
-        <button onClick={() => onInfoClick(plot.plotId)} className="flex-1 bg-[#3E7C59] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#2d5f43] transition-colors">
-          Crops
-        </button>
-        <button onClick={() => onDevicesClick(plot.plotId)} className="flex-1 bg-gray-200 text-[#3E7C59] px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors">
-          Devices
+      <div className="p-4 flex flex-col gap-2">
+        <div className="flex gap-3">
+          <button onClick={() => onInfoClick(plot.plotId)} className="flex-1 bg-[#3E7C59] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#2d5f43] transition-colors">
+            Crops
+          </button>
+          <button onClick={() => onDevicesClick(plot.plotId)} className="flex-1 bg-gray-200 text-[#3E7C59] px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors">
+            Devices
+          </button>
+        </div>
+        <button onClick={() => onMetricsClick(plot.plotId)} className="w-full bg-blue-100 text-blue-700 px-4 py-2 rounded-lg font-medium hover:bg-blue-200 transition-colors">
+          Live Metrics
         </button>
       </div>
     </div>

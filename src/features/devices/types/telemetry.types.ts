@@ -6,9 +6,12 @@ export interface ChartDataResource {
 }
 
 export interface AvgReadingResource {
-  sensorType: 'TEMPERATURE' | 'HUMIDITY' | 'SOIL_MOISTURE';
-  avgValue: number;
-  timestamp: string;
+  plotId: string;
+  serialNumber: string;
+  avgTemperature: number;
+  avgHumidity: number;
+  avgSoilMoisture: number;
+  lastUpdated: string;
 }
 
 export interface PlotReadingResource {
