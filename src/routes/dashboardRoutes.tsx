@@ -73,16 +73,28 @@ export const dashboardRoutes: RouteObject[] = [
                 ),
             },
             {
-                path: ROUTES.DEVICES,
-                element: <DevicesPage />,
+                path: '/plots/:plotId/devices',
+                element: (
+                    <ProtectedRoute>
+                        <DevicesPage />
+                    </ProtectedRoute>
+                ),
             },
             {
-                path: '/devices/:cropId/details/:deviceId',
-                element: <DeviceDetailsPage />,
+                path: '/plots/:plotId/devices/details/:deviceId',
+                element: (
+                    <ProtectedRoute>
+                        <DeviceDetailsPage />
+                    </ProtectedRoute>
+                ),
             },
             {
-                path: '/devices/:cropId/readings/:deviceId',
-                element: <AllReadingsPage />,
+                path: '/plots/:plotId/devices/readings/:deviceId',
+                element: (
+                    <ProtectedRoute>
+                        <AllReadingsPage />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: ROUTES.USER_PROFILE,

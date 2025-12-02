@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { CreatePlantingResource } from '../types/crop.types';
 import { useCropTypes } from '../hooks';
+import { validateField } from '../../../shared/utils/validations';
 
 export interface CropModalProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ export function CropModal({ isOpen, onClose, onSave }: CropModalProps) {
     plantingDate: '',
     actualHarvestDate: null,
   });
+
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -71,6 +74,9 @@ export function CropModal({ isOpen, onClose, onSave }: CropModalProps) {
                 </option>
               ))}
             </select>
+            {error && (
+              <p className="mt-2 text-sm text-red-600">{error}</p>
+            )}
           </div>
 
           <div className="flex gap-4">

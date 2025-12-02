@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Control, ControlFormData } from '../types/control.types';
+import { validateField } from '../../../shared/utils/validations';
 
 interface ControlModalProps {
   isOpen: boolean;
@@ -14,6 +15,8 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
     stemCondition: '',
     soilMoisture: '',
   });
+
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (control) {
@@ -33,6 +36,7 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+<<<<<<< feat/information-field-API-connection
   
     const trimmedData: ControlFormData = {
       leaves: formData.leaves.trim(),
@@ -45,6 +49,16 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
     }
     
     onSave(trimmedData);
+=======
+    setError(null);
+    const leavesError = validateField({ value: formData.leaves, required: true });
+    if (leavesError) return setError(leavesError);
+    const stemError = validateField({ value: formData.stemCondition, required: true });
+    if (stemError) return setError(stemError);
+    const soilError = validateField({ value: formData.soilMoisture, required: true });
+    if (soilError) return setError(soilError);
+    onSave(formData);
+>>>>>>> develop
     onClose();
   };
 
@@ -110,6 +124,9 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
             />
           </div>
 
+          {error && (
+            <p className="mt-2 text-sm text-red-600">{error}</p>
+          )}
           <div className="flex gap-4">
             <button
               type="submit"

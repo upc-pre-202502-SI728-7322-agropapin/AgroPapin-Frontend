@@ -1,7 +1,7 @@
 import { AreaChart as RechartsAreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface DataPoint {
-  day: string;
+  time: string;
   value: number;
 }
 
@@ -33,7 +33,7 @@ export function AreaChart({
       <div className="mb-4">
         <div className="text-sm text-gray-600 mb-1">{title}</div>
         <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold text-gray-900">{currentValue}{unit}</span>
+          <span className="text-3xl font-bold text-gray-900">{currentValue.toFixed(2)}{unit}</span>
           <span className={`text-sm font-medium ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
             {change >= 0 ? '↑' : '↓'} {Math.abs(parseFloat(changePercent))}%
           </span>
@@ -52,7 +52,15 @@ export function AreaChart({
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis 
-              dataKey="day" 
+              dataKey="time"
+              tickFormatter={(value) => {
+                // formato de hora a HH:MM
+                return new Date(value).toLocaleTimeString('en-US', { 
+                  hour: '2-digit', 
+                  minute: '2-digit',
+                  hour12: false 
+                });
+              }}
               tick={{ fill: '#999', fontSize: 12 }}
               axisLine={{ stroke: '#e5e5e5' }}
             />
@@ -67,7 +75,18 @@ export function AreaChart({
                 borderRadius: '8px',
                 padding: '8px 12px'
               }}
-              formatter={(value: number) => [`${value}${unit}`, title]}
+              labelFormatter={(label) => {
+
+                return new Date(label).toLocaleTimeString('en-US', { 
+                  hour: '2-digit', 
+                  minute: '2-digit',
+                  hour12: false 
+                });
+              }}
+              formatter={(value: number) => [
+                `${value.toFixed(2)}${unit}`, 
+                title
+              ]}
             />
             <Area 
               type="monotone" 

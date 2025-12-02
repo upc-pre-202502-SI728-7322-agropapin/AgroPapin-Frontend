@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { AddButton } from '../../../shared/components/ui/AddButton';
 import { Tabs } from '../../../shared/components/ui/Tabs';
 import { DevicesList } from './DevicesList';
@@ -8,78 +8,61 @@ import { DeleteDeviceModal } from './DeleteDeviceModal';
 import { AreaChart } from '../../../shared/components/charts/AreaChart';
 import { DevicesSidebar } from './DevicesSidebar';
 import { AlertsView } from './AlertsView';
-import type { Device, ChartData } from '../types/device.types';
+import { useActuators, useSensors, useTelemetry } from '../hooks';
+import ActuatorService from '../../../services/device/ActuatorService';
+import SensorService from '../../../services/device/SensorService';
+import type { Device } from '../types/device.types';
+import type { ActuatorResource } from '../types/actuator.types';
+import type { SensorResource } from '../types/sensor.types';
 
 export function DevicesView() {
-  const navigate = useNavigate();
-  const { id: cropId } = useParams<{ id: string }>();
-  const [activeTab, setActiveTab] = useState<'all' | 'sensors' | 'actuators'>('all');
+  const { plotId } = useParams<{ plotId: string }>();
+  
+  console.log('Current plotId from URL:', plotId);
+  
+  const [activeTab, setActiveTab] = useState<'sensors' | 'actuators'>('sensors');
   const [activeSection, setActiveSection] = useState<'devices' | 'alerts'>('devices');
+  const [selectedDays, setSelectedDays] = useState<number>(1); // 1 día predeterminado
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
   const [deviceToDelete, setDeviceToDelete] = useState<string | null>(null);
-  const [devices, setDevices] = useState<Device[]>([
-    {
-      id: '1',
-      name: 'Sensor 1',
-      type: 'sensor',
-      status: 'active',
-      location: 'Zone A'
-    },
-    {
-      id: '2',
-      name: 'Sensor 2',
-      type: 'sensor',
-      status: 'inactive',
-      location: 'Zone B'
-    },
-    {
-      id: '3',
-      name: 'Sensor 3',
-      type: 'sensor',
-      status: 'active',
-      location: 'Zone C'
-    },
-    {
-      id: '4',
-      name: 'Actuator 1',
-      type: 'actuator',
-      status: 'active',
-      location: 'Zone A'
-    },
-  ]);
+
+  const { actuators, refetch: refetchActuators } = useActuators(plotId);
+  const { sensors, refetch: refetchSensors } = useSensors(plotId);
+  const { telemetryData } = useTelemetry(plotId, selectedDays);
+
+  console.log('Telemetry data in DevicesView:', telemetryData);
+  console.log('Number of telemetry points:', telemetryData.length);
+
+  // une a los actuadores y sensores en un único array de devices para mostrarlos en la tabla
+  const devices: Device[] = [
+    ...sensors.map((sensor: SensorResource) => ({
+      id: sensor.sensorId,
+      serialNumber: sensor.serialNumber,
+      deviceType: 'Sensor',
+      model: sensor.model,
+      version: sensor.version,
+      type: 'sensor' as const,
+      status: sensor.status.toLowerCase() as 'online' | 'offline' | 'maintenance' | 'provisioned',
+    })),
+    ...actuators.map((actuator: ActuatorResource) => ({
+      id: actuator.actuatorId,
+      serialNumber: actuator.serialNumber,
+      deviceType: actuator.actuatorType,
+      model: actuator.model,
+      version: actuator.version,
+      type: 'actuator' as const,
+      status: actuator.status.toLowerCase() as 'online' | 'offline' | 'maintenance' | 'provisioned',
+    })),
+  ];
 
   const tabs = [
-    { id: 'all', label: 'All' },
     { id: 'sensors', label: 'Sensors' },
     { id: 'actuators', label: 'Actuators' },
   ];
 
-
-  const temperatureData: ChartData[] = [
-    { day: 'Mon', value: 24 },
-    { day: 'Tue', value: 26 },
-    { day: 'Wed', value: 23 },
-    { day: 'Thu', value: 25 },
-    { day: 'Fri', value: 28 },
-    { day: 'Sat', value: 27 },
-    { day: 'Sun', value: 25 },
-  ];
-
-
-  const humidityData: ChartData[] = [
-    { day: 'Mon', value: 65 },
-    { day: 'Tue', value: 68 },
-    { day: 'Wed', value: 70 },
-    { day: 'Thu', value: 66 },
-    { day: 'Fri', value: 64 },
-    { day: 'Sat', value: 62 },
-    { day: 'Sun', value: 65 },
-  ];
-
   const filteredDevices = devices.filter(device => {
-    if (activeTab === 'all') return true;
     if (activeTab === 'sensors') return device.type === 'sensor';
     if (activeTab === 'actuators') return device.type === 'actuator';
     return true;
@@ -91,12 +74,14 @@ export function DevicesView() {
   };
 
   const handleRowClick = (deviceId: string) => {
-    navigate(`/devices/${cropId}/details/${deviceId}`);
+    // REVISAR SI TODAVÍA VA A EXISTIR LA VISTA DETALLADA DE SENSORES
+    // navigate(`/devices/details/${deviceId}`);
   };
 
   const handleEdit = (deviceId: string) => {
     const device = devices.find(d => d.id === deviceId);
     if (device) {
+      // TODO: NO HAY EDIT
       setSelectedDevice(device);
       setIsModalOpen(true);
     }
@@ -107,37 +92,60 @@ export function DevicesView() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deviceToDelete) {
-      setDevices(devices.filter(device => device.id !== deviceToDelete));
+      // TODO: NO HAY DELETE
       setDeviceToDelete(null);
       setIsDeleteModalOpen(false);
+      await refetchActuators();
+      await refetchSensors();
     }
   };
 
-  const handleSaveDevice = (data: { name: string; type: 'sensor' | 'actuator'; location: string }) => {
-    if (selectedDevice) {
-      // Edit
-      setDevices(devices.map(device =>
-        device.id === selectedDevice.id
-          ? { ...device, name: data.name, type: data.type, location: data.location }
-          : device
-      ));
-    } else {
-      // Add 
-      const newDevice: Device = {
-        id: String(devices.length + 1),
-        name: data.name,
-        type: data.type,
-        status: 'active',
-        location: data.location,
-      };
-      setDevices([...devices, newDevice]);
+  const handleSaveDevice = async (data: { 
+    serialNumber: string; 
+    type: 'sensor' | 'actuator'; 
+    deviceType: string;
+    model: string;
+    version: string;
+  }) => {
+    if (!plotId) return;
+
+    try {
+      if (data.type === 'sensor') {
+        await SensorService.createSensor({
+          serialNumber: data.serialNumber,
+          plotId: plotId,
+          model: data.model,
+          version: data.version,
+          sensorType: data.deviceType as any,
+        });
+      } else {
+        await ActuatorService.createActuator({
+          serialNumber: data.serialNumber,
+          plotId: plotId,
+          model: data.model,
+          version: data.version,
+          actuatorType: data.deviceType as any,
+        });
+      }
+      
+      setIsModalOpen(false);
+      setSelectedDevice(null);
+
+      await refetchActuators();
+      await refetchSensors();
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message;
+      if (errorMessage && errorMessage.includes('Duplicate entry')) {
+        alert('Ya existe un dispositivo de este tipo para esta parcela. Elimina el existente primero.');
+      } else {
+        alert('Error al crear el dispositivo: ' + (errorMessage || 'Error desconocido'));
+      }
     }
-    setSelectedDevice(null);
   };
 
-  const deviceToDeleteName = devices.find(d => d.id === deviceToDelete)?.name || '';
+  const deviceToDeleteName = devices.find(d => d.id === deviceToDelete)?.serialNumber || '';
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
@@ -164,34 +172,60 @@ export function DevicesView() {
               <Tabs 
                 tabs={tabs}
                 activeTab={activeTab}
-                onTabChange={(tabId) => setActiveTab(tabId as 'all' | 'sensors' | 'actuators')}
+                onTabChange={(tabId) => setActiveTab(tabId as 'sensors' | 'actuators')}
               />
             </div>
 
-            {/* Charts  */}
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">General Data</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="min-w-0">
-                  <AreaChart
-                    title="Temperature Over Time (Last 7 Days)"
-                    subtitle=""
-                    data={temperatureData}
-                    color="#4ade80"
-                    unit="°C"
-                  />
+            {/* Charts */}
+            {activeTab === 'sensors' && (
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Sensor Metrics (Last {selectedDays} {selectedDays === 1 ? 'Day' : 'Days'})
+                  </h2>
+                  <div className="relative">
+                    <select
+                      value={selectedDays}
+                      onChange={(e) => setSelectedDays(Number(e.target.value))}
+                      className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#3E7C59] cursor-pointer"
+                    >
+                      <option value={1}>Last 1 Day</option>
+                      <option value={7}>Last 7 Days</option>
+                      <option value={30}>Last 30 Days</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <AreaChart
-                    title="Humidity Over Time (Last 7 Days)"
-                    subtitle=""
-                    data={humidityData}
-                    color="#60a5fa"
-                    unit="%"
-                  />
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className="min-w-0">
+                    <AreaChart
+                      title="Temperature"
+                      subtitle=""
+                      data={telemetryData.map(d => ({ time: d.time, value: d.temperature || 0 }))}
+                      color="#ef4444"
+                      unit="°C"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <AreaChart
+                      title="Humidity"
+                      subtitle=""
+                      data={telemetryData.map(d => ({ time: d.time, value: d.humidity || 0 }))}
+                      color="#3b82f6"
+                      unit="%"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <AreaChart
+                      title="Soil Moisture"
+                      subtitle=""
+                      data={telemetryData.map(d => ({ time: d.time, value: d.soilMoisture || 0 }))}
+                      color="#10b981"
+                      unit="%"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Devices List */}
             <div>
@@ -217,6 +251,8 @@ export function DevicesView() {
         }}
         onSave={handleSaveDevice}
         device={selectedDevice}
+        existingSensors={sensors}
+        existingActuators={actuators}
       />
 
       <DeleteDeviceModal

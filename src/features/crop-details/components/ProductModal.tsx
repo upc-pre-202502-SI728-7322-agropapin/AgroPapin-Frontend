@@ -15,6 +15,8 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
     quantity: '',
   });
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     if (product) {
       setFormData({
@@ -107,7 +109,7 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
               Quantity
             </label>
             <input
-              type="text"
+              type="number"
               value={formData.quantity}
               onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
@@ -115,6 +117,7 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
               pattern="^\d+(\.\d+)?\s+[a-zA-Z]+$"
               title="Format: number + space + unit (e.g., 20 Kg, 2.5 L)"
               required
+              min="0"
             />
             <p className="text-xs text-gray-500 mt-1">Format: number + space + unit (e.g., 20 Kg, 2.5 L)</p>
           </div>

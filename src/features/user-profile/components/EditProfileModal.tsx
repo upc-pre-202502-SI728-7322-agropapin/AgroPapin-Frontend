@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { UserProfile, UserProfileFormData } from '../types/user-profile.types';
+import { validateField } from '../../../shared/utils/validations';
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -17,6 +18,8 @@ export function EditProfileModal({ isOpen, onClose, onSave, profile }: EditProfi
     phone: '',
   });
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -31,6 +34,17 @@ export function EditProfileModal({ isOpen, onClose, onSave, profile }: EditProfi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    const firstNameError = validateField({ value: formData.firstName, required: true });
+    if (firstNameError) return setError(firstNameError);
+    const lastNameError = validateField({ value: formData.lastName, required: true });
+    if (lastNameError) return setError(lastNameError);
+    const emailError = validateField({ value: formData.email, required: true });
+    if (emailError) return setError(emailError);
+    const countryError = validateField({ value: formData.country, required: true });
+    if (countryError) return setError(countryError);
+    const phoneError = validateField({ value: formData.phone, required: true });
+    if (phoneError) return setError(phoneError);
     onSave(formData);
   };
 
@@ -118,6 +132,9 @@ export function EditProfileModal({ isOpen, onClose, onSave, profile }: EditProfi
             />
           </div>
 
+          {error && (
+            <p className="mt-2 text-sm text-red-600">{error}</p>
+          )}
           <div className="flex gap-4">
             <button
               type="submit"
