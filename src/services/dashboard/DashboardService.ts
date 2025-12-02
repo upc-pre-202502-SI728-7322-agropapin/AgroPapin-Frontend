@@ -1,7 +1,7 @@
 import axiosClient from '../api/axiosClient';
 
-// obtener datos del farmer por userId
-export const getFarmerData = async (userId: string) => {
-  const { data } = await axiosClient.get(`/farmer/user/${userId}`);
+// obtener datos del farmer 
+export const getFarmerData = async () => {
+  const { data } = await axiosClient.get('/farmer/me');
   return data;
 };
