@@ -1,5 +1,5 @@
 interface StatusBadgeProps {
-  status: 'online' | 'offline' | 'maintenance' | 'provisioned';
+  status: 'online' | 'offline' | 'maintenance' | 'provisioned' | 'active';
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
@@ -9,6 +9,12 @@ export function StatusBadge({ status }: StatusBadgeProps) {
       textColor: 'text-green-800',
       dotColor: 'bg-green-500',
       label: 'Online'
+    },
+    active: {
+      bgColor: 'bg-green-100',
+      textColor: 'text-green-800',
+      dotColor: 'bg-green-500',
+      label: 'Active'
     },
     offline: {
       bgColor: 'bg-gray-100',

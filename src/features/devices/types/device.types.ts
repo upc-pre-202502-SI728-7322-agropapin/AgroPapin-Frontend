@@ -13,5 +13,6 @@ export interface Device {
 
 export interface ChartData {
   day: string;
+  time: string;
   value: number;
 }

@@ -8,19 +8,18 @@ export function useLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { user } = useAuth();
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      await login(email, password);
-
-      // obtener el usuario del local storage y redirigir según su rol
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      const dashboard = getDashboardRoute(user.roles || []);
-      navigate(dashboard);
+      //se redirige al user segun su rol 
+      if (user) {
+        const dashboard = getDashboardRoute(user.roles || []);
+        navigate(dashboard);
+      }
     } catch (err) {
 
       if (err instanceof AxiosError && err.response?.status === 400) {

@@ -29,13 +29,13 @@ export function ActuatorDetailsView() {
 
 
   const waterLevelData: ChartData[] = [
-    { day: 'Mon', value: 65 },
-    { day: 'Tue', value: 70 },
-    { day: 'Wed', value: 68 },
-    { day: 'Thu', value: 75 },
-    { day: 'Fri', value: 80 },
-    { day: 'Sat', value: 78 },
-    { day: 'Sun', value: 72 },
+    { day: 'Mon', time: 'Mon', value: 65 },
+    { day: 'Tue', time: 'Tue', value: 70 },
+    { day: 'Wed', time: 'Wed', value: 68 },
+    { day: 'Thu', time: 'Thu', value: 75 },
+    { day: 'Fri', time: 'Fri', value: 80 },
+    { day: 'Sat', time: 'Sat', value: 78 },
+    { day: 'Sun', time: 'Sun', value: 72 },
   ];
 
   return (
