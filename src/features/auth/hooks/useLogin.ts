@@ -10,7 +10,7 @@ export function useLogin() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = async () => {
     setIsLoading(true);
     setError(null);
 
