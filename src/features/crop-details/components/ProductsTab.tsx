@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { ProductsTable } from './ProductsTable';
 import { ProductModal } from './ProductModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
@@ -9,6 +8,8 @@ import type { Product, ProductFormData, ProductResource, CreateProductResource, 
 
 interface ProductsTabProps {
   cropId: string;
+  plotId: string;
+  plantingId: string;
   isAdmin?: boolean;
 }
 
@@ -86,7 +87,7 @@ const mockProductsData: Record<string, Product[]> = {
   ],
 };
 
-export function ProductsTab({ cropId, isAdmin = false }: ProductsTabProps) {
+export function ProductsTab({ cropId, plotId, plantingId, isAdmin = false }: ProductsTabProps) {
   const [products, setProducts] = useState<Product[]>(
     mockProductsData[cropId] || mockProductsData['1']
   );
@@ -95,20 +96,23 @@ export function ProductsTab({ cropId, isAdmin = false }: ProductsTabProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
+  const mapProductResourceToProduct = (resource: ProductResource): Product => ({
+    id: resource.productId,
+    date: new Date(resource.applicationDate).toLocaleDateString(),
+    type: resource.type || 'N/A',
+    name: resource.name || 'N/A',
+    quantity: resource.amount ? `${resource.amount} ${resource.unit || ''}`.trim() : 'N/A',
+  });
+
   useEffect(() => {
     const fetchProducts = async () => {
       if (!plotId || !plantingId) return;
       
-      setLoading(true);
-      setError(null);
       try {
         const data = await ProductService.getProductsByPlantingId(plotId, plantingId);
         setProducts(data.map(mapProductResourceToProduct));
       } catch (err) {
-        setError('Error loading products');
         console.error('Error fetching products:', err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchProducts();
@@ -131,12 +135,11 @@ export function ProductsTab({ cropId, isAdmin = false }: ProductsTabProps) {
 
     try {
       await ProductService.deleteProduct(plotId, productToDelete);
-      setProducts(products.filter((product) => product.id !== productToDelete));
+      setProducts(products.filter(p => p.id !== productToDelete));
       setProductToDelete(null);
       setIsDeleteModalOpen(false);
     } catch (err) {
       console.error('Error deleting product:', err);
-      setError('Error deleting product');
     }
   };
 
@@ -180,7 +183,6 @@ export function ProductsTab({ cropId, isAdmin = false }: ProductsTabProps) {
       setSelectedProduct(null);
     } catch (err) {
       console.error('Error saving product:', err);
-      setError('Error saving product');
     }
   };
 

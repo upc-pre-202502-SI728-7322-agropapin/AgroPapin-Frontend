@@ -4,7 +4,7 @@ import type { Device } from '../types/device.types';
 
 interface DevicesListProps {
   devices: Device[];
-  onRowClick: (deviceId: string) => void;
+  onRowClick?: (deviceId: string) => void;
   onEdit?: (deviceId: string) => void;
   onDelete?: (deviceId: string) => void;
   isAdmin?: boolean;
@@ -42,7 +42,7 @@ export function DevicesList({ devices, onRowClick, onEdit, onDelete, isAdmin = f
       data={devices}
       getRowKey={(device) => device.id}
       renderCell={renderCell}
-      onRowClick={(device) => onRowClick(device.id)}
+      onRowClick={onRowClick ? (device) => onRowClick(device.id) : undefined}
       onEdit={onEdit ? (device) => onEdit(device.id) : undefined}
       onDelete={onDelete ? (device) => onDelete(device.id) : undefined}
       showActions={!isAdmin}

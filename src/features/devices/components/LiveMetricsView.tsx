@@ -21,9 +21,16 @@ export function LiveMetricsView() {
       
       //desde la lectura más reciente a la más antigua
       setMetrics(data.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error loading metrics');
-      console.error('Error fetching metrics:', err);
+    } catch (err: any) {
+      // Si el endpoint no está disponible (400 o 404), mostrar mensaje informativo en lugar de error
+      if (err.response?.status === 400 || err.response?.status === 404) {
+        console.log('Historical metrics endpoint not available yet');
+        setMetrics([]);
+        setError('No historical metrics available for this plot. Please check back later.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Error loading metrics');
+        console.error('Error fetching metrics:', err);
+      }
     } finally {
       setIsLoading(false);
     }

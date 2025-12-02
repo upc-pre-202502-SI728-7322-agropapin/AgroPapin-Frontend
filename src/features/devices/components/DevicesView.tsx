@@ -20,6 +20,7 @@ import type { SensorResource } from '../types/sensor.types';
 
 export function DevicesView() {
   const { plotId } = useParams<{ plotId: string }>();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
   
@@ -267,7 +268,6 @@ export function DevicesView() {
               <h2 className="text-xl font-bold text-gray-900 mb-4">Device List</h2>
               <DevicesList 
                 devices={filteredDevices}
-                onRowClick={handleRowClick}
                 onDelete={isAdmin ? undefined : handleDelete}
                 isAdmin={isAdmin}
               />
@@ -298,7 +298,7 @@ export function DevicesView() {
         deviceName={deviceToDeleteName}
       />
 
-      <FloatingChatButton />
+      {!isAdmin && <FloatingChatButton />}
     </div>
   );
 }

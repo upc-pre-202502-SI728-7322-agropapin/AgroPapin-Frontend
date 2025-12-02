@@ -166,6 +166,7 @@ export function PlotListView() {
             plots={plots}
             onInfoClick={handleInfoClick}
             onDevicesClick={handleDevicesClick}
+            onMetricsClick={handleMetricsClick}
             onEdit={isAdmin ? undefined : handleEdit}
             onDelete={isAdmin ? undefined : handleDeleteRequest}
             isAdmin={isAdmin}
@@ -194,7 +195,7 @@ export function PlotListView() {
         />
       </div>
 
-      <FloatingChatButton />
+      {!isAdmin && <FloatingChatButton />}
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import { ControlsTable } from './ControlsTable';
 import { ControlModal } from './ControlModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
@@ -9,6 +8,8 @@ import type { Control, ControlFormData, ControlResource, CreateControlResource, 
 
 interface ControlsTabProps {
   cropId: string;
+  plotId: string;
+  plantingId: string;
   isAdmin?: boolean;
 }
 
@@ -86,7 +87,7 @@ const mockControlsData: Record<string, Control[]> = {
   ],
 };
 
-export function ControlsTab({ cropId, isAdmin = false }: ControlsTabProps) {
+export function ControlsTab({ cropId, plotId, plantingId, isAdmin = false }: ControlsTabProps) {
   const [controls, setControls] = useState<Control[]>(
     mockControlsData[cropId] || mockControlsData['1']
   );
@@ -94,6 +95,16 @@ export function ControlsTab({ cropId, isAdmin = false }: ControlsTabProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedControl, setSelectedControl] = useState<Control | null>(null);
   const [controlToDelete, setControlToDelete] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const mapControlResourceToControl = (resource: ControlResource): Control => ({
+    id: resource.controlId,
+    date: new Date(resource.date).toLocaleDateString(),
+    leaves: resource.stateLeaves || 'N/A',
+    stemCondition: resource.stateStem || 'N/A',
+    soilMoisture: resource.soilMoisture || 'N/A',
+  });
 
   useEffect(() => {
     const fetchControls = async () => {
