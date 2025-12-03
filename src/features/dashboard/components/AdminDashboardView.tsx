@@ -52,7 +52,13 @@ export function AdminDashboardView() {
         
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('dashboard.title')}</h1>
-          <p className="text-gray-600">{t('dashboard.welcome')}</p>
+          <p className="text-gray-600">
+            {loading 
+              ? t('common.loading') 
+              : cooperative 
+                ? `${t('dashboard.welcome')}, ${cooperative.cooperativeName}`
+                : t('dashboard.welcome')}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -86,20 +92,6 @@ export function AdminDashboardView() {
                 {t('inventory.manageInventory')}
               </p>
             </button>
-
-            {/* Field's Statistics Card */}
-            <button
-              onClick={handleStatisticsClick}
-              className="w-full bg-[#3C889D] hover:bg-[#5B9AA8] text-white rounded-2xl p-8 text-left transition-all shadow-md hover:shadow-lg"
-            >
-              <div className="flex items-center gap-4 mb-3">
-                <HiOutlineChartBar className="w-12 h-12" />
-                <h3 className="text-2xl font-bold">{t('dashboard.statistics')}</h3>
-              </div>
-              <p className="text-white/90 text-base">
-                {t('dashboard.overview')}
-              </p>
-            </button>
           </div>
 
           {/* Right Column - Cooperative Members */}
@@ -125,7 +117,6 @@ export function AdminDashboardView() {
                 {t('dashboard.manageMembers')}
               </button>
             </div>
-
           </div>
         </div>
       </div>
