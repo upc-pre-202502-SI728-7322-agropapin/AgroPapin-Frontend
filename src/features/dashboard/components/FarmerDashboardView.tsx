@@ -93,10 +93,10 @@ export function FarmerDashboardView() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-7 gap-8">
           
           {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-4 space-y-6">
             
             {/* Field Information Card */}
             <button
@@ -142,7 +142,7 @@ export function FarmerDashboardView() {
           </div>
 
           {/* Right Column */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-3">
             {/* Crop Distribution Chart */}
             {!loading && cropDistribution.length > 0 ? (
               <CropsChart data={chartData} />
