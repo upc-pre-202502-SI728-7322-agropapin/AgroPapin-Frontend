@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ConfirmModal } from "../../../shared/components/ui/ConfirmModal";
 
 interface DeleteConfirmModalProps {
@@ -8,15 +9,17 @@ interface DeleteConfirmModalProps {
 }
 
 export function DeleteConfirmModal({ isOpen, onConfirm, onCancel, cropName }: DeleteConfirmModalProps) {
+  const { t } = useTranslation();
+  
   return (
     <ConfirmModal
       isOpen={isOpen}
       onConfirm={onConfirm}
       onCancel={onCancel}
-      title="Confirm Deletion"
-      message={`Are you sure you want to delete the crop ${cropName}?`}
-      confirmText="Delete"
-      cancelText="Cancel"
+      title={t('crops.confirmDeletion')}
+      message={`${t('crops.confirmDeleteCrop')} ${cropName}?`}
+      confirmText={t('common.delete')}
+      cancelText={t('common.cancel')}
     />
   );
 }

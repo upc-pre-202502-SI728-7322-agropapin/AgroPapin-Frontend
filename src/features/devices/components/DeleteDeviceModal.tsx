@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ConfirmModal } from "../../../shared/components/ui/ConfirmModal";
 
 interface DeleteDeviceModalProps {
@@ -8,15 +9,17 @@ interface DeleteDeviceModalProps {
 }
 
 export function DeleteDeviceModal({ isOpen, onConfirm, onCancel, deviceName }: DeleteDeviceModalProps) {
+  const { t } = useTranslation();
+  
   return (
     <ConfirmModal
       isOpen={isOpen}
       onConfirm={onConfirm}
       onCancel={onCancel}
-      title="Confirm Deletion"
-      message={`Are you sure you want to delete the device ${deviceName}?`}
-      confirmText="Delete"
-      cancelText="Cancel"
+      title={t('devices.confirmDeletion')}
+      message={`${t('devices.confirmDeleteDevice')} ${deviceName}?`}
+      confirmText={t('common.delete')}
+      cancelText={t('common.cancel')}
     />
   );
 }

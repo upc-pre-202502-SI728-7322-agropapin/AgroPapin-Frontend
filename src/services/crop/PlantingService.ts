@@ -34,6 +34,11 @@ class PlantingService {
     const response = await axiosClient.patch<PlantingResource>(`${this.basePath(fieldId, plotId)}/${plantingId}/status`, data);
     return response.data;
   }
+
+  async getCropDistribution(): Promise<PlantingResource[]> {
+    const response = await axiosClient.get<PlantingResource[]>('/field/cropDistribution/me');
+    return response.data;
+  }
 }
 
 export default new PlantingService();

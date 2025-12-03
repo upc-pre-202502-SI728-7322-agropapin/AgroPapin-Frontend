@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { PlotModalProps, CreatePlotResource, UpdatePlotResource } from '../types/plot.types';
 import { validateField } from '../../../shared/utils/validations';
 
 export function PlotModal({ isOpen, onClose, onSave, plot }: PlotModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CreatePlotResource | UpdatePlotResource>({
     plotName: '',
     plotArea: 0
@@ -52,19 +54,19 @@ export function PlotModal({ isOpen, onClose, onSave, plot }: PlotModalProps) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          {plot ? 'Edit Plot' : 'Create New Plot'}
+          {plot ? t('plots.editPlot') : t('plots.createPlot')}
         </h2>
         
         <p className="text-gray-600 text-center mb-6">
           {plot 
-            ? 'Update your plot information.' 
-            : 'Create a new plot within your field to organize your crops.'}
+            ? t('common.update') 
+            : t('dashboard.createFirstPlot')}
         </p>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Plot Name *
+              {t('plots.plotName')} *
             </label>
             <input
               type="text"
@@ -79,7 +81,7 @@ export function PlotModal({ isOpen, onClose, onSave, plot }: PlotModalProps) {
 
           <div className="mb-6">
             <label className="block text-gray-700 font-medium mb-2">
-              Plot Area (m²) *
+              {t('plots.plotArea')} *
             </label>
             <input
               type="number"
@@ -100,10 +102,10 @@ export function PlotModal({ isOpen, onClose, onSave, plot }: PlotModalProps) {
 
           <div className="flex gap-4">
             <button type="submit" className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
-              {plot ? 'Save' : 'Create'}
+              {plot ? t('common.save') : t('common.create')}
             </button>
             <button type="button" onClick={onClose} className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface FieldSelectorProps {
   fields: Array<{ id: string; name: string }>;
   selectedFieldId: string | null;
@@ -5,9 +7,11 @@ interface FieldSelectorProps {
 }
 
 export function FieldSelector({ fields, selectedFieldId, onSelectField }: FieldSelectorProps) {
+  const { t } = useTranslation();
+  
   return (
     <div className="space-y-2">
-      <h4 className="text-sm font-semibold text-gray-700 mb-3">Select Field</h4>
+      <h4 className="text-sm font-semibold text-gray-700 mb-3">{t('field.selectField')}</h4>
       <div className="space-y-2">
         {fields.map((field) => (
           <button

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft } from 'react-icons/fa';
 import { ChatWindow } from './ChatWindow';
 import { ChatInput } from './ChatInput';
@@ -41,6 +42,7 @@ export function ChatView({ isFloating = false, plotId = null, fieldId = null }: 
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,7 +103,7 @@ export function ChatView({ isFloating = false, plotId = null, fieldId = null }: 
               className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors font-medium"
             >
               <FaArrowLeft size={16} />
-              <span>Back</span>
+              <span>{t('chat.back')}</span>
             </button>
           </div>
         )}
@@ -122,10 +124,10 @@ export function ChatView({ isFloating = false, plotId = null, fieldId = null }: 
                           <img src={agropapinLogo} className="h-12 w-12 object-contain" alt="AgroPapin logo"/>
                         </div>
                         <h3 className="text-lg font-semibold text-gray-700 mb-1">
-                          Ask me anything!
+                          {t('chat.askMeAnything')}
                         </h3>
                         <p className="text-sm text-gray-500">
-                          I'm here to help with farming
+                          {t('chat.hereToHelp')}
                         </p>
                       </div>
                     </div>
@@ -138,10 +140,10 @@ export function ChatView({ isFloating = false, plotId = null, fieldId = null }: 
                         <img src={agropapinLogo} className="h-16 w-16 object-contain" alt="AgroPapin logo"/>
                       </div>
                       <h3 className="text-2xl font-semibold text-gray-700 mb-2">
-                        Say hi to AgroPapin!
+                        {t('chat.sayHi')}
                       </h3>
                       <p className="text-gray-500 mb-6">
-                        Ask me anything about farming and I'll help you
+                        {t('chat.askAboutFarming')}
                       </p>
                       <ChatInput onSendMessage={handleSendMessage} disabled={isLoading} />
                     </div>

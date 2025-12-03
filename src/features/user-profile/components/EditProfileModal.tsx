@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { UserProfile, UserProfileFormData } from '../types/user-profile.types';
 import { validateField } from '../../../shared/utils/validations';
 
@@ -10,6 +11,7 @@ interface EditProfileModalProps {
 }
 
 export function EditProfileModal({ isOpen, onClose, onSave, profile }: EditProfileModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<UserProfileFormData>({
     firstName: '',
     lastName: '',
@@ -54,17 +56,17 @@ export function EditProfileModal({ isOpen, onClose, onSave, profile }: EditProfi
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          Edit Profile
+          {t('profile.editProfile')}
         </h2>
         
         <p className="text-gray-600 text-center mb-6">
-          Update your profile information.
+          {t('common.update')}
         </p>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              First Name
+              {t('auth.firstName')}
             </label>
             <input
               type="text"
@@ -78,7 +80,7 @@ export function EditProfileModal({ isOpen, onClose, onSave, profile }: EditProfi
 
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Last Name
+              {t('auth.lastName')}
             </label>
             <input
               type="text"
@@ -92,7 +94,7 @@ export function EditProfileModal({ isOpen, onClose, onSave, profile }: EditProfi
 
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Email
+              {t('profile.email')}
             </label>
             <input
               type="email"
@@ -106,7 +108,7 @@ export function EditProfileModal({ isOpen, onClose, onSave, profile }: EditProfi
 
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Country
+              {t('auth.country')}
             </label>
             <input
               type="text"
@@ -120,7 +122,7 @@ export function EditProfileModal({ isOpen, onClose, onSave, profile }: EditProfi
 
           <div className="mb-6">
             <label className="block text-gray-700 font-medium mb-2">
-              Phone
+              {t('profile.phone')}
             </label>
             <input
               type="tel"
@@ -139,13 +141,13 @@ export function EditProfileModal({ isOpen, onClose, onSave, profile }: EditProfi
             <button
               type="submit"
               className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
-              Save
+              {t('common.save')}
             </button>
             <button
               type="button"
               onClick={onClose}
               className="flex-1 bg-gray-300 py-2 px-4  rounded-lg font-semibold hover:bg-gray-400 transition-colors">
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>

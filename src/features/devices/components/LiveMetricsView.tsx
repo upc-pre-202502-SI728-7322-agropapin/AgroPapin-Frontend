@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import TelemetryService from '../../../services/telemetry/TelemetryService';
 import type { ChartDataResource } from '../types/telemetry.types';
 import { DataTable } from '../../../shared/components/ui/DataTable';
 
 export function LiveMetricsView() {
+  const { t } = useTranslation();
   const { plotId } = useParams<{ plotId: string }>();
   const [metrics, setMetrics] = useState<ChartDataResource[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +28,7 @@ export function LiveMetricsView() {
       if (err.response?.status === 400 || err.response?.status === 404) {
         console.log('Historical metrics endpoint not available yet');
         setMetrics([]);
-        setError('No historical metrics available for this plot. Please check back later.');
+        setError(t('devices.noMetrics'));
       } else {
         setError(err instanceof Error ? err.message : 'Error loading metrics');
         console.error('Error fetching metrics:', err);
@@ -80,7 +82,7 @@ export function LiveMetricsView() {
   return (
     <div className="p-4 md:p-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Live Metrics</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('devices.liveMetrics')}</h1>
         <button
           onClick={fetchMetrics}
           disabled={isLoading}
@@ -100,13 +102,13 @@ export function LiveMetricsView() {
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-          <span>Refresh</span>
+          <span>{t('common.refresh')}</span>
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-          {error}
+        <div className="text-center py-8">
+          <p className="text-red-600">{error}</p>
         </div>
       )}
 

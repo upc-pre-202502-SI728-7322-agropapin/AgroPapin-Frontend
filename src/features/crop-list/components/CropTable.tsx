@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { PlantingResource } from '../types/crop.types';
 import { LuPencil } from 'react-icons/lu';
 import { IoTrashOutline } from 'react-icons/io5';
@@ -6,12 +7,14 @@ interface CropTableProps {
   plantings: PlantingResource[];
   onRowClick: (plantingId: string) => void;
   onEdit?: (planting: PlantingResource) => void;
-  onDelete: (plantingId: string) => void;
+  onDelete?: (plantingId: string) => void;
   onHarvest?: (plantingId: string) => void;
   isAdmin?: boolean;
 }
 
 export function CropTable({ plantings, onRowClick, onEdit, onDelete, onHarvest, isAdmin = false }: CropTableProps) {
+  const { t } = useTranslation();
+  
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -24,11 +27,11 @@ export function CropTable({ plantings, onRowClick, onEdit, onDelete, onHarvest, 
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'GROWING':
-        return 'Growing';
+        return t('crops.growing');
       case 'HARVESTED':
-        return 'Harvested';
+        return t('crops.harvested');
       case 'FAILED':
-        return 'Failed';
+        return t('crops.failed');
       default:
         return status;
     }
@@ -37,7 +40,7 @@ export function CropTable({ plantings, onRowClick, onEdit, onDelete, onHarvest, 
   if (plantings.length === 0) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-8 text-center text-gray-500">
-        No crops found. Start by adding your first crop.
+        {t('crops.noCropsFound')}
       </div>
     );
   }
@@ -48,10 +51,10 @@ export function CropTable({ plantings, onRowClick, onEdit, onDelete, onHarvest, 
         <table className="w-full">
           <thead className="bg-[#3E7C59] text-white">
             <tr>
-              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">Crop Type</th>
-              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">Status</th>
-              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">Planting Date</th>
-              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">Harvest Date</th>
+              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">{t('crops.cropType')}</th>
+              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">{t('crops.status')}</th>
+              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">{t('crops.plantingDate')}</th>
+              <th className="px-6 py-4 text-left font-semibold whitespace-nowrap">{t('crops.harvestDate')}</th>
               {!isAdmin && <th className="px-6 py-4 w-24"></th>}
             </tr>
           </thead>
@@ -144,7 +147,7 @@ export function CropTable({ plantings, onRowClick, onEdit, onDelete, onHarvest, 
 
       {/* paginator */}
       <div className="px-6 py-4 border-t border-gray-200 flex justify-end items-center gap-4">
-        <span className="text-sm text-gray-600">Records per page</span>
+        <span className="text-sm text-gray-600">{t('common.recordsPerPage')}</span>
         <select className="border border-gray-300 rounded px-2 py-1 text-sm">
           <option>5</option>
           <option>10</option>

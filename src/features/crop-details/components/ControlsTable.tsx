@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { DataTable } from '../../../shared/components/ui/DataTable';
 import type { Control } from '../types/control.types';
 
@@ -9,11 +10,13 @@ interface ControlsTableProps {
 }
 
 export function ControlsTable({ controls, onEdit, onDelete, showActions = true }: ControlsTableProps) {
+  const { t } = useTranslation();
+  
   const columns = [
-    { key: 'date', label: 'Date' },
-    { key: 'leaves', label: 'Leaves' },
-    { key: 'stemCondition', label: 'Stem Condition' },
-    { key: 'soilMoisture', label: 'Soil Moisture' },
+    { key: 'date', label: t('common.date') },
+    { key: 'leaves', label: t('controls.leaves') },
+    { key: 'stemCondition', label: t('controls.stemCondition') },
+    { key: 'soilMoisture', label: t('controls.soilMoisture') },
   ];
 
   const renderCell = (control: Control, columnKey: string) => {
@@ -40,7 +43,7 @@ export function ControlsTable({ controls, onEdit, onDelete, showActions = true }
       onDelete={onDelete ? (control) => onDelete(control.id) : undefined}
       getRowKey={(control) => control.id}
       showActions={showActions}
-      emptyMessage="No pest and disease controls recorded yet."
+      emptyMessage={t('controls.noControlsRecorded')}
     />
   );
 }

@@ -1,13 +1,15 @@
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft } from 'react-icons/fa';
 
 interface DevicesSidebarProps {
-  activeSection: 'devices' | 'alerts' | 'metrics' | 'irrigation';
-  onSectionChange: (section: 'devices' | 'alerts' | 'metrics' | 'irrigation') => void;
+  activeSection: 'devices' | 'metrics' | 'irrigation';
+  onSectionChange: (section: 'devices' | 'metrics' | 'irrigation') => void;
 }
 
 export function DevicesSidebar({ activeSection, onSectionChange }: DevicesSidebarProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
 
   return (
@@ -18,10 +20,10 @@ export function DevicesSidebar({ activeSection, onSectionChange }: DevicesSideba
         className="mb-6 text-[#3E7C59] hover:text-[#2d5f43] transition-colors flex items-center gap-2 font-medium"
       >
         <FaArrowLeft size={16} />
-          <span>Back</span>
+          <span>{t('common.back')}</span>
       </button>
 
-      <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">Crop {id}</h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">{t('crops.cropName')} {id}</h2>
 
       {/* Navigation buttons */}
       <div className="flex lg:flex-col gap-2">
@@ -33,7 +35,7 @@ export function DevicesSidebar({ activeSection, onSectionChange }: DevicesSideba
               : 'bg-white text-gray-700 hover:bg-gray-100'
           }`}
         >
-          Devices
+          {t('dashboard.devices')}
         </button>
         <button
           onClick={() => onSectionChange('metrics')}
@@ -42,7 +44,7 @@ export function DevicesSidebar({ activeSection, onSectionChange }: DevicesSideba
               ? 'bg-[#3E7C59] text-white'
               : 'bg-white text-gray-700 hover:bg-gray-100'
           }`}>
-          Live Metrics
+          {t('devices.liveMetrics')}
         </button>
         <button
           onClick={() => onSectionChange('irrigation')}
@@ -51,17 +53,7 @@ export function DevicesSidebar({ activeSection, onSectionChange }: DevicesSideba
               ? 'bg-[#3E7C59] text-white'
               : 'bg-white text-gray-700 hover:bg-gray-100'
           }`}>
-          Irrigation
-        </button>
-        <button
-          onClick={() => onSectionChange('alerts')}
-          className={`flex-1 lg:w-full px-4 py-3 rounded-lg font-medium transition-colors text-left ${
-            activeSection === 'alerts'
-              ? 'bg-[#3E7C59] text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-100'
-          }`}
-        >
-          Alerts
+          {t('irrigation.title')}
         </button>
       </div>
     </div>

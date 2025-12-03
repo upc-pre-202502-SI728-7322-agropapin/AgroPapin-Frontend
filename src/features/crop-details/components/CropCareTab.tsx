@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { CropCareCalendar } from './CropCareCalendar';
 import { CropCareSuggestionsTable } from './CropCareSuggestionsTable';
 import type { CropCareData } from '../types/crop-care.types';
@@ -60,17 +61,18 @@ const mockCropCareData: Record<string, CropCareData> = {
 
 export function CropCareTab({ cropId }: CropCareTabProps) {
   const careData = mockCropCareData[cropId] || mockCropCareData['1'];
+  const { t } = useTranslation();
 
   return (
     <div className="py-6">
       {/* phase Information */}
       <div className="mb-8 flex items-center gap-8 text-lg">
         <div>
-          <span className="font-semibold text-gray-700">Phase: </span>
+          <span className="font-semibold text-gray-700">{t('crops.phase')}: </span>
           <span className="text-gray-900">{careData.phase}</span>
         </div>
         <div>
-          <span className="font-semibold text-gray-700">Phase Date: </span>
+          <span className="font-semibold text-gray-700">{t('crops.phaseDate')}: </span>
           <span className="text-gray-900">{careData.phaseDate}</span>
         </div>
       </div>

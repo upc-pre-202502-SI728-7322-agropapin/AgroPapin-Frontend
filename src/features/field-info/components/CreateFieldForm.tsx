@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FieldService } from '../../../services/field';
 import { FieldModal } from './FieldModal';
 import type { CreateFieldRequest } from '../types/field.types';
@@ -7,6 +8,7 @@ import { ROUTES } from '../../../shared/constants/routes';
 
 export function CreateFieldForm() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(true);
 
   const handleSaveField = async (data: CreateFieldRequest) => {
@@ -26,9 +28,9 @@ export function CreateFieldForm() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8 flex items-center justify-center">
       <div className="max-w-2xl w-full text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to AgroPapin</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('field.welcomeToAgroPapin')}</h1>
         <p className="text-gray-600 text-lg mb-8">
-          Let's start by creating your field to manage your crops efficiently.
+          {t('field.letsStartByCreating')}
         </p>
         
         <FieldModal

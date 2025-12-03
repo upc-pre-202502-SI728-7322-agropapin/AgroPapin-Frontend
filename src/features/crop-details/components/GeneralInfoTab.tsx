@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { CropDetail } from '../types/crop-details.types';
 import {PiPottedPlant} from "react-icons/pi";
 import {MdOutlineCalendarToday} from "react-icons/md";
@@ -7,6 +8,8 @@ interface GeneralInfoTabProps {
 }
 
 export function GeneralInfoTab({ crop }: GeneralInfoTabProps) {
+  const { t } = useTranslation();
+  
   return (
     <div className="py-8">
       {/* Image and Info Cards Grid */}
@@ -28,7 +31,7 @@ export function GeneralInfoTab({ crop }: GeneralInfoTabProps) {
               <div className="text-[#3E7C59] text-2xl">
                 <PiPottedPlant size={35}/>
               </div>
-              <p className="text-base font-medium text-gray-700">Crop name</p>
+              <p className="text-base font-medium text-gray-700">{t('crops.cropName')}</p>
             </div>
             <p className="text-lg font-semibold text-gray-900">{crop.name}</p>
           </div>
@@ -39,7 +42,7 @@ export function GeneralInfoTab({ crop }: GeneralInfoTabProps) {
               <div className="text-[#3E7C59] text-2xl">
                 <MdOutlineCalendarToday size={25}/>
               </div>
-              <p className="text-base font-medium text-gray-700">Creation date</p>
+              <p className="text-base font-medium text-gray-700">{t('crops.creationDate')}</p>
             </div>
             <p className="text-lg font-semibold text-gray-900">{crop.creationDate}</p>
           </div>

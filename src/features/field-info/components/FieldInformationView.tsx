@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft, FaPlus } from "react-icons/fa";
 import { LuPencil } from "react-icons/lu";
 import { FieldService } from "../../../services/field";
@@ -9,6 +10,7 @@ import { ROUTES } from "../../../shared/constants/routes";
 import fieldImage from "../../../assets/campo-predeterminado.png";
 
 export function FieldInformationView() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [field, setField] = useState<FieldResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -71,11 +73,11 @@ export function FieldInformationView() {
             className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
           >
             <FaArrowLeft size={16} />
-            <span>Back</span>
+            <span>{t('common.back')}</span>
           </button>
 
           <h1 className="text-4xl font-bold text-gray-900 mb-8">
-            Field information
+            {t('field.title')}
           </h1>
 
           <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
@@ -85,10 +87,10 @@ export function FieldInformationView() {
                   <FaPlus className="text-gray-400 text-3xl" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                  No Field Found
+                  {t('field.noField')}
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  You haven't created a field yet. Create your first field.
+                  {t('field.createFirstField')}
                 </p>
               </div>
               
@@ -97,7 +99,7 @@ export function FieldInformationView() {
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#3E7C59] text-white rounded-lg font-semibold hover:bg-[#2d5f43] transition"
               >
                 <FaPlus />
-                Add Field
+                {t('field.createField')}
               </button>
             </div>
           </div>
@@ -121,11 +123,11 @@ export function FieldInformationView() {
           className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
         >
           <FaArrowLeft size={16} />
-          <span>Back</span>
+          <span>{t('common.back')}</span>
         </button>
 
         <h1 className="text-4xl font-bold text-gray-900 mb-8">
-          Field information
+          {t('field.title')}
         </h1>
 
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -134,35 +136,35 @@ export function FieldInformationView() {
               <div className="space-y-6">
                 <div className="pb-4 border-b border-gray-200">
                   <label className="block text-sm font-medium text-gray-500 mb-2">
-                    Field Name
+                    {t('field.fieldName')}
                   </label>
                   <p className="text-xl font-bold text-gray-900">{field.fieldName}</p>
                 </div>
 
                 <div className="pb-4 border-b border-gray-200">
                   <label className="block text-sm font-medium text-gray-500 mb-2">
-                    Location
+                    {t('plots.location')}
                   </label>
                   <p className="text-xl font-bold text-gray-900">{field.location}</p>
                 </div>
 
                 <div className="pb-4 border-b border-gray-200">
                   <label className="block text-sm font-medium text-gray-500 mb-2">
-                    Total Area
+                    {t('field.totalArea')}
                   </label>
                   <p className="text-xl font-bold text-gray-900">{field.totalArea} m²</p>
                 </div>
 
                 <div className="pb-4">
                   <label className="block text-sm font-medium text-gray-500 mb-2">
-                    Status
+                    {t('common.status')}
                   </label>
                   <span className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${
                     field.status === 'ACTIVE' 
                       ? 'bg-green-100 text-green-800' 
                       : 'bg-gray-100 text-gray-800'
                   }`}>
-                    {field.status === 'ACTIVE' ? 'Active' : field.status}
+                    {field.status === 'ACTIVE' ? t('common.active') : field.status}
                   </span>
                 </div>
               </div>
@@ -173,13 +175,13 @@ export function FieldInformationView() {
                   className="flex items-center justify-center gap-2 w-full px-4 py-2 mb-3 border-2 border-[#3E7C59] text-[#3E7C59] rounded-lg font-medium text-sm hover:bg-gray-100 hover:border-[#2d5f43] hover:text-[#2d5f43] transition"
                 >
                   <LuPencil />
-                  Edit Field Information
+                  {t('field.updateField')}
                 </button>
                 <button
                   onClick={() => navigate(ROUTES.PLOT_LIST)}
                   className="w-full px-4 py-2 bg-[#3E7C59] text-white rounded-lg font-medium text-sm hover:bg-[#2d5f43] transition"
                 >
-                  View Plots
+                  {t('plots.plotList')}
                 </button>
               </div>
             </div>

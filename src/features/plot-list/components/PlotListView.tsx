@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft, FaPlus } from "react-icons/fa";
 import { FieldService } from "../../../services/field";
 import { usePlots } from "../hooks";
@@ -13,6 +14,7 @@ import { FloatingChatButton } from "../../../shared/components/ui/FloatingChatBu
 import type { Plot, CreatePlotResource, UpdatePlotResource } from "../types/plot.types";
 
 export function PlotListView() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
@@ -118,14 +120,14 @@ export function PlotListView() {
        
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium">
           <FaArrowLeft size={16} />
-          <span>Back</span>
+          <span>{t('common.back')}</span>
         </button>
 
         <div className="mb-8 flex justify-between items-center">
           <h1 className="text-4xl font-bold text-gray-900">
-            Field Plots
+            {t('plots.title')}
           </h1>
-          {!isAdmin && <AddButton onClick={handleOpenAddModal} label="Add Plot"/>}
+          {!isAdmin && <AddButton onClick={handleOpenAddModal} label={t('plots.addPlot')}/>}
         </div>
 
         {error && (
@@ -142,10 +144,10 @@ export function PlotListView() {
                   <FaPlus className="text-gray-400 text-3xl" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                  No Plots Found
+                  {t('plots.noPlotsFound')}
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  You haven't created any plots yet. Create your first plot to start organizing your crops.
+                  {t('dashboard.createFirstPlot')}
                 </p>
               </div>
               
@@ -155,7 +157,7 @@ export function PlotListView() {
                 disabled={!fieldId}
               >
                 <FaPlus />
-                Add Plot
+                {t('plots.addPlot')}
               </button>
             </div>
           </div>
@@ -187,10 +189,10 @@ export function PlotListView() {
           isOpen={isDeleteModalOpen}
           onConfirm={handleDeleteConfirm}
           onCancel={handleDeleteCancel}
-          title="Delete Plot"
-          message="Are you sure you want to delete this plot? This action cannot be undone."
-          confirmText="Delete"
-          cancelText="Cancel"
+          title={t('plots.deletePlot')}
+          message={t('messages.confirmAction')}
+          confirmText={t('common.delete')}
+          cancelText={t('common.cancel')}
           confirmButtonColor="bg-red-600 hover:bg-red-700"
         />
       </div>

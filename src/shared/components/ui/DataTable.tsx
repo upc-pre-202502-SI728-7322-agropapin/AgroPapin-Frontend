@@ -1,4 +1,5 @@
 import { LuPencil } from 'react-icons/lu';
+import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
 import {IoTrashOutline} from "react-icons/io5";
 
@@ -31,6 +32,7 @@ export function DataTable<T>({
   showActions = true,
   emptyMessage,
 }: DataTableProps<T>) {
+  const { t } = useTranslation();
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
@@ -106,7 +108,7 @@ export function DataTable<T>({
       {/* paginator - only show when there's data */}
       {data.length > 0 && (
         <div className="px-6 py-4 border-t border-gray-200 flex justify-end items-center gap-4">
-          <span className="text-sm text-gray-600">Records per page</span>
+          <span className="text-sm text-gray-600">{t('common.recordsPerPage')}</span>
           <select className="border border-gray-300 rounded px-2 py-1 text-sm">
             <option>5</option>
             <option>10</option>

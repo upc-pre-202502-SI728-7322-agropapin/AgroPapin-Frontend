@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { CooperativeService } from '../../../services/cooperative/CooperativeService';
 import type { MemberFieldResource } from '../../cooperative/types/cooperative.types';
 import { FaArrowLeft } from 'react-icons/fa';
 import fieldImage from '../../../assets/campo-predeterminado.png';
 
 export function AdminFieldsView() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [membersFields, setMembersFields] = useState<MemberFieldResource[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +51,7 @@ export function AdminFieldsView() {
       <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-center items-center h-64">
-            <div className="text-gray-600">Loading fields...</div>
+            <div className="text-gray-600">{t('common.loading')}</div>
           </div>
         </div>
       </div>
@@ -61,13 +63,13 @@ export function AdminFieldsView() {
       <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">No Cooperative Found</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('cooperative.noCooperativeFound')}</h2>
             <p className="text-gray-600 mb-6">
-              You need to create a cooperative before you can view fields.
+              {t('field.needCooperativeView')}
             </p>
             <button
               onClick={() => window.location.href = '/create-cooperative'} className="bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold px-6 py-3 rounded-lg transition-colors">
-              Create Cooperative
+              {t('cooperative.createCooperative')}
             </button>
           </div>
         </div>
@@ -84,12 +86,12 @@ export function AdminFieldsView() {
           className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
         >
           <FaArrowLeft size={16} />
-          <span>Back</span>
+          <span>{t('common.back')}</span>
         </button>
 
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Fields Information</h1>
-          <p className="text-gray-600">View all fields from cooperative members</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('field.fieldsInformation')}</h1>
+          <p className="text-gray-600">{t('field.viewAllFields')}</p>
         </div>
 
         {/* Fields Grid */}
@@ -97,10 +99,10 @@ export function AdminFieldsView() {
           <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
             <div className="max-w-md mx-auto">
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                No Fields Found
+                {t('field.noFieldsFound')}
               </h2>
               <p className="text-gray-600">
-                No farmers in your cooperative have registered fields yet.
+                {t('field.noFarmersFields')}
               </p>
             </div>
           </div>
@@ -116,14 +118,14 @@ export function AdminFieldsView() {
                     <div className="space-y-6">
                       <div className="pb-4 border-b border-gray-200">
                         <label className="block text-sm font-medium text-gray-500 mb-2">
-                          Farmer Name
+                          {t('cooperative.farmerName')}
                         </label>
                         <p className="text-xl font-bold text-gray-900">{memberField.farmerFullName}</p>
                       </div>
 
                       <div className="pb-4 border-b border-gray-200">
                         <label className="block text-sm font-medium text-gray-500 mb-2">
-                          Field Name
+                          {t('field.fieldName')}
                         </label>
                         <p className="text-xl font-bold text-gray-900">
                           {memberField.fieldName}
@@ -133,7 +135,7 @@ export function AdminFieldsView() {
                       {memberField.location && (
                         <div className="pb-4 border-b border-gray-200">
                           <label className="block text-sm font-medium text-gray-500 mb-2">
-                            Location
+                            {t('plots.location')}
                           </label>
                           <p className="text-xl font-bold text-gray-900">{memberField.location}</p>
                         </div>
@@ -142,7 +144,7 @@ export function AdminFieldsView() {
                       {memberField.totalArea && (
                         <div className="pb-4 border-b border-gray-200">
                           <label className="block text-sm font-medium text-gray-500 mb-2">
-                            Total Area
+                            {t('field.totalArea')}
                           </label>
                           <p className="text-xl font-bold text-gray-900">{memberField.totalArea} m²</p>
                         </div>
@@ -150,7 +152,7 @@ export function AdminFieldsView() {
 
                       <div className="pb-4">
                         <label className="block text-sm font-medium text-gray-500 mb-2">
-                          Status
+                          {t('common.status')}
                         </label>
                         <span className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${
                           memberField.fieldId
@@ -168,11 +170,11 @@ export function AdminFieldsView() {
                           onClick={() => handleViewPlots(memberField)}
                           className="w-full px-4 py-2 bg-[#3E7C59] text-white rounded-lg font-medium text-sm hover:bg-[#2d5f43] transition"
                         >
-                          View Plots
+                          {t('plots.plotList')}
                         </button>
                       ) : (
                         <div className="text-center text-gray-400 py-2 text-sm">
-                          No field assigned
+                          {t('field.noFieldAssigned')}
                         </div>
                       )}
                     </div>

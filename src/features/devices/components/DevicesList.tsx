@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { StatusBadge } from '../../../shared/components/ui/StatusBadge';
 import { DataTable } from '../../../shared/components/ui/DataTable';
 import type { Device } from '../types/device.types';
@@ -11,12 +12,14 @@ interface DevicesListProps {
 }
 
 export function DevicesList({ devices, onRowClick, onEdit, onDelete, isAdmin = false }: DevicesListProps) {
+  const { t } = useTranslation();
+  
   const columns = [
-    { key: 'serialNumber', label: 'Serial Number' },
-    { key: 'deviceType', label: 'Device Type' },
-    { key: 'model', label: 'Model' },
-    { key: 'version', label: 'Version' },
-    { key: 'status', label: 'Status' },
+    { key: 'serialNumber', label: t('devices.serialNumber') },
+    { key: 'deviceType', label: t('devices.deviceType') },
+    { key: 'model', label: t('devices.model') },
+    { key: 'version', label: t('devices.version') },
+    { key: 'status', label: t('common.status') },
   ];
 
   const renderCell = (device: Device, columnKey: string) => {
@@ -46,7 +49,7 @@ export function DevicesList({ devices, onRowClick, onEdit, onDelete, isAdmin = f
       onEdit={onEdit ? (device) => onEdit(device.id) : undefined}
       onDelete={onDelete ? (device) => onDelete(device.id) : undefined}
       showActions={!isAdmin}
-      emptyMessage="No devices found. Add your first device to get started."
+      emptyMessage={t('devices.noDevices')}
     />
   );
 }

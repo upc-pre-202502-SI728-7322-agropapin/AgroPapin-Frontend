@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft } from 'react-icons/fa';
 import IrrigationService from '../../../services/irrigation/IrrigationService';
 import { FieldService } from '../../../services/field/FieldService';
@@ -10,6 +11,7 @@ import { DataTable } from '../../../shared/components/ui/DataTable';
 import fieldImage from '../../../assets/campo-predeterminado.png';
 
 export function IrrigationHistoryView() {
+  const { t } = useTranslation();
   const { plotId } = useParams<{ plotId?: string }>();
   const navigate = useNavigate();
   const [plots, setPlots] = useState<PlotResource[]>([]);
@@ -89,11 +91,11 @@ export function IrrigationHistoryView() {
 
   const formatReason = (reason: string) => {
     const reasonMap: { [key: string]: string } = {
-      'MANUAL_ACTIVATION': 'Manual activation by user',
-      'AUTOMATED_LOW_HUMIDITY': 'Automated: Low humidity detected',
-      'AUTOMATED_THRESHOLD_EXCEEDED': 'Automated: Humidity threshold exceeded',
-      'SCHEDULED_IRRIGATION': 'Scheduled irrigation',
-      'EMERGENCY_ACTIVATION': 'Emergency activation'
+      'MANUAL_ACTIVATION': t('irrigation.manual'),
+      'AUTOMATED_LOW_HUMIDITY': t('irrigation.automated'),
+      'AUTOMATED_THRESHOLD_EXCEEDED': t('irrigation.automated'),
+      'SCHEDULED_IRRIGATION': t('irrigation.scheduled'),
+      'EMERGENCY_ACTIVATION': t('irrigation.active')
     };
     
     return reasonMap[reason] || reason;
@@ -102,22 +104,20 @@ export function IrrigationHistoryView() {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'EMPTY':
-        return 'Empty';
+        return t('common.none');
       case 'PLANTED':
-        return 'Planted';
+        return t('crops.growing');
       case 'HARVESTED':
-        return 'Harvested';
+        return t('crops.harvested');
       default:
         return status;
     }
   };
 
   const columns = [
-    { key: 'decision', label: 'Decision', width: '15%' },
-    { key: 'decisionTimestamp', label: 'Date & Time', width: '20%' },
-    { key: 'reason', label: 'Reason', width: '30%' },
-    { key: 'humidityReading', label: 'Humidity', width: '15%' },
-    { key: 'humidityThreshold', label: 'Threshold', width: '15%' }
+    { key: 'decision', label: t('irrigation.decision'), width: '15%' },
+    { key: 'decisionTimestamp', label: t('devices.dateTime'), width: '20%' },
+    { key: 'reason', label: t('irrigation.reason'), width: '30%' }
   ];
 
   return (
@@ -128,18 +128,18 @@ export function IrrigationHistoryView() {
           className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
         >
           <FaArrowLeft size={16} />
-          <span>Back</span>
+          <span>{t('common.back')}</span>
         </button>
 
         {!selectedPlot ? (
           <>
             <h1 className="text-4xl font-bold text-gray-900 text-center mb-8">
-              Select a Plot
+              {t('plots.selectPlot')}
             </h1>
 
             {loading ? (
               <div className="bg-white rounded-lg shadow-lg p-8">
-                <p className="text-gray-500 text-center py-8">Loading plots...</p>
+                <p className="text-gray-500 text-center py-8">{t('common.loading')}</p>
               </div>
             ) : plots.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -177,7 +177,7 @@ export function IrrigationHistoryView() {
                           onClick={() => handlePlotClick(plot)}
                           className="w-full bg-[#3E7C59] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#2d5f43] transition-colors"
                         >
-                          View Irrigation History
+                          {t('irrigation.history')}
                         </button>
                       </div>
                     </div>
@@ -185,14 +185,14 @@ export function IrrigationHistoryView() {
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow-lg p-8">
-                <p className="text-gray-500 text-center py-8">No plots found</p>
+                <p className="text-gray-500 text-center py-8">{t('plots.noPlotsFound')}</p>
               </div>
             )}
           </>
         ) : (
           <>
             <h1 className="text-4xl font-bold text-gray-900 text-center mb-2">
-              Irrigation History
+              {t('irrigation.history')}
             </h1>
             <p className="text-xl text-gray-600 text-center mb-8">
               {selectedPlot.plotName}
@@ -200,7 +200,7 @@ export function IrrigationHistoryView() {
 
             <div className="bg-white rounded-lg shadow-lg p-8">
               {logsLoading ? (
-                <p className="text-gray-500 text-center py-8">Loading irrigation history...</p>
+                <p className="text-gray-500 text-center py-8">{t('common.loading')}</p>
               ) : (
                 <DataTable
                   columns={columns}
@@ -213,23 +213,19 @@ export function IrrigationHistoryView() {
                           <span className={`font-semibold ${
                             item.decision === 'IRRIGATE' ? 'text-blue-600' : 'text-gray-600'
                           }`}>
-                            {item.decision === 'IRRIGATE' ? 'Irrigated' : 'No Action'}
+                            {item.decision === 'IRRIGATE' ? t('irrigation.irrigated') : t('irrigation.noAction')}
                           </span>
                         );
                       case 'decisionTimestamp':
                         return <span>{formatDateTime(item.decisionTimestamp)}</span>;
                       case 'reason':
                         return <span>{formatReason(item.reason)}</span>;
-                      case 'humidityReading':
-                        return <span>{item.humidityReading.toFixed(1)}%</span>;
-                      case 'humidityThreshold':
-                        return <span>{item.humidityThreshold.toFixed(1)}%</span>;
                       default:
                         return <span>{String(item[columnKey as keyof IrrigationLogResource])}</span>;
                     }
                   }}
                   showActions={false}
-                  emptyMessage="No irrigation history found for this plot"
+                  emptyMessage={t('irrigation.noHistoryFound')}
                 />
               )}
             </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Message } from '../types/chat.types';
 import { ChatBubble } from './ChatBubble';
 import agropapinLogo from "../../../assets/agropapin.png"
@@ -9,6 +10,7 @@ interface ChatWindowProps {
 }
 
 export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
+  const { t } = useTranslation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -27,10 +29,10 @@ export function ChatWindow({ messages, isLoading = false }: ChatWindowProps) {
              <img src={agropapinLogo} className="h-30 mx-auto" alt="Agrotech's logo"/>
           </div>
           <h3 className="text-xl font-semibold text-gray-700 mb-2">
-            Start a Conversation
+            {t('chat.startConversation')}
           </h3>
           <p className="text-gray-500">
-            Ask me anything about farming, crops, or agriculture!
+            {t('chat.askAboutCrops')}
           </p>
         </div>
       </div>

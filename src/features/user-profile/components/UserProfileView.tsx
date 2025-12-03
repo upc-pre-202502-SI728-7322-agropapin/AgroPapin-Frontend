@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft, FaCopy, FaCheck } from 'react-icons/fa';
 import { CgProfile } from 'react-icons/cg';
 import { useAuth } from '../../auth/context/AuthContext';
@@ -10,6 +11,7 @@ import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import type { UserProfile, UserProfileFormData } from '../types/user-profile.types';
 
 export function UserProfileView() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
@@ -137,7 +139,7 @@ export function UserProfileView() {
       <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-10">
-            <div className="text-center text-gray-600">Loading profile...</div>
+            <div className="text-center text-gray-600">{t('common.loading')}</div>
           </div>
         </div>
       </div>
@@ -149,7 +151,7 @@ export function UserProfileView() {
       <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-10">
-            <div className="text-center text-red-600">Failed to load profile</div>
+            <div className="text-center text-red-600">{t('errors.loadingError')}</div>
           </div>
         </div>
       </div>
@@ -164,10 +166,10 @@ export function UserProfileView() {
           className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
         >
           <FaArrowLeft size={16} />
-          <span>Back</span>
+          <span>{t('common.back')}</span>
         </button>
         <div className="bg-white rounded-lg shadow-lg p-10">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">My Profile</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('profile.title')}</h1>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Profile Image */}
@@ -189,7 +191,7 @@ export function UserProfileView() {
             <div className="space-y-4">
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
-                  First Name
+                  {t('auth.firstName')}
                 </label>
                 <input
                   type="text"
@@ -201,7 +203,7 @@ export function UserProfileView() {
 
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
-                  Last Name
+                  {t('auth.lastName')}
                 </label>
                 <input
                   type="text"
@@ -213,7 +215,7 @@ export function UserProfileView() {
 
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
-                  Email:
+                  {t('profile.email')}:
                 </label>
                 <input
                   type="email"
@@ -225,7 +227,7 @@ export function UserProfileView() {
 
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
-                  Country:
+                  {t('auth.country')}:
                 </label>
                 <input
                   type="text"
@@ -240,16 +242,16 @@ export function UserProfileView() {
                   onClick={() => setIsEditModalOpen(true)}
                   className="w-full bg-[#3E7C59] text-white py-2.5 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold flex items-center justify-center gap-2"
                 >
-                  Edit Information
+                  {t('profile.editProfile')}
                 </button>
               </div>
             </div>
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">User ID</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">{t('profile.userId')}</h2>
             <p className="text-gray-600 mb-4">
-              Use this ID to identify your account in the system and get added in a cooperative.
+              {t('cooperative.enterUserId')}
             </p>
             <div className="flex items-center gap-3">
               <input
@@ -266,12 +268,12 @@ export function UserProfileView() {
                 {isCopied ? (
                   <>
                     <FaCheck size={16} />
-                    <span>Copied!</span>
+                    <span>{t('common.copied')}</span>
                   </>
                 ) : (
                   <>
                     <FaCopy size={16} />
-                    <span>Copy</span>
+                    <span>{t('common.copy')}</span>
                   </>
                 )}
               </button>
@@ -280,15 +282,15 @@ export function UserProfileView() {
 
           {/* Delete Account */}
           <div className="mt-12 pt-8 border-t border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Delete Account</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">{t('profile.changePassword')}</h2>
             <p className="text-gray-600 mb-4">
-              Permanently delete your account. This action cannot be undone.
+              {t('messages.dataLost')}
             </p>
             <button
               onClick={() => setIsDeleteModalOpen(true)}
               className="text-red-600 font-semibold hover:text-red-700 transition-colors"
             >
-              Delete Account
+              {t('common.delete')}
             </button>
           </div>
         </div>
@@ -309,10 +311,10 @@ export function UserProfileView() {
           setIsConfirmSaveModalOpen(false);
           setPendingChanges(null);
         }}
-        title="Save Changes"
-        message="Are you sure you want to save these changes to your profile?"
-        confirmText={isSaving ? 'Saving...' : 'Save'}
-        cancelText="Cancel"
+        title={t('common.save')}
+        message={t('messages.confirmAction')}
+        confirmText={isSaving ? t('common.loading') : t('common.save')}
+        cancelText={t('common.cancel')}
         confirmButtonColor="bg-[#3E7C59] hover:bg-[#2d5f43]"
       />
 
@@ -320,10 +322,10 @@ export function UserProfileView() {
         isOpen={isDeleteModalOpen}
         onConfirm={handleDeleteAccount}
         onCancel={() => setIsDeleteModalOpen(false)}
-        title="Delete Account"
-        message="Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted."
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('common.delete')}
+        message={t('messages.dataLost')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
         confirmButtonColor="bg-red-600 hover:bg-red-700"
       />
     </div>

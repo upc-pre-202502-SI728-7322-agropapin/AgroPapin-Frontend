@@ -6,9 +6,11 @@ import {useState, useEffect, useRef} from "react";
 import {CgProfile} from "react-icons/cg";
 import {useAuth} from "../../../features/auth/context/AuthContext.tsx";
 import {getDashboardRoute} from "../../utils/navigation.ts";
+import { useTranslation } from 'react-i18next';
 
 
 export function Navbar() {
+    const { t, i18n } = useTranslation();
     const [isOpen, setIsOpen] = useState(false)
     const [isProfileOpen, setIsProfileOpen] = useState(false)
     const profileRef = useRef<HTMLDivElement>(null)
@@ -59,11 +61,16 @@ export function Navbar() {
                         <button
                             onClick={handleDashboardClick}
                             className="bg-white text-[#3E7C59] px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
-                            Dashboard
+                            {t('nav.dashboard')}
                         </button>
                     )}
                     
-                    <button className="text-white hover:opacity-80 transition">EN</button>
+                    <button 
+                        onClick={() => i18n.changeLanguage(i18n.language === 'es' ? 'en' : 'es')}
+                        className="text-white hover:opacity-80 transition font-semibold"
+                    >
+                        {i18n.language === 'es' ? 'ES' : 'EN'}
+                    </button>
 
                     {showUserElements && (
                         <div className="relative" ref={profileRef}>
@@ -99,7 +106,7 @@ export function Navbar() {
                                         }}
                                         className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2">
                                         <CgProfile size={20} />
-                                        My Profile
+                                        {t('nav.profile')}
                                     </button>
                                     <hr className="my-1" />
                                     <button
@@ -111,7 +118,7 @@ export function Navbar() {
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                         </svg>
-                                        Logout
+                                        {t('nav.logout')}
                                     </button>
                                 </div>
                             )}
@@ -142,11 +149,16 @@ export function Navbar() {
                                 setIsOpen(false);
                             }}
                             className="block w-full bg-white text-[#3E7C59] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition text-center">
-                            Dashboard
+                            {t('nav.dashboard')}
                         </button>
                     )}
                     
-                    <button className="w-full text-left px-4 py-2 text-white hover:opacity-80 transition">EN</button>
+                    <button 
+                        onClick={() => i18n.changeLanguage(i18n.language === 'es' ? 'en' : 'es')}
+                        className="w-full text-left px-4 py-2 text-white hover:opacity-80 transition font-semibold"
+                    >
+                        {i18n.language === 'es' ? 'ES' : 'EN'}
+                    </button>
 
                     {showUserElements && (
                         <>
@@ -175,7 +187,7 @@ export function Navbar() {
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                 </svg>
-                                Logout
+                                {t('nav.logout')}
                             </button>
                         </>
                     )}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Control, ControlFormData } from '../types/control.types';
 
 interface ControlModalProps {
@@ -9,6 +10,7 @@ interface ControlModalProps {
 }
 
 export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<ControlFormData>({
     leaves: '',
     stemCondition: '',
@@ -55,17 +57,17 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          {control ? 'Edit Control' : 'Add Control'}
+          {control ? t('controls.editControl') : t('controls.addControl')}
         </h2>
         
         <p className="text-gray-600 text-center mb-6">
-          Enter the leaf condition, stem condition and soil moisture.
+          {t('controls.enterControlInfo')}
         </p>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Leaf Condition
+              {t('controls.leafCondition')}
             </label>
             <input
               type="text"
@@ -81,7 +83,7 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
 
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Stem Condition
+              {t('controls.stemCondition')}
             </label>
             <input
               type="text"
@@ -97,7 +99,7 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
 
           <div className="mb-6">
             <label className="block text-gray-700 font-medium mb-2">
-              Soil Moisture
+              {t('controls.soilMoisture')}
             </label>
             <input
               type="text"
@@ -115,13 +117,13 @@ export function ControlModal({ isOpen, onClose, onSave, control }: ControlModalP
             <button
               type="submit"
               className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
-              {control ? 'Save' : 'Add'}
+              {control ? t('common.save') : t('common.add')}
             </button>
             <button
               type="button"
               onClick={onClose}
               className="flex-1 bg-gray-300 py-2 px-4  rounded-lg font-semibold hover:bg-gray-400 transition-colors">
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>

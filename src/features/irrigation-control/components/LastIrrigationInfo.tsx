@@ -1,4 +1,5 @@
 import type { LastIrrigation } from '../types/irrigation.types';
+import { useTranslation } from 'react-i18next';
 import { FaArrowRight } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 
@@ -8,12 +9,13 @@ interface LastIrrigationInfoProps {
 
 export function LastIrrigationInfo({ irrigation }: LastIrrigationInfoProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
 
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        Last Irrigation Information
+        {t('irrigation.lastIrrigationInformation')}
       </h3>
 
       <div className="flex flex-col md:flex-row gap-6">
@@ -21,10 +23,15 @@ export function LastIrrigationInfo({ irrigation }: LastIrrigationInfoProps) {
         <div className="flex-1 min-w-0 flex flex-col justify-between">
           <div>
             <p className="text-sm text-gray-600 mb-2">
-              <span className="font-medium">Irrigation on {irrigation.date}</span>
+              <span className="font-medium">{t('irrigation.irrigationOn', { date: irrigation.date })}</span>
             </p>
             <p className="text-sm text-gray-700 mb-4">
-              The last irrigation was performed on {irrigation.date} at {irrigation.time}, with a duration of {irrigation.duration} and water consumption of {irrigation.waterUsed}.
+              {t('irrigation.lastIrrigationDetails', { 
+                date: irrigation.date, 
+                time: irrigation.time, 
+                duration: irrigation.duration, 
+                waterUsed: irrigation.waterUsed 
+              })}
             </p>
           </div>
 
@@ -32,7 +39,7 @@ export function LastIrrigationInfo({ irrigation }: LastIrrigationInfoProps) {
             onClick={() => navigate('/devices/1/details/4')}
             className="flex justify-center items-center gap-3 bg-[#3E7C59] text-white py-3 px-6 rounded-lg hover:bg-[#2d5f43] transition-colors font-medium w-full sm:w-auto"
           >
-            View Details
+            {t('common.viewDetails')}
             <FaArrowRight />
           </button>
         </div>

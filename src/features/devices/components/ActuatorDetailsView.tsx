@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {FaArrowLeft, FaArrowRight} from 'react-icons/fa';
 import { AreaChart } from '../../../shared/components/charts/AreaChart';
 import { StatusBadge } from '../../../shared/components/ui/StatusBadge';
@@ -24,6 +25,7 @@ const mockConfigurations = {
 };
 
 export function ActuatorDetailsView() {
+  const { t } = useTranslation();
   const { cropId, deviceId } = useParams<{ cropId: string; deviceId: string }>();
   const navigate = useNavigate();
 
@@ -47,17 +49,17 @@ export function ActuatorDetailsView() {
           className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-4 font-medium"
         >
           <FaArrowLeft size={16} />
-          <span>Devices</span>
+          <span>{t('devices.title')}</span>
         </button>
         <h1 className="text-3xl font-bold text-gray-900">
-          Devices / {mockDevice.name}
+          {t('devices.title')} / {mockDevice.name}
         </h1>
       </div>
 
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Device Details</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('devices.deviceDetails')}</h2>
         <p className="text-gray-600">
-          Manage and view the configuration and information of the selected device.
+          {t('devices.manageConfiguration')}
         </p>
       </div>
 
@@ -67,19 +69,19 @@ export function ActuatorDetailsView() {
           {/* Device Information */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
-              Device Information
+              {t('devices.deviceInformation')}
             </h3>
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Device Name</p>
+                <p className="text-sm text-gray-600 mb-1">{t('devices.deviceName')}</p>
                 <p className="text-gray-900 font-medium">{mockDevice.name}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Device Type</p>
+                <p className="text-sm text-gray-600 mb-1">{t('devices.deviceType')}</p>
                 <p className="text-gray-900 font-medium capitalize">{mockDevice.type}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Status</p>
+                <p className="text-sm text-gray-600 mb-1">{t('common.status')}</p>
                 <StatusBadge status={mockDevice.status} />
               </div>
             </div>
@@ -88,12 +90,12 @@ export function ActuatorDetailsView() {
           {/* Historical Information */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="mb-6">
-              <h3 className="text-lg font-bold text-gray-900">Historical Information</h3>
+              <h3 className="text-lg font-bold text-gray-900">{t('devices.historicalInfo')}</h3>
             </div>
 
             {/* Water Level chart */}
             <AreaChart
-              title="Water Level Over Time (Last 7 Days)"
+              title={t('devices.waterLevel')}
               subtitle="+2%"
               data={waterLevelData}
               color="#60a5fa"
@@ -106,25 +108,25 @@ export function ActuatorDetailsView() {
         <div className="lg:col-span-1 space-y-6">
           {/* Last Irrigation ( */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Last Irrigation</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">{t('devices.lastIrrigation')}</h3>
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Time</p>
+                <p className="text-sm text-gray-600 mb-1">{t('devices.time')}</p>
                 <p className="text-gray-900 font-semibold text-2xl">{mockLastIrrigation.time}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Quantity</p>
+                <p className="text-sm text-gray-600 mb-1">{t('devices.quantity')}</p>
                 <p className="text-gray-900 font-semibold text-2xl">{mockLastIrrigation.quantity}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-1">Date</p>
+                <p className="text-sm text-gray-600 mb-1">{t('devices.date')}</p>
                 <p className="text-gray-900 font-semibold text-2xl">{mockLastIrrigation.date}</p>
               </div>
             </div>
             <button 
               onClick={() => navigate(`/devices/${cropId}/readings/${deviceId}`)}
               className="flex flex-row items-center justify-center gap-3 w-full mt-6 bg-[#3E7C59] text-white py-3 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
-              All Readings
+              {t('devices.allReadings')}
                 <FaArrowRight />
 
             </button>
@@ -132,11 +134,11 @@ export function ActuatorDetailsView() {
 
           {/* Configurations */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Configurations</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-4">{t('devices.configurations')}</h3>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-2">
-                  Sampling Rate (minutes)
+                  {t('devices.samplingRate')}
                 </label>
                 <input
                   type="number"
@@ -147,16 +149,16 @@ export function ActuatorDetailsView() {
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-2">
-                  Alert Threshold
+                  {t('devices.alertThreshold')}
                 </label>
                 <select
                   value={mockConfigurations.alertThreshold}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
                   disabled
                 >
-                  <option>Low</option>
-                  <option>Medium</option>
-                  <option>High</option>
+                  <option>{t('devices.low')}</option>
+                  <option>{t('devices.medium')}</option>
+                  <option>{t('devices.high')}</option>
                 </select>
               </div>
             </div>

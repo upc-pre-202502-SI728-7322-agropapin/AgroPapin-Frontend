@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IoMdClose } from 'react-icons/io';
 import type { ScheduleIrrigationForm } from '../types/irrigation.types';
 
@@ -15,6 +16,7 @@ export function ScheduleIrrigationModal({
   onSubmit, 
   fields 
 }: ScheduleIrrigationModalProps) {
+  const { t } = useTranslation();
   const today = new Date().toISOString().split('T')[0];
   
   const [formData, setFormData] = useState<ScheduleIrrigationForm>({
@@ -39,18 +41,18 @@ export function ScheduleIrrigationModal({
     const newErrors: typeof errors = {};
     
     if (!formData.fieldId) {
-      newErrors.fieldId = 'You must select a field';
+      newErrors.fieldId = t('irrigation.mustSelectField');
     }
     
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
     if (formData.startDate < today) {
-      newErrors.startDate = 'Start date cannot be before today';
+      newErrors.startDate = t('irrigation.startDateCannotBeBeforeToday');
     }
     
     if (formData.endDate < formData.startDate) {
-      newErrors.endDate = 'End date must be after start date';
+      newErrors.endDate = t('irrigation.endDateMustBeAfterStartDate');
     }
     
     setErrors(newErrors);
@@ -73,7 +75,7 @@ export function ScheduleIrrigationModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-md w-full p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Schedule Irrigation</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t('irrigation.scheduleIrrigation')}</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
@@ -84,13 +86,13 @@ export function ScheduleIrrigationModal({
         </div>
 
         <p className="text-gray-600 text-sm mb-6">
-          Select the field and date range to schedule the automatic irrigation system.
+          {t('irrigation.selectFieldAndDateRange')}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Field/Crop *
+              {t('field.fieldCrop')} *
             </label>
             <select
               value={formData.fieldId}
@@ -103,7 +105,7 @@ export function ScheduleIrrigationModal({
               }`}
               required
             >
-              <option value="">Select field</option>
+              <option value="">{t('field.selectField')}</option>
               {fields.map((field) => (
                 <option key={field.id} value={field.id}>
                   {field.name}
@@ -117,7 +119,7 @@ export function ScheduleIrrigationModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Start Date *
+              {t('irrigation.startDate')} *
             </label>
             <input
               type="date"
@@ -142,7 +144,7 @@ export function ScheduleIrrigationModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              End Date *
+              {t('irrigation.endDate')} *
             </label>
             <input
               type="date"
@@ -169,13 +171,13 @@ export function ScheduleIrrigationModal({
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-[#3E7C59] text-white rounded-lg hover:bg-[#2d5f43] transition-colors">
-              Schedule
+              {t('irrigation.schedule')}
             </button>
             <button
               type="button"
               onClick={onClose}
               className="flex-1 bg-gray-300 py-2 px-4  rounded-lg font-semibold hover:bg-gray-400 transition-colors">
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>

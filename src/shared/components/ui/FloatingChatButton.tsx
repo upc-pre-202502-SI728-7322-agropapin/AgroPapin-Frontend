@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import agropapinChatIcon from '../../../assets/agropapinChat.png';
 import { ChatView } from '../../../features/chat/components/ChatView';
 
@@ -9,6 +10,7 @@ interface FloatingChatButtonProps {
 }
 
 export function FloatingChatButton({ plotId: propPlotId, fieldId: propFieldId }: FloatingChatButtonProps = {}) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const params = useParams<{ plotId?: string }>();
   const location = useLocation();
@@ -30,9 +32,9 @@ export function FloatingChatButton({ plotId: propPlotId, fieldId: propFieldId }:
             <div className="flex items-center gap-3">
               <img src={agropapinChatIcon} alt="AgroPapin" className="w-10 h-10 object-contain" />
               <div>
-                <h3 className="font-semibold">AgroPapin Assistant</h3>
+                <h3 className="font-semibold">{t('chat.assistant')}</h3>
                 <p className="text-xs text-green-100">
-                  {plotId ? 'Plot Context' : fieldId ? 'Field Context' : 'Online'}
+                  {plotId ? t('chat.plotContext') : fieldId ? t('chat.fieldContext') : t('common.online')}
                 </p>
               </div>
             </div>

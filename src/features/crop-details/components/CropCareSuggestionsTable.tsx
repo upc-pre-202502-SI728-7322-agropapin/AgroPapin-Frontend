@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { SimpleTable } from '../../../shared/components/ui/SimpleTable';
 import type { CropCareRecommendation } from '../types/crop-care.types';
 
@@ -6,9 +7,11 @@ interface CropCareSuggestionsTableProps {
 }
 
 export function CropCareSuggestionsTable({ recommendations }: CropCareSuggestionsTableProps) {
+  const { t } = useTranslation();
+  
   const columns = [
-    { key: 'date', label: 'Date', width: '160px' },
-    { key: 'suggestion', label: 'Suggestions' },
+    { key: 'date', label: t('common.date'), width: '160px' },
+    { key: 'suggestion', label: t('crops.suggestions') },
   ];
 
   const renderCell = (rec: CropCareRecommendation, columnKey: string) => {
