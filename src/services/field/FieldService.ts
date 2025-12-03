@@ -1,5 +1,5 @@
 import { axiosClient } from '../api/axiosClient';
-import type { CreateFieldRequest, UpdateFieldRequest, FieldResponse } from '../../features/field-info/types/field.types';
+import type { CreateFieldRequest, UpdateFieldRequest, FieldResponse, CropDistribution } from '../../features/field-info/types/field.types';
 
 export class FieldService {
   // GET
@@ -14,6 +14,16 @@ export class FieldService {
       }
       console.error('Error obteniendo field:', error);
       throw error;
+    }
+  }
+
+  static async getCropDistribution(): Promise<CropDistribution[]> {
+    try {
+      const response = await axiosClient.get<CropDistribution[]>('/field/cropDistribution/me');
+      return response.data;
+    } catch (error: any) {
+      console.error('Error obteniendo distribución de cultivos:', error);
+      return [];
     }
   }
 

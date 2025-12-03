@@ -25,3 +25,18 @@ export interface FieldModalProps {
   onSave: (data: CreateFieldRequest | UpdateFieldRequest) => Promise<void>;
   field?: FieldResponse | null;
 }
+
+export interface CropType {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface CropDistribution {
+  id: string;
+  plantingDate: string;
+  actualHarvestDate?: string;
+  status: string;
+  plotId: string;
+  croptype: CropType;
+}
