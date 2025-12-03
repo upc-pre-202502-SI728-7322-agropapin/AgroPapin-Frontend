@@ -3,14 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getFarmerData } from "../../../services/dashboard/DashboardService";
 import { FieldService } from "../../../services/field/FieldService";
-import PlotService from "../../../services/plot/PlotService";
 import { useAuth } from "../../auth/context/AuthContext";
 import { ROUTES } from "../../../shared/constants/routes.ts";
 import { PiFarm } from 'react-icons/pi';
 import { LuSprout } from 'react-icons/lu';
 import { GiWaterDrop } from 'react-icons/gi';
-import type { FieldResponse } from '../../field-info/types/field.types';
-import type { PlotResource } from '../../plot-list/types/plot.types.tsx';
+import { CropsChart } from '../../../shared/components/ui/CropsChart';
+import type { CropDistribution } from '../../field-info/types/field.types';
 
 
 export function FarmerDashboardView() {
@@ -18,8 +17,7 @@ export function FarmerDashboardView() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [farmerData, setFarmerData] = useState<any>(null);
-  const [field, setField] = useState<FieldResponse | null>(null);
-  const [plots, setPlots] = useState<PlotResource[]>([]);
+  const [cropDistribution, setCropDistribution] = useState<CropDistribution[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,14 +32,10 @@ export function FarmerDashboardView() {
         console.log('respuesta', data);
         setFarmerData(data);
         
-        const fieldData = await FieldService.getField();
-        setField(fieldData);
+        await FieldService.getField();
         
-        if (fieldData?.id || fieldData?.fieldId) {
-          const fieldId = (fieldData.id || fieldData.fieldId)!;
-          const plotsData = await PlotService.getPlots(fieldId);
-          setPlots(plotsData);
-        }
+        const distribution = await FieldService.getCropDistribution();
+        setCropDistribution(distribution);
       } catch (error) {
         console.error('Error loading farmer data:', error);
       } finally {
@@ -64,15 +58,25 @@ export function FarmerDashboardView() {
     navigate(ROUTES.IRRIGATION_CONTROL);
   }
 
-  const handleManagePlotsClick = () => {
-    navigate(ROUTES.PLOT_LIST);
-  }
+  const cropColors = [
+    "#efb627", "#f13434", "#126de3", "#59a630", 
+    "#ef9347", "#af4df4", "#34c759", "#ff9500",
+    "#ff2d55", "#5856d6"
+  ];
 
-  const handlePlotClick = (plotId: string) => {
-    if (!field?.id && !field?.fieldId) return;
-    const fieldId = field.id || field.fieldId;
-    navigate(`${ROUTES.PLOT_LIST}?fieldId=${fieldId}&plotId=${plotId}`);
-  }
+  // Formater for crop distribution data
+  const cropCounts = cropDistribution.reduce((acc: any, crop: any) => {
+    const cropName = crop.croptype?.name || 'Desconocido';
+    acc[cropName] = (acc[cropName] || 0) + 1;
+    return acc;
+  }, {});
+
+  const total = cropDistribution.length;
+  const chartData = Object.entries(cropCounts).map(([name, count]: [string, any], index) => ({
+    name,
+    value: Math.round((count / total) * 100),
+    color: cropColors[index % cropColors.length]
+  }));
 
   return (
     <div className="min-h-[calc(100vh-80px)] bg-gray-50 py-8 px-4 md:px-8">
@@ -139,34 +143,17 @@ export function FarmerDashboardView() {
 
           {/* Right Column */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {loading ? t('common.loading') : field ? field.fieldName : t('field.noField')}
-              </h2>
-              <p className="text-sm text-gray-500 mb-6">{t('dashboard.yourPlots')}</p>
-              
-              <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
-                {loading ? (
-                  <p className="text-gray-500 text-center py-4">{t('common.loading')}</p>
-                ) : plots.length > 0 ? (
-                  plots.map((plot) => (
-                    <button
-                      key={plot.plotId}
-                      onClick={() => handlePlotClick(plot.plotId)}
-                      className="w-full text-left text-gray-700 py-2 px-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 rounded transition-colors"
-                    >
-                      {plot.plotName}
-                    </button>
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-center py-4">{t('dashboard.noPlots')}</p>
-                )}
+            {/* Crop Distribution Chart */}
+            {!loading && cropDistribution.length > 0 ? (
+              <CropsChart data={chartData} />
+            ) : (
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('dashboard.cropDistribution')}</h2>
+                <p className="text-gray-500 text-center py-12">
+                  {loading ? t('common.loading') : t('dashboard.noPlots')}
+                </p>
               </div>
-
-              <button onClick={handleManagePlotsClick} className="w-full bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                {t('dashboard.managePlots')}
-              </button>
-            </div>
+            )}
           </div>
         </div>
       </div>

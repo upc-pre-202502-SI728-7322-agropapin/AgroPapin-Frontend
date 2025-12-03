@@ -6,7 +6,6 @@ import { ROUTES } from "../../../shared/constants/routes";
 import type { CooperativeResource } from '../../cooperative/types/cooperative.types';
 import { PiFarm } from 'react-icons/pi';
 import { BiBox } from 'react-icons/bi';
-import { HiOutlineChartBar } from 'react-icons/hi';
 
 export function AdminDashboardView() {
   const { t } = useTranslation();
@@ -36,10 +35,6 @@ export function AdminDashboardView() {
 
   const handleSuppliesClick = () => {
     navigate(ROUTES.INVENTORY);
-  };
-
-  const handleStatisticsClick = () => {
-    navigate('/statistics');
   };
 
   const handleManageMembersClick = () => {
