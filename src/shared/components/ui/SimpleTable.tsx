@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface Column {
   key: string;
   label: string;
@@ -21,6 +23,7 @@ export function SimpleTable<T>({
   itemsPerPage = 5,
   totalItems,
 }: SimpleTableProps<T>) {
+  const { t } = useTranslation();
   const displayedItems = data.slice(0, itemsPerPage);
   const total = totalItems || data.length;
 
@@ -57,7 +60,7 @@ export function SimpleTable<T>({
 
       {/* paginator */}
       <div className="flex items-center justify-end gap-4 py-4 px-6 bg-white border-t border-gray-200">
-        <span className="text-sm text-gray-600">Records per page</span>
+        <span className="text-sm text-gray-600">{t('common.recordsPerPage')}</span>
         <select className="border border-gray-300 rounded px-2 py-1 text-sm">
           <option value="3">3</option>
           <option value="5">5</option>

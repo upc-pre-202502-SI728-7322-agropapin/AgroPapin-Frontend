@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Product, ProductFormData, ProductType } from '../types/product.types';
 
 interface ProductModalProps {
@@ -9,6 +10,7 @@ interface ProductModalProps {
 }
 
 export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<ProductFormData>({
     type: 'FERTILIZER',
     name: '',
@@ -60,17 +62,17 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          {product ? 'Edit Product' : 'Add Product'}
+          {product ? t('controls.editProduct') : t('controls.addProduct')}
         </h2>
         
         <p className="text-gray-600 text-center mb-6">
-          Enter the type of input, name and quantity used.
+          {t('controls.enterProductInfo')}
         </p>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Type
+              {t('controls.type')}
             </label>
             <select
               value={formData.type}
@@ -78,17 +80,17 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
               required
             >
-              <option value="FERTILIZER">Fertilizer</option>
-              <option value="PESTICIDE">Pesticide</option>
-              <option value="FUNGICIDE">Fungicide</option>
-              <option value="HERBICIDE">Herbicide</option>
-              <option value="SOIL_AMENDMENT">Soil Amendment</option>
+              <option value="FERTILIZER">{t('controls.fertilizer')}</option>
+              <option value="PESTICIDE">{t('controls.pesticide')}</option>
+              <option value="FUNGICIDE">{t('controls.fungicide')}</option>
+              <option value="HERBICIDE">{t('controls.herbicide')}</option>
+              <option value="SOIL_AMENDMENT">{t('controls.soilAmendment')}</option>
             </select>
           </div>
 
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Name
+              {t('inventory.name')}
             </label>
             <input
               type="text"
@@ -104,7 +106,7 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
 
           <div className="mb-6">
             <label className="block text-gray-700 font-medium mb-2">
-              Quantity
+              {t('controls.quantity')}
             </label>
             <input
               type="number"
@@ -122,10 +124,10 @@ export function ProductModal({ isOpen, onClose, onSave, product }: ProductModalP
 
           <div className="flex gap-4">
             <button type="submit" className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
-              {product ? 'Save' : 'Create'}
+              {product ? t('common.save') : t('common.create')}
             </button>
             <button type="button" onClick={onClose} className="flex-1 bg-gray-300 py-2 px-4  rounded-lg font-semibold hover:bg-gray-400 transition-colors">
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>

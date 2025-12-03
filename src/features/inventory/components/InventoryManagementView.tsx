@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { CooperativeService } from '../../../services/cooperative/CooperativeService';
 import { InventoryService } from '../../../services/inventory/InventoryService';
 import { DataTable, type TableColumn } from '../../../shared/components/ui/DataTable';
@@ -10,6 +11,7 @@ import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
 import { FaArrowLeft } from 'react-icons/fa';
 
 export function InventoryManagementView() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [items, setItems] = useState<InventoryItemResource[]>([]);
   const [loading, setLoading] = useState(true);
@@ -190,12 +192,12 @@ export function InventoryManagementView() {
   };
 
   const columns: TableColumn[] = [
-    { key: 'name', label: 'Name' },
-    { key: 'category', label: 'Category' },
-    { key: 'amount', label: 'Amount' },
-    { key: 'unit', label: 'Unit' },
-    { key: 'description', label: 'Description' },
-    { key: 'stockActions', label: 'Stock', width: '150px' },
+    { key: 'name', label: t('inventory.name') },
+    { key: 'category', label: t('inventory.category') },
+    { key: 'amount', label: t('inventory.amount') },
+    { key: 'unit', label: t('inventory.unit') },
+    { key: 'description', label: t('common.description') },
+    { key: 'stockActions', label: t('inventory.stock'), width: '150px' },
   ];
 
   const renderCell = (item: InventoryItemResource, columnKey: string) => {
@@ -219,7 +221,7 @@ export function InventoryManagementView() {
                 openIncreaseModal(item);
               }}
               className="text-green-600 hover:text-green-800 transition-colors p-2"
-              title="Increase Stock"
+              title={t('inventory.increaseStock')}
             >
               <IoAddCircleOutline size={22} />
             </button>
@@ -229,7 +231,7 @@ export function InventoryManagementView() {
                 openUseModal(item);
               }}
               className="text-orange-600 hover:text-orange-800 transition-colors p-2"
-              title="Use Supply"
+              title={t('inventory.useSupply')}
             >
               <IoRemoveCircleOutline size={22} />
             </button>
@@ -243,7 +245,7 @@ export function InventoryManagementView() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-gray-600">Loading inventory...</div>
+        <div className="text-gray-600">{t('common.loading')}</div>
       </div>
     );
   }
@@ -253,14 +255,14 @@ export function InventoryManagementView() {
       <div className="min-h-[calc(100vh-80px)] bg-gray-50 py-8 px-4 md:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">No Cooperative Found</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('cooperative.noCooperativeFound')}</h2>
             <p className="text-gray-600 mb-6">
-              You need to create a cooperative before you can manage inventory.
+              {t('inventory.needCooperative')}
             </p>
             <button
               onClick={() => window.location.href = '/create-cooperative'}
               className="bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold px-6 py-3 rounded-lg transition-colors">
-              Create Cooperative
+              {t('cooperative.createCooperative')}
             </button>
           </div>
         </div>
@@ -276,16 +278,16 @@ export function InventoryManagementView() {
           className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
         >
           <FaArrowLeft size={16} />
-          <span>Back</span>
+          <span>{t('common.back')}</span>
         </button>
 
         {/* Header */}
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Supplies Management</h1>
-            <p className="text-gray-600">Manage your cooperative's inventory</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('inventory.title')}</h1>
+            <p className="text-gray-600">{t('inventory.manageInventory')}</p>
           </div>
-          <AddButton onClick={() => setShowCreateModal(true)} label="Add New Item" />
+          <AddButton onClick={() => setShowCreateModal(true)} label={t('inventory.addItem')} />
         </div>
 
         {/* Inventory Table */}
@@ -298,7 +300,7 @@ export function InventoryManagementView() {
             onEdit={openEditModal}
             onDelete={handleDelete}
             showActions={true}
-            emptyMessage="No items found. Add your first item."
+            emptyMessage={t('inventory.noItems')}
           />
         </div>
 
@@ -307,50 +309,50 @@ export function InventoryManagementView() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                Create New Item
+                {t('inventory.createItem')}
               </h2>
               
               <p className="text-gray-600 text-center mb-6">
-                Add a new item to your cooperative's inventory.
+                {t('inventory.addNewItem')}
               </p>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Name *</label>
+                  <label className="block text-gray-700 font-medium mb-2">{t('inventory.name')} *</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
-                    placeholder="Ex: Organic Fertilizer"
+                    placeholder={t('inventory.enterName')}
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Description</label>
+                  <label className="block text-gray-700 font-medium mb-2">{t('common.description')}</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
                     rows={3}
-                    placeholder="Brief description of the item"
+                    placeholder={t('inventory.briefDescription')}
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Category *</label>
+                  <label className="block text-gray-700 font-medium mb-2">{t('inventory.category')} *</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value as SupplyCategory })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
                   >
-                    <option value="FERTILIZER">Fertilizer</option>
-                    <option value="PESTICIDE">Pesticide</option>
-                    <option value="SEED">Seed</option>
-                    <option value="TOOL">Tool</option>
-                    <option value="OTHER">Other</option>
+                    <option value="FERTILIZER">{t('inventory.fertilizer')}</option>
+                    <option value="PESTICIDE">{t('inventory.pesticide')}</option>
+                    <option value="SEED">{t('inventory.seed')}</option>
+                    <option value="TOOL">{t('inventory.tool')}</option>
+                    <option value="OTHER">{t('inventory.other')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Initial Amount *</label>
+                  <label className="block text-gray-700 font-medium mb-2">{t('inventory.initialAmount')} *</label>
                   <input
                     type="number"
                     value={formData.initialAmount}
@@ -366,12 +368,12 @@ export function InventoryManagementView() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Unit *</label>
+                  <label className="block text-gray-700 font-medium mb-2">{t('inventory.unit')} *</label>
                   <input
                     type="text"
                     value={formData.unit}
                     onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                    placeholder="kg, liters, units, etc."
+                    placeholder={t('inventory.unitPlaceholder')}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
                   />
                 </div>
@@ -380,12 +382,12 @@ export function InventoryManagementView() {
                 <button
                   onClick={handleCreate}
                   className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
-                  Create
+                  {t('common.create')}
                 </button>
                 <button
                   onClick={() => setShowCreateModal(false)}
                   className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>
@@ -397,16 +399,16 @@ export function InventoryManagementView() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                Edit Item
+                {t('inventory.editItem')}
               </h2>
               
               <p className="text-gray-600 text-center mb-6">
-                Update the item information.
+                {t('inventory.updateInfo')}
               </p>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Name *</label>
+                  <label className="block text-gray-700 font-medium mb-2">{t('inventory.name')} *</label>
                   <input
                     type="text"
                     value={editFormData.name}
@@ -415,7 +417,7 @@ export function InventoryManagementView() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Description</label>
+                  <label className="block text-gray-700 font-medium mb-2">{t('common.description')}</label>
                   <textarea
                     value={editFormData.description}
                     onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
@@ -424,23 +426,23 @@ export function InventoryManagementView() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Category *</label>
+                  <label className="block text-gray-700 font-medium mb-2">{t('inventory.category')} *</label>
                   <select
                     value={editFormData.category}
                     onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value as SupplyCategory })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
                   >
-                    <option value="FERTILIZER">Fertilizer</option>
-                    <option value="PESTICIDE">Pesticide</option>
-                    <option value="SEED">Seed</option>
-                    <option value="TOOL">Tool</option>
-                    <option value="OTHER">Other</option>
+                    <option value="FERTILIZER">{t('inventory.fertilizer')}</option>
+                    <option value="PESTICIDE">{t('inventory.pesticide')}</option>
+                    <option value="SEED">{t('inventory.seed')}</option>
+                    <option value="TOOL">{t('inventory.tool')}</option>
+                    <option value="OTHER">{t('inventory.other')}</option>
                   </select>
                 </div>
               </div>
               <div className="flex gap-4 mt-6">
                 <button onClick={handleEdit} className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
-                  Save
+                  {t('common.save')}
                 </button>
                 <button
                   onClick={() => {
@@ -448,7 +450,7 @@ export function InventoryManagementView() {
                     setSelectedItem(null);
                   }}
                   className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>
@@ -460,20 +462,20 @@ export function InventoryManagementView() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                Increase Stock
+                {t('inventory.increaseStock')}
               </h2>
               
               <p className="text-gray-600 text-center mb-6">
-                Add more stock for <span className="font-semibold">{selectedItem.name}</span>
+                {t('inventory.addMoreStock')} <span className="font-semibold">{selectedItem.name}</span>
               </p>
 
               <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600">Current Stock</p>
+                <p className="text-sm text-gray-600">{t('inventory.currentStock')}</p>
                 <p className="text-2xl font-bold text-gray-900">{selectedItem.amount} {selectedItem.unit}</p>
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 font-medium mb-2">Amount to Add *</label>
+                <label className="block text-gray-700 font-medium mb-2">{t('inventory.amountToAdd')} *</label>
                 <input
                   type="number"
                   value={increaseAmount}
@@ -490,7 +492,7 @@ export function InventoryManagementView() {
                   onClick={handleIncrease} 
                   className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold"
                 >
-                  Add Stock
+                  {t('inventory.addStock')}
                 </button>
                 <button
                   onClick={() => {
@@ -499,7 +501,7 @@ export function InventoryManagementView() {
                   }}
                   className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>
@@ -511,21 +513,21 @@ export function InventoryManagementView() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                Use Supply
+                {t('inventory.useSupply')}
               </h2>
               
               <p className="text-gray-600 text-center mb-6">
-                Record usage of <span className="font-semibold">{selectedItem.name}</span>
+                {t('inventory.recordUsage')} <span className="font-semibold">{selectedItem.name}</span>
               </p>
 
               <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600">Available Stock</p>
+                <p className="text-sm text-gray-600">{t('inventory.availableStock')}</p>
                 <p className="text-2xl font-bold text-gray-900">{selectedItem.amount} {selectedItem.unit}</p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Amount to Use *</label>
+                  <label className="block text-gray-700 font-medium mb-2">{t('inventory.amountToUse')} *</label>
                   <input
                     type="number"
                     value={useAmount}
@@ -538,13 +540,13 @@ export function InventoryManagementView() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 font-medium mb-2">Purpose *</label>
+                  <label className="block text-gray-700 font-medium mb-2">{t('inventory.purpose')} *</label>
                   <textarea
                     value={usePurpose}
                     onChange={(e) => setUsePurpose(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
                     rows={3}
-                    placeholder="What is this supply being used for?"
+                    placeholder={t('inventory.purposePlaceholder')}
                   />
                 </div>
               </div>
@@ -554,7 +556,7 @@ export function InventoryManagementView() {
                   onClick={handleUse} 
                   className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold"
                 >
-                  Use Supply
+                  {t('inventory.useSupply')}
                 </button>
                 <button
                   onClick={() => {
@@ -563,7 +565,7 @@ export function InventoryManagementView() {
                   }}
                   className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>
@@ -577,10 +579,10 @@ export function InventoryManagementView() {
             setShowDeleteModal(false);
             setItemToDelete(null);
           }}
-          title="Delete Item"
-          message={`Are you sure you want to delete "${itemToDelete?.name}"? This action cannot be undone.`}
-          confirmText="Delete"
-          cancelText="Cancel"
+          title={t('inventory.deleteItem')}
+          message={`${t('inventory.confirmDelete')} "${itemToDelete?.name}"? ${t('inventory.cannotUndo')}`}
+          confirmText={t('common.delete')}
+          cancelText={t('common.cancel')}
           confirmButtonColor="bg-red-600 hover:bg-red-700"
         />
       </div>

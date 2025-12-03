@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getFarmerData } from "../../../services/dashboard/DashboardService";
 import { FieldService } from "../../../services/field/FieldService";
 import PlotService from "../../../services/plot/PlotService";
@@ -13,6 +14,7 @@ import type { PlotResource } from '../../plot-list/types/plot.types.tsx';
 
 
 export function FarmerDashboardView() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [farmerData, setFarmerData] = useState<any>(null);
@@ -55,11 +57,11 @@ export function FarmerDashboardView() {
   }
 
   const handleCropTrackingClick = () => {
-    navigate(ROUTES.CROP_LIST);
+    navigate(ROUTES.CROP_TRACKING);
   }
 
   const handleIrrigationClick = () => {
-    navigate('/irrigation-history');
+    navigate(ROUTES.IRRIGATION_CONTROL);
   }
 
   const handleManagePlotsClick = () => {
@@ -77,13 +79,13 @@ export function FarmerDashboardView() {
       <div className="max-w-7xl mx-auto">
         
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('dashboard.title')}</h1>
           <p className="text-gray-600">
             {loading 
-              ? 'Loading...' 
+              ? t('common.loading') 
               : farmerData 
-                ? `Welcome, ${farmerData.firstName} ${farmerData.lastName}`
-                : 'Welcome to Agrotech dashboard'}
+                ? `${t('dashboard.welcomeBack')}, ${farmerData.firstName} ${farmerData.lastName}`
+                : t('dashboard.welcome')}
           </p>
         </div>
 
@@ -99,10 +101,10 @@ export function FarmerDashboardView() {
             >
               <div className="flex items-center gap-4 mb-3">
                 <PiFarm className="w-12 h-12" />
-                <h3 className="text-2xl font-bold">Field Information</h3>
+                <h3 className="text-2xl font-bold">{t('dashboard.fieldInfo')}</h3>
               </div>
               <p className="text-white/90 text-base">
-                Manage the details of your field, plots and crops.
+                {t('field.fieldDetails')}
               </p>
             </button>
 
@@ -113,10 +115,10 @@ export function FarmerDashboardView() {
             >
               <div className="flex items-center gap-4 mb-3">
                 <LuSprout className="w-12 h-12" />
-                <h3 className="text-2xl font-bold">Crop Tracking</h3>
+                <h3 className="text-2xl font-bold">{t('dashboard.cropTracking')}</h3>
               </div>
               <p className="text-white/90 text-base">
-                Track the stage of your crops and your supplies.
+                {t('crops.cropDetails')}
               </p>
             </button>
 
@@ -127,10 +129,10 @@ export function FarmerDashboardView() {
             >
               <div className="flex items-center gap-4 mb-3">
                 <GiWaterDrop className="w-12 h-12" />
-                <h3 className="text-2xl font-bold">Irrigation History</h3>
+                <h3 className="text-2xl font-bold">{t('irrigation.history')}</h3>
               </div>
               <p className="text-white/90 text-base">
-                View irrigation history.
+                {t('irrigation.irrigationLogs')}
               </p>
             </button>
           </div>
@@ -139,13 +141,13 @@ export function FarmerDashboardView() {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {loading ? 'Loading...' : field ? field.fieldName : 'No Field'}
+                {loading ? t('common.loading') : field ? field.fieldName : t('field.noField')}
               </h2>
-              <p className="text-sm text-gray-500 mb-6">Your Plots</p>
+              <p className="text-sm text-gray-500 mb-6">{t('dashboard.yourPlots')}</p>
               
               <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
                 {loading ? (
-                  <p className="text-gray-500 text-center py-4">Loading plots...</p>
+                  <p className="text-gray-500 text-center py-4">{t('common.loading')}</p>
                 ) : plots.length > 0 ? (
                   plots.map((plot) => (
                     <button
@@ -157,12 +159,12 @@ export function FarmerDashboardView() {
                     </button>
                   ))
                 ) : (
-                  <p className="text-gray-500 text-center py-4">No plots yet</p>
+                  <p className="text-gray-500 text-center py-4">{t('dashboard.noPlots')}</p>
                 )}
               </div>
 
               <button onClick={handleManagePlotsClick} className="w-full bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                Manage Plots
+                {t('dashboard.managePlots')}
               </button>
             </div>
           </div>

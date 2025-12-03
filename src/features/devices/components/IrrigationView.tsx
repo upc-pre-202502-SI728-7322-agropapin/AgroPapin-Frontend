@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ActivateIrrigationModal } from './ActivateIrrigationModal';
 import { useActuators } from '../hooks';
 import { useAuth } from '../../auth/context/AuthContext';
@@ -8,6 +9,7 @@ import type { IrrigationLogResource } from '../../../features/irrigation-control
 import { DataTable } from '../../../shared/components/ui/DataTable';
 
 export function IrrigationView() {
+  const { t } = useTranslation();
   const { plotId } = useParams<{ plotId: string }>();
   const { user } = useAuth();
   const isAdmin = user?.roles?.includes('ROLE_ADMINISTRATOR');
@@ -76,22 +78,20 @@ export function IrrigationView() {
   const columns = [
     { key: 'decision', label: 'Decision', width: '12%' },
     { key: 'decisionTimestamp', label: 'Date & Time', width: '18%' },
-    { key: 'reason', label: 'Reason', width: '35%' },
-    { key: 'humidityReading', label: 'Humidity', width: '15%' },
-    { key: 'humidityThreshold', label: 'Threshold', width: '15%' }
+    { key: 'reason', label: 'Reason', width: '35%' }
   ];
 
   return (
     <div className="p-4 md:p-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Irrigation Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('devices.irrigationManagement')}</h1>
         {!isAdmin && (
           <button
             onClick={() => setIsIrrigationModalOpen(true)}
             className="flex items-center gap-2 bg-[#3563BA] hover:bg-[#4A77C9] text-white font-semibold py-2 px-4 rounded-lg transition-colors"
           >
-            Activate Irrigation
+            {t('devices.activateIrrigation')}
           </button>
         )}
       </div>
@@ -99,7 +99,7 @@ export function IrrigationView() {
       {/* Irrigation History */}
       {logsLoading ? (
         <div className="bg-white rounded-2xl shadow-lg p-6">
-          <p className="text-gray-500 text-center py-8">Loading irrigation history...</p>
+          <p className="text-gray-500 text-center py-8">{t('common.loading')}</p>
         </div>
       ) : (
         <DataTable
@@ -120,16 +120,12 @@ export function IrrigationView() {
                 return <span>{formatDateTime(log.decisionTimestamp)}</span>;
               case 'reason':
                 return <span>{formatReason(log.reason)}</span>;
-              case 'humidityReading':
-                return <span>{log.humidityReading.toFixed(1)}%</span>;
-              case 'humidityThreshold':
-                return <span>{log.humidityThreshold.toFixed(1)}%</span>;
               default:
                 return <span>{String(log[columnKey as keyof IrrigationLogResource])}</span>;
             }
           }}
           showActions={false}
-          emptyMessage="No irrigation history yet"
+          emptyMessage={t('irrigation.noHistoryFound')}
         />
       )}
 

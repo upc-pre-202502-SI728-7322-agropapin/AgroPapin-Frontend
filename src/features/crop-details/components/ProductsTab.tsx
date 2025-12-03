@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ProductsTable } from './ProductsTable';
 import { ProductModal } from './ProductModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
@@ -88,6 +89,7 @@ const mockProductsData: Record<string, Product[]> = {
 };
 
 export function ProductsTab({ cropId, plotId, plantingId, isAdmin = false }: ProductsTabProps) {
+  const { t } = useTranslation();
   const [products, setProducts] = useState<Product[]>(
     mockProductsData[cropId] || mockProductsData['1']
   );
@@ -199,7 +201,7 @@ export function ProductsTab({ cropId, plotId, plantingId, isAdmin = false }: Pro
         <div className="flex justify-end mb-6">
           <AddButton
             onClick={handleOpenAddModal}
-            label="Add Product"
+            label={t('controls.addProduct')}
           />
         </div>
       )}
@@ -230,10 +232,10 @@ export function ProductsTab({ cropId, plotId, plantingId, isAdmin = false }: Pro
           setIsDeleteModalOpen(false);
           setProductToDelete(null);
         }}
-        title="Delete Product"
-        message="Are you sure you want to delete this product? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('controls.deleteProduct')}
+        message={t('controls.confirmDeleteProduct')}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
         confirmButtonColor="bg-red-600 hover:bg-red-700"
       />
     </div>

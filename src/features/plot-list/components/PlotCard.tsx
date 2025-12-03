@@ -1,17 +1,20 @@
+import { useTranslation } from 'react-i18next';
 import type { PlotCardProps } from "../types/plot.types";
 import fieldImage from "../../../assets/campo-predeterminado.png";
 import { LuPencil } from "react-icons/lu";
 import { IoTrashOutline } from "react-icons/io5";
 
 export function PlotCard({ plot, onInfoClick, onDevicesClick, onMetricsClick, onEdit, onDelete, isAdmin = false }: PlotCardProps) {
+  const { t } = useTranslation();
+  
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'EMPTY':
-        return 'Empty';
+        return t('plots.empty');
       case 'PLANTED':
-        return 'Planted';
+        return t('plots.planted');
       case 'HARVESTED':
-        return 'Harvested';
+        return t('plots.harvested');
       default:
         return status;
     }
@@ -58,15 +61,15 @@ export function PlotCard({ plot, onInfoClick, onDevicesClick, onMetricsClick, on
       <div className="p-4 flex flex-col gap-2">
         <div className="flex gap-3">
           <button onClick={() => onInfoClick(plot.plotId)} className="flex-1 bg-[#3E7C59] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#2d5f43] transition-colors">
-            Crops
+            {t('plots.crops')}
           </button>
           <button onClick={() => onDevicesClick(plot.plotId)} className="flex-1 bg-gray-200 text-[#3E7C59] px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition-colors">
-            Devices
+            {t('plots.devices')}
           </button>
         </div>
         {onMetricsClick && (
           <button onClick={() => onMetricsClick(plot.plotId)} className="w-full bg-blue-100 text-blue-700 px-4 py-2 rounded-lg font-medium hover:bg-blue-200 transition-colors">
-            Live Metrics
+            {t('plots.liveMetrics')}
           </button>
         )}
       </div>

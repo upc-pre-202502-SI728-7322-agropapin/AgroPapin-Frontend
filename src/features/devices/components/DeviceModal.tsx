@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Device } from '../types/device.types';
 import { validateField } from '../../../shared/utils/validations';
 
@@ -16,6 +17,7 @@ interface DeviceModalProps {
 }
 
 export function DeviceModal({ isOpen, onClose, onSave, device }: DeviceModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     serialNumber: '',
     type: 'sensor' as 'sensor' | 'actuator',
@@ -74,17 +76,17 @@ export function DeviceModal({ isOpen, onClose, onSave, device }: DeviceModalProp
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          Add Device
+          {t('devices.addDevice')}
         </h2>
         
         <p className="text-gray-600 text-center mb-6">
-          Enter the device information.
+          {t('devices.enterDeviceInfo')}
         </p>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Serial Number
+              {t('devices.serialNumber')}
             </label>
             <input
               type="text"
@@ -98,36 +100,36 @@ export function DeviceModal({ isOpen, onClose, onSave, device }: DeviceModalProp
 
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Device Type
+              {t('devices.deviceType')}
             </label>
             <select
               value={formData.type}
               onChange={(e) => setFormData({ ...formData, type: e.target.value as 'sensor' | 'actuator', deviceType: '' })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
               required>
-              <option value="sensor">Sensor</option>
-              <option value="actuator">Actuator</option>
+              <option value="sensor">{t('devices.sensor')}</option>
+              <option value="actuator">{t('devices.actuator')}</option>
             </select>
           </div>
 
           {formData.type === 'actuator' && (
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-2">
-                Actuator Type
+                {t('devices.actuatorType')}
               </label>
               <select value={formData.deviceType} onChange={(e) => setFormData({ ...formData, deviceType: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
                 required>
-                <option value="">Select type...</option>
-                <option value="IRRIGATION_VALVE">Irrigation Valve</option>
-                <option value="FERTILIZER_DISPENSER">Fertilizer Dispenser</option>
+                <option value="">{t('devices.selectType')}</option>
+                <option value="IRRIGATION_VALVE">{t('devices.irrigationValve')}</option>
+                <option value="FERTILIZER_DISPENSER">{t('devices.fertilizerDispenser')}</option>
               </select>
             </div>
           )}
 
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Model
+              {t('devices.model')}
             </label>
             <input
               type="text"
@@ -140,7 +142,7 @@ export function DeviceModal({ isOpen, onClose, onSave, device }: DeviceModalProp
 
           <div className="mb-6">
             <label className="block text-gray-700 font-medium mb-2">
-              Version
+              {t('devices.version')}
             </label>
             <input
               type="text"
@@ -158,13 +160,13 @@ export function DeviceModal({ isOpen, onClose, onSave, device }: DeviceModalProp
             <button
               type="submit"
               className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold">
-              Create
+              {t('common.create')}
             </button>
             <button
               type="button"
               onClick={onClose}
               className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>

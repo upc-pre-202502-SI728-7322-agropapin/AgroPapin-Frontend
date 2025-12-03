@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaArrowLeft } from 'react-icons/fa';
 import { DataTable, type TableColumn } from '../../../shared/components/ui/DataTable';
 
@@ -108,6 +109,7 @@ const columns: TableColumn[] = [
 
 export function SensorReadingsView() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const mockDevice = {
     name: 'Sensor 2'
@@ -122,18 +124,18 @@ export function SensorReadingsView() {
           className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-4 font-medium"
         >
           <FaArrowLeft size={16} />
-          <span>Devices</span>
+          <span>{t('nav.devices')}</span>
         </button>
         <h1 className="text-3xl font-bold text-gray-900">
-          Devices / {mockDevice.name} / All Readings
+          {t('nav.devices')} / {mockDevice.name} / {t('devices.allReadings')}
         </h1>
       </div>
 
       {/* Title */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">All Device Readings</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('devices.allReadings')}</h2>
         <p className="text-gray-600">
-          View the total data from the sensor device.
+          {t('devices.viewTotalData')}
         </p>
       </div>
 

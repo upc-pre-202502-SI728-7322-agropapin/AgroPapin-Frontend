@@ -1,4 +1,5 @@
 import { Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../features/auth';
 import { ROUTES } from '../constants/routes';
 import type { ReactNode } from 'react';
@@ -11,13 +12,14 @@ interface ProtectedRouteProps {
 // para proteger rutas que requieren autenticación, si no se encuentra autenticado redirige al login
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const { t } = useTranslation();
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#3E7C59] mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading...</p>
+          <p className="text-gray-600 text-lg">{t('common.loading')}</p>
         </div>
       </div>
     );

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FaSearch, FaArrowLeft } from 'react-icons/fa';
 import { CropTable } from './CropTable';
 import { CropModal } from './CropModal';
@@ -12,6 +13,7 @@ import type { CreatePlantingResource } from '../types/crop.types';
 import { ROUTES } from '../../../shared/constants/routes';
 
 export function CropListView() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
@@ -19,6 +21,7 @@ export function CropListView() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [plantingToDelete, setPlantingToDelete] = useState<string | null>(null);
+  const [plantingToDeleteName, setPlantingToDeleteName] = useState<string>('');
   const [fieldId, setFieldId] = useState<string | null>(null);
   const [plotId, setPlotId] = useState<string | null>(null);
   const [createError, setCreateError] = useState<string | null>(null);
@@ -76,7 +79,9 @@ export function CropListView() {
   };
 
   const handleDelete = (plantingId: string) => {
+    const planting = plantings.find(p => p.id === plantingId);
     setPlantingToDelete(plantingId);
+    setPlantingToDeleteName(planting?.croptype?.name || 'this crop');
     setIsDeleteModalOpen(true);
   };
 
@@ -85,6 +90,7 @@ export function CropListView() {
       await deletePlanting(plantingToDelete);
       await fetchPlantings();
       setPlantingToDelete(null);
+      setPlantingToDeleteName('');
       setIsDeleteModalOpen(false);
     }
   };
@@ -113,8 +119,6 @@ export function CropListView() {
     setIsModalOpen(true);
   };
 
-  const plantingToDeleteName = (Array.isArray(plantings) ? plantings.find(p => p.id === plantingToDelete)?.id : undefined) || 'this planting';
-
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
@@ -123,11 +127,11 @@ export function CropListView() {
           className="flex items-center gap-2 text-[#3E7C59] hover:text-[#2d5f43] transition-colors mb-6 font-medium"
         >
           <FaArrowLeft size={16} />
-          <span>Back</span>
+          <span>{t('common.back')}</span>
         </button>
 
         <h1 className="text-4xl font-bold text-gray-900 text-center mb-8">
-          Crops in Progress List
+          {t('crops.cropList')}
         </h1>
 
         {/* Card container */}
@@ -138,11 +142,11 @@ export function CropListView() {
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
           <input
             type="text"
-            placeholder="Search Crops"
+            placeholder={t('common.search')}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
           />
               </div>
-              {!isAdmin && <AddButton onClick={handleOpenAddModal} label="Add Crop" />}
+              {!isAdmin && <AddButton onClick={handleOpenAddModal} label={t('crops.addCrop')} />}
             </div>
           </div>
 
@@ -181,10 +185,10 @@ export function CropListView() {
             setIsDeleteModalOpen(false);
             setPlantingToDelete(null);
           }}
-          title="Delete Crop"
-          message={`Are you sure you want to delete ${plantingToDeleteName}? This action cannot be undone.`}
-          confirmText="Delete"
-          cancelText="Cancel"
+          title={t('crops.deleteCrop')}
+          message={`${t('messages.confirmAction')} ${plantingToDeleteName}?`}
+          confirmText={t('common.delete')}
+          cancelText={t('common.cancel')}
           confirmButtonColor="bg-red-600 hover:bg-red-700"
         />
       </div>

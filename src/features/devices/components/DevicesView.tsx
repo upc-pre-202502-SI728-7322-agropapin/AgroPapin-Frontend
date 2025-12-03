@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AddButton } from '../../../shared/components/ui/AddButton';
 import { Tabs } from '../../../shared/components/ui/Tabs';
 import { DevicesList } from './DevicesList';
@@ -7,7 +8,6 @@ import { DeviceModal } from './DeviceModal';
 import { DeleteDeviceModal } from './DeleteDeviceModal';
 import { AreaChart } from '../../../shared/components/charts/AreaChart';
 import { DevicesSidebar } from './DevicesSidebar';
-import { AlertsView } from './AlertsView';
 import { LiveMetricsView } from './LiveMetricsView';
 import { IrrigationView } from './IrrigationView';
 import { useActuators, useSensors, useTelemetry } from '../hooks';
@@ -20,6 +20,7 @@ import type { ActuatorResource } from '../types/actuator.types';
 import type { SensorResource } from '../types/sensor.types';
 
 export function DevicesView() {
+  const { t } = useTranslation();
   const { plotId } = useParams<{ plotId: string }>();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
@@ -28,7 +29,7 @@ export function DevicesView() {
   console.log('Current plotId from URL:', plotId);
   
   const [activeTab, setActiveTab] = useState<'sensors' | 'actuators'>('sensors');
-  const [activeSection, setActiveSection] = useState<'devices' | 'alerts' | 'metrics' | 'irrigation'>('devices');
+  const [activeSection, setActiveSection] = useState<'devices' | 'metrics' | 'irrigation'>('devices');
   const [selectedDays, setSelectedDays] = useState<number>(1); // 1 día predeterminado
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -74,8 +75,8 @@ export function DevicesView() {
   ];
 
   const tabs = [
-    { id: 'sensors', label: 'Sensors' },
-    { id: 'actuators', label: 'Actuators' },
+    { id: 'sensors', label: t('devices.sensors') },
+    { id: 'actuators', label: t('devices.actuators') },
   ];
 
   const filteredDevices = devices.filter(device => {
@@ -168,9 +169,7 @@ export function DevicesView() {
 
       {/* Main content */}
       <div className="flex-1 min-w-0">
-        {activeSection === 'alerts' ? (
-          <AlertsView />
-        ) : activeSection === 'metrics' ? (
+        {activeSection === 'metrics' ? (
           <LiveMetricsView />
         ) : activeSection === 'irrigation' ? (
           <IrrigationView />
@@ -178,8 +177,8 @@ export function DevicesView() {
           <div className="p-4 md:p-8">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Devices</h1>
-              {!isAdmin && <AddButton onClick={handleAddDevice} label="Add Device" />}
+              <h1 className="text-3xl font-bold text-gray-900">{t('devices.title')}</h1>
+              {!isAdmin && <AddButton onClick={handleAddDevice} label={t('devices.addDevice')} />}
             </div>
 
             {/* Tabs */}
@@ -196,7 +195,7 @@ export function DevicesView() {
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-gray-900">
-                    Sensor Metrics (Last {selectedDays} {selectedDays === 1 ? 'Day' : 'Days'})
+                    {t('devices.sensorMetrics')} ({t('devices.last')} {selectedDays} {selectedDays === 1 ? t('devices.day') : t('devices.days')})
                   </h2>
                   <div className="flex items-center gap-3">
                     <button
@@ -224,16 +223,16 @@ export function DevicesView() {
                       onChange={(e) => setSelectedDays(Number(e.target.value))}
                       className="px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#3E7C59] cursor-pointer"
                     >
-                      <option value={1}>Last 1 Day</option>
-                      <option value={7}>Last 7 Days</option>
-                      <option value={30}>Last 30 Days</option>
+                      <option value={1}>{t('devices.last')} 1 {t('devices.day')}</option>
+                      <option value={7}>{t('devices.last')} 7 {t('devices.days')}</option>
+                      <option value={30}>{t('devices.last')} 30 {t('devices.days')}</option>
                     </select>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                   <div className="min-w-0">
                     <AreaChart
-                      title="Temperature"
+                      title={t('devices.temperature')}
                       subtitle=""
                       data={telemetryData.map(d => ({ time: d.time, value: d.temperature || 0 }))}
                       color="#ef4444"
@@ -242,7 +241,7 @@ export function DevicesView() {
                   </div>
                   <div className="min-w-0">
                     <AreaChart
-                      title="Humidity"
+                      title={t('devices.humidity')}
                       subtitle=""
                       data={telemetryData.map(d => ({ time: d.time, value: d.humidity || 0 }))}
                       color="#3b82f6"
@@ -251,7 +250,7 @@ export function DevicesView() {
                   </div>
                   <div className="min-w-0">
                     <AreaChart
-                      title="Soil Moisture"
+                      title={t('devices.soilMoisture')}
                       subtitle=""
                       data={telemetryData.map(d => ({ time: d.time, value: d.soilMoisture || 0 }))}
                       color="#10b981"
@@ -264,7 +263,7 @@ export function DevicesView() {
 
             {/* Devices List */}
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Device List</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">{t('devices.deviceList')}</h2>
               <DevicesList 
                 devices={filteredDevices}
                 onDelete={isAdmin ? undefined : handleDelete}

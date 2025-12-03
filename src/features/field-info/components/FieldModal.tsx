@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { CreateFieldRequest, UpdateFieldRequest, FieldModalProps } from '../types/field.types';
 import { validateField } from '../../../shared/utils/validations';
 
 export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CreateFieldRequest | UpdateFieldRequest>({
     fieldName: '',
     location: '',
@@ -56,20 +58,20 @@ export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) 
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 ">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          {field ? 'Edit Field' : 'Create New Field'}
+          {field ? t('field.updateField') : t('field.createField')}
         </h2>
         
         <p className="text-gray-600  mb-6">
           {field 
-            ? 'Update your field information.' 
-            : 'To get started, we need some information about your field.'}
+            ? t('field.fieldInfo') 
+            : t('field.createFirstField')}
         </p>
 
         <div className="text-left">
             <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Field Name *
+              {t('field.fieldName')} *
             </label>
             <input
               type="text"
@@ -77,14 +79,14 @@ export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) 
               value={formData.fieldName}
               onChange={handleInputChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
-              placeholder="Ex: Velasquez Field"
+              placeholder={t('field.enterFieldName')}
               required
             />
           </div>
 
           <div className="mb-4">
             <label className="block text-gray-700 font-medium mb-2">
-              Location *
+              {t('plots.location')} *
             </label>
             <input
               type="text"
@@ -99,7 +101,7 @@ export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) 
 
           <div className="mb-6">
             <label className="block text-gray-700 font-medium mb-2">
-              Area (m²) *
+              {t('plots.area')} (m²) *
             </label>
             <input
               type="number"
@@ -122,14 +124,14 @@ export function FieldModal({ isOpen, onClose, onSave, field }: FieldModalProps) 
               type="submit"
               className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold"
             >
-              {field ? 'Save' : 'Create'}
+              {field ? t('common.save') : t('common.create')}
             </button>
             <button
               type="button"
               onClick={onClose}
               className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>

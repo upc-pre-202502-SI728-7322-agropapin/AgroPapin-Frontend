@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { DataTable } from '../../../shared/components/ui/DataTable';
 import type { Product } from '../types/product.types';
 
@@ -9,11 +10,13 @@ interface ProductsTableProps {
 }
 
 export function ProductsTable({ products, onEdit, onDelete, showActions = true }: ProductsTableProps) {
+  const { t } = useTranslation();
+  
   const columns = [
-    { key: 'date', label: 'Date' },
-    { key: 'type', label: 'Type' },
-    { key: 'name', label: 'Name' },
-    { key: 'quantity', label: 'Quantity' },
+    { key: 'date', label: t('controls.date') },
+    { key: 'type', label: t('controls.type') },
+    { key: 'name', label: t('inventory.name') },
+    { key: 'quantity', label: t('controls.quantity') },
   ];
 
   const renderCell = (product: Product, columnKey: string) => {
@@ -40,7 +43,7 @@ export function ProductsTable({ products, onEdit, onDelete, showActions = true }
       onDelete={onDelete ? (product) => onDelete(product.id) : undefined}
       getRowKey={(product) => product.id}
       showActions={showActions}
-      emptyMessage="No products found. Add your first product to track your harvest."
+      emptyMessage={t('controls.noProducts')}
     />
   );
 }

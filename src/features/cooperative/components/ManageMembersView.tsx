@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { CooperativeService } from '../../../services/cooperative/CooperativeService';
 import { DataTable, type TableColumn } from '../../../shared/components/ui/DataTable';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
@@ -7,6 +8,7 @@ import type { MemberSummaryResource } from '../types/cooperative.types';
 import { IoEyeOutline, IoArrowBack } from 'react-icons/io5';
 
 export function ManageMembersView() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [members, setMembers] = useState<MemberSummaryResource[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,12 +96,12 @@ export function ManageMembersView() {
   };
 
   const columns: TableColumn[] = [
-    { key: 'firstName', label: 'First Name' },
-    { key: 'lastName', label: 'Last Name' },
-    { key: 'country', label: 'Country' },
-    { key: 'phone', label: 'Phone' },
-    { key: 'userId', label: 'User ID' },
-    { key: 'actions', label: 'Actions', width: '120px' },
+    { key: 'firstName', label: t('auth.firstName') },
+    { key: 'lastName', label: t('auth.lastName') },
+    { key: 'country', label: t('auth.country') },
+    { key: 'phone', label: t('profile.phone') },
+    { key: 'userId', label: t('profile.userId') },
+    { key: 'actions', label: t('common.actions'), width: '120px' },
   ];
 
   const renderCell = (member: MemberSummaryResource, columnKey: string) => {
@@ -122,7 +124,7 @@ export function ManageMembersView() {
               handleViewField(member);
             }}
             className="text-blue-600 hover:text-blue-800 transition-colors p-2"
-            title="View Field"
+            title={t('field.viewField')}
           >
             <IoEyeOutline size={22} />
           </button>
@@ -135,7 +137,7 @@ export function ManageMembersView() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-gray-600">Loading members...</div>
+        <div className="text-gray-600">{t('common.loading')}</div>
       </div>
     );
   }
@@ -145,15 +147,15 @@ export function ManageMembersView() {
       <div className="min-h-[calc(100vh-80px)] bg-gray-50 py-8 px-4 md:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">No Cooperative Found</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('cooperative.noCooperativeFound')}</h2>
             <p className="text-gray-600 mb-6">
-              You need to create a cooperative before you can manage members.
+              {t('cooperative.needCreate')}
             </p>
             <button
               onClick={() => window.location.href = '/create-cooperative'}
               className="bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
             >
-              Create Cooperative
+              {t('cooperative.createCooperative')}
             </button>
           </div>
         </div>
@@ -171,21 +173,21 @@ export function ManageMembersView() {
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
           >
             <IoArrowBack size={20} />
-            <span>Back</span>
+            <span>{t('common.back')}</span>
           </button>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Manage Members</h1>
-          <p className="text-gray-600">Manage farmers in your cooperative</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('cooperative.manageMembers')}</h1>
+          <p className="text-gray-600">{t('cooperative.manageFarmers')}</p>
         </div>
 
         {/* Add Member Section */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Add New Member</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('cooperative.addMember')}</h2>
           <div className="flex gap-4">
             <input
               type="text"
               value={newUserId}
               onChange={(e) => setNewUserId(e.target.value)}
-              placeholder="Enter User ID"
+              placeholder={t('cooperative.enterUserId')}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
             />
             <button
@@ -193,7 +195,7 @@ export function ManageMembersView() {
               disabled={isAddingMember}
               className="bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold px-6 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isAddingMember ? 'Adding...' : 'Add Member'}
+              {isAddingMember ? t('common.loading') : t('cooperative.addMember')}
             </button>
           </div>
         </div>
@@ -207,7 +209,7 @@ export function ManageMembersView() {
             renderCell={renderCell}
             onDelete={handleDeleteMember}
             showActions={true}
-            emptyMessage="No members found. Add your first member above."
+            emptyMessage={t('cooperative.noMembers')}
           />
         </div>
       </div>
@@ -216,10 +218,10 @@ export function ManageMembersView() {
         isOpen={!!memberToDelete}
         onConfirm={confirmDeleteMember}
         onCancel={() => setMemberToDelete(null)}
-        title="Remove Member"
-        message={`Are you sure you want to remove ${memberToDelete?.firstName} ${memberToDelete?.lastName} from the cooperative?`}
-        confirmText="Remove"
-        cancelText="Cancel"
+        title={t('cooperative.removeMember')}
+        message={`${t('cooperative.confirmRemove')} ${memberToDelete?.firstName} ${memberToDelete?.lastName}?`}
+        confirmText={t('common.remove')}
+        cancelText={t('common.cancel')}
         confirmButtonColor="bg-red-600 hover:bg-red-700"
       />
     </div>

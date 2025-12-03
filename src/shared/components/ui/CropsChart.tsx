@@ -1,4 +1,5 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts"
+import { useTranslation } from 'react-i18next';
 
 interface CropData {
     name: string
@@ -20,9 +21,10 @@ const defaultData: CropData[] = [
 ]
 
 export function CropsChart({ data = defaultData }: CropsChartProps) {
+    const { t } = useTranslation();
     return (
         <div className="bg-white rounded-2xl shadow-md p-8 h-full flex flex-col">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Crop Distribution</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">{t('dashboard.cropDistribution')}</h2>
             <div className="flex-1 flex items-center justify-center">
                 <ResponsiveContainer width="100%" height={300}>
                     <PieChart>

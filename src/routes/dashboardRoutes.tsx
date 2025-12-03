@@ -6,6 +6,7 @@ import CreateCooperativePage from '../pages/cooperative/CreateCooperativePage';
 import FieldInformationPage from '../pages/field-info/FieldInformationPage';
 import CreateFieldPage from '../pages/field-info/CreateFieldPage';
 import CropListPage from '../pages/crop-list/CropListPage';
+import CropTrackingPage from '../pages/crop-tracking/CropTrackingPage';
 import { CropDetailPage } from '../pages/crop-detail/CropDetailPage';
 import DevicesPage from '../pages/devices/DevicesPage';
 import DeviceDetailsPage from '../pages/devices/DeviceDetailsPage';
@@ -77,6 +78,14 @@ export const dashboardRoutes: RouteObject[] = [
                 ),
             },
             {
+                path: ROUTES.CROP_TRACKING,
+                element: (
+                    <ProtectedRoute>
+                        <CropTrackingPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
                 path: ROUTES.CROP_DETAIL,
                 element: (
                     <ProtectedRoute>
@@ -144,7 +153,7 @@ export const dashboardRoutes: RouteObject[] = [
                 path: ROUTES.IRRIGATION_CONTROL,
                 element: (
                     <ProtectedRoute>
-                        <IrrigationControlPage />
+                        <IrrigationHistoryPage />
                     </ProtectedRoute>
                 ),
             },

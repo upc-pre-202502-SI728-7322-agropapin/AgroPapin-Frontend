@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { CooperativeService } from "../../../services/cooperative/CooperativeService";
 import { ROUTES } from "../../../shared/constants/routes";
 import type { CooperativeResource } from '../../cooperative/types/cooperative.types';
@@ -8,6 +9,7 @@ import { BiBox } from 'react-icons/bi';
 import { HiOutlineChartBar } from 'react-icons/hi';
 
 export function AdminDashboardView() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [cooperative, setCooperative] = useState<CooperativeResource | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,8 +51,8 @@ export function AdminDashboardView() {
       <div className="max-w-7xl mx-auto">
         
         <div className="mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-gray-600">Welcome to your cooperative dashboard</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">{t('dashboard.title')}</h1>
+          <p className="text-gray-600">{t('dashboard.welcome')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -64,10 +66,10 @@ export function AdminDashboardView() {
             >
               <div className="flex items-center gap-4 mb-3">
                 <PiFarm className="w-12 h-12" />
-                <h3 className="text-2xl font-bold">Field information</h3>
+                <h3 className="text-2xl font-bold">{t('dashboard.fieldInfo')}</h3>
               </div>
               <p className="text-white/90 text-base">
-                Manage the details of your field, plots and crops.
+                {t('field.viewAllFields')}
               </p>
             </button>
 
@@ -78,10 +80,10 @@ export function AdminDashboardView() {
             >
               <div className="flex items-center gap-4 mb-3">
                 <BiBox className="w-12 h-12" />
-                <h3 className="text-2xl font-bold">Supplies Management</h3>
+                <h3 className="text-2xl font-bold">{t('inventory.title')}</h3>
               </div>
               <p className="text-white/90 text-base">
-                Manage the supplies and resources of your cooperative.
+                {t('inventory.manageInventory')}
               </p>
             </button>
 
@@ -92,10 +94,10 @@ export function AdminDashboardView() {
             >
               <div className="flex items-center gap-4 mb-3">
                 <HiOutlineChartBar className="w-12 h-12" />
-                <h3 className="text-2xl font-bold">Field's statistics</h3>
+                <h3 className="text-2xl font-bold">{t('dashboard.statistics')}</h3>
               </div>
               <p className="text-white/90 text-base">
-                Manage the supplies and resources of your cooperative.
+                {t('dashboard.overview')}
               </p>
             </button>
           </div>
@@ -103,11 +105,11 @@ export function AdminDashboardView() {
           {/* Right Column - Cooperative Members */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Cooperative Members</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('cooperative.members')}</h2>
               
               <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
                 {loading ? (
-                  <p className="text-gray-500 text-center py-4">Loading members...</p>
+                  <p className="text-gray-500 text-center py-4">{t('common.loading')}</p>
                 ) : cooperative && cooperative.members.length > 0 ? (
                   cooperative.members.map((member) => (
                     <div key={member.id} className="text-gray-700 py-2 border-b border-gray-100 last:border-0">
@@ -115,12 +117,12 @@ export function AdminDashboardView() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500 text-center py-4">No members yet</p>
+                  <p className="text-gray-500 text-center py-4">{t('cooperative.noMembers')}</p>
                 )}
               </div>
 
               <button onClick={handleManageMembersClick} className="w-full bg-[#3E7C59] hover:bg-[#2d5f43] text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                Manage Members
+                {t('dashboard.manageMembers')}
               </button>
             </div>
 

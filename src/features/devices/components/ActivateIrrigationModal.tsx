@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ActivateIrrigationModalProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface ActivateIrrigationModalProps {
 }
 
 export function ActivateIrrigationModal({ isOpen, onClose, onActivate, actuators }: ActivateIrrigationModalProps) {
+  const { t } = useTranslation();
   const [selectedActuator, setSelectedActuator] = useState('');
   const [minutes, setMinutes] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,18 +46,18 @@ export function ActivateIrrigationModal({ isOpen, onClose, onActivate, actuators
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Activate Irrigation
+          {t('irrigation.activate')}
         </h2>
         
         <p className="text-gray-600 mb-6">
-          Select an irrigation actuator and set the duration.
+          {t('irrigation.selectActuatorDuration')}
         </p>
 
         <div className="text-left">
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-2">
-                Select Actuator *
+                {t('irrigation.selectActuator')} *
               </label>
               <select
                 value={selectedActuator}
@@ -63,7 +65,7 @@ export function ActivateIrrigationModal({ isOpen, onClose, onActivate, actuators
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"
                 required
               >
-                <option value="">Choose an irrigation actuator...</option>
+                <option value="">{t('irrigation.chooseActuator')}</option>
                 {irrigationActuators.map((actuator) => (
                   <option key={actuator.actuatorId} value={actuator.actuatorId}>
                     {actuator.serialNumber} - {actuator.actuatorType}
@@ -71,13 +73,13 @@ export function ActivateIrrigationModal({ isOpen, onClose, onActivate, actuators
                 ))}
               </select>
               {irrigationActuators.length === 0 && (
-                <p className="mt-2 text-sm text-red-600">No irrigation actuators available</p>
+                <p className="mt-2 text-sm text-red-600">{t('irrigation.noActuators')}</p>
               )}
             </div>
 
             <div className="mb-6">
               <label className="block text-gray-700 font-medium mb-2">
-                Duration (minutes) *
+                {t('irrigation.duration')} *
               </label>
               <input
                 type="number"
@@ -99,10 +101,10 @@ export function ActivateIrrigationModal({ isOpen, onClose, onActivate, actuators
                 type="submit" 
                 disabled={isSubmitting || !selectedActuator || irrigationActuators.length === 0}
                 className="flex-1 bg-[#3E7C59] text-white py-2 px-4 rounded-lg hover:bg-[#2d5f43] transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
-                {isSubmitting ? 'Activating...' : 'Activate'}
+                {isSubmitting ? t('common.activating') : t('irrigation.activate')}
               </button>
               <button type="button" onClick={onClose} disabled={isSubmitting} className="flex-1 bg-gray-300 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 transition-colors disabled:opacity-50">
-                Cancel
+                {t('common.cancel')}
               </button>
             </div>
           </form>

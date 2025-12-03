@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { CropDetailTabs } from './CropDetailTabs';
 import { GeneralInfoTab } from './GeneralInfoTab';
 import { ControlsTab } from './ControlsTab';
@@ -10,6 +11,7 @@ import type { PlantingResource } from '../../crop-list/types/crop.types';
 import {FaArrowLeft} from "react-icons/fa";
 
 export function CropDetailView() {
+  const { t } = useTranslation();
   const { fieldId, plotId, plantingId } = useParams<{ fieldId: string; plotId: string; plantingId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -41,9 +43,9 @@ export function CropDetailView() {
   }, [fieldId, plotId, plantingId]);
 
   const renderTabContent = () => {
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div>{t('common.loading')}</div>;
     if (error) return <div className="text-red-600">{error}</div>;
-    if (!planting) return <div>No planting found.</div>;
+    if (!planting) return <div>{t('crops.noPlantingFound')}</div>;
 
     const cropDetail = planting.croptype ? {
       ...planting.croptype,
@@ -54,17 +56,17 @@ export function CropDetailView() {
     } : null;
     switch (activeTab) {
       case 'general':
-        return cropDetail ? <GeneralInfoTab crop={cropDetail} /> : <div>No crop detail found.</div>;
+        return cropDetail ? <GeneralInfoTab crop={cropDetail} /> : <div>{t('crops.noCropDetail')}</div>;
       case 'controls':
         return fieldId && plotId && plantingId ? (
           <ControlsTab cropId={planting.id} plotId={plotId} plantingId={plantingId} isAdmin={isAdmin} />
-        ) : <div>Missing required information</div>;
+        ) : <div>{t('errors.missingInfo')}</div>;
       case 'products':
         return fieldId && plotId && plantingId ? (
           <ProductsTab cropId={planting.id} plotId={plotId} plantingId={plantingId} isAdmin={isAdmin} />
-        ) : <div>Missing required information</div>;
+        ) : <div>{t('errors.missingInfo')}</div>;
       default:
-        return cropDetail ? <GeneralInfoTab crop={cropDetail} /> : <div>No crop detail found.</div>;
+        return cropDetail ? <GeneralInfoTab crop={cropDetail} /> : <div>{t('crops.noCropDetail')}</div>;
     }
   };
 
@@ -75,7 +77,7 @@ export function CropDetailView() {
         className="mb-6 text-[#3E7C59] hover:text-[#2d5a42] transition-colors flex items-center gap-2 font-medium">
         <div className="flex items-center justify-center gap-2">
           <FaArrowLeft />
-          Back to Crop List
+          {t('crops.backToCropList')}
         </div>
 
       </button>

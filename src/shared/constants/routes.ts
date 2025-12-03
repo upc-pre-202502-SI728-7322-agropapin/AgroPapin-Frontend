@@ -9,6 +9,7 @@ export const ROUTES = {
     PLOT_LIST: '/plot-list',
     CREATE_PLOT: '/plot-list/create',
     CROP_LIST: '/crop-list',
+    CROP_TRACKING: '/crop-tracking',
     CROP_DETAIL: '/fields/:fieldId/plots/:plotId/plantings/:plantingId',
     DEVICES: '/plots/:plotId/devices',
     LIVE_METRICS: '/plots/:plotId/metrics',

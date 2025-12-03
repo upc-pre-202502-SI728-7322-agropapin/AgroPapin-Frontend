@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaSearch } from 'react-icons/fa';
 import { SimpleTable } from '../../../shared/components/ui/SimpleTable';
 import type { Pest } from '../types/pest.types';
@@ -73,6 +74,7 @@ const mockPestsData: Record<string, Pest[]> = {
 };
 
 export function PestsTab({ cropId }: PestsTabProps) {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const pests = mockPestsData[cropId] || mockPestsData['1'];
 
@@ -82,9 +84,9 @@ export function PestsTab({ cropId }: PestsTabProps) {
   );
 
   const columns = [
-    { key: 'name', label: 'Name', width: '200px' },
-    { key: 'description', label: 'Description' },
-    { key: 'solution', label: 'Solution' },
+    { key: 'name', label: t('common.name'), width: '200px' },
+    { key: 'description', label: t('common.description') },
+    { key: 'solution', label: t('crops.solution') },
   ];
 
   const renderCell = (pest: Pest, columnKey: string) => {
@@ -108,7 +110,7 @@ export function PestsTab({ cropId }: PestsTabProps) {
           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Search for diseases or pests"
+            placeholder={t('crops.searchDiseasesOrPests')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3E7C59]"

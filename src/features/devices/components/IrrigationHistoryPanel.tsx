@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { GiWaterDrop } from 'react-icons/gi';
 import type { IrrigationLogResource } from '../../../features/irrigation-control/types/irrigation.types';
 
@@ -7,6 +8,8 @@ interface IrrigationHistoryPanelProps {
 }
 
 export function IrrigationHistoryPanel({ logs, loading }: IrrigationHistoryPanelProps) {
+  const { t } = useTranslation();
+  
   const formatDateTime = (timestamp: string) => {
     const date = new Date(timestamp);
     return date.toLocaleString('en-US', {
@@ -21,12 +24,12 @@ export function IrrigationHistoryPanel({ logs, loading }: IrrigationHistoryPanel
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
       <div className="flex items-center gap-3 mb-6">
         <GiWaterDrop className="w-8 h-8 text-[#3563BA]" />
-        <h2 className="text-2xl font-bold text-gray-900">Irrigation History</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{t('irrigation.history')}</h2>
       </div>
 
       <div className="space-y-3 max-h-96 overflow-y-auto">
         {loading ? (
-          <p className="text-gray-500 text-center py-4">Loading irrigation history...</p>
+          <p className="text-gray-500 text-center py-4">{t('common.loading')}</p>
         ) : logs.length > 0 ? (
           logs.map((log) => (
             <div 
@@ -37,7 +40,7 @@ export function IrrigationHistoryPanel({ logs, loading }: IrrigationHistoryPanel
                 <span className={`font-semibold text-lg ${
                   log.decision === 'IRRIGATE' ? 'text-blue-600' : 'text-gray-600'
                 }`}>
-                  {log.decision === 'IRRIGATE' ? 'Irrigated' : '⏸ No Action'}
+                  {log.decision === 'IRRIGATE' ? t('irrigation.irrigated') : `⏸ ${t('irrigation.noAction')}`}
                 </span>
                 <span className="text-sm text-gray-500">
                   {formatDateTime(log.decisionTimestamp)}
@@ -53,7 +56,7 @@ export function IrrigationHistoryPanel({ logs, loading }: IrrigationHistoryPanel
         ) : (
           <div className="text-center py-8">
             <GiWaterDrop className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-            <p className="text-gray-500">No irrigation history yet</p>
+            <p className="text-gray-500">{t('irrigation.noHistoryYet')}</p>
           </div>
         )}
       </div>

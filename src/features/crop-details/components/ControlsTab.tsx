@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ControlsTable } from './ControlsTable';
 import { ControlModal } from './ControlModal';
 import { ConfirmModal } from '../../../shared/components/ui/ConfirmModal';
@@ -88,6 +89,7 @@ const mockControlsData: Record<string, Control[]> = {
 };
 
 export function ControlsTab({ cropId, plotId, plantingId, isAdmin = false }: ControlsTabProps) {
+  const { t } = useTranslation();
   const [controls, setControls] = useState<Control[]>(
     mockControlsData[cropId] || mockControlsData['1']
   );
@@ -204,7 +206,7 @@ export function ControlsTab({ cropId, plotId, plantingId, isAdmin = false }: Con
 
       {loading && (
         <div className="mb-4 text-center text-gray-600">
-          Loading controls...
+          {t('common.loading')}
         </div>
       )}
 
@@ -212,7 +214,7 @@ export function ControlsTab({ cropId, plotId, plantingId, isAdmin = false }: Con
         <div className="flex justify-end mb-6">
           <AddButton
             onClick={handleOpenAddModal}
-            label="Add Control"
+            label={t('controls.addControl')}
           />
         </div>
       )}
@@ -220,8 +222,8 @@ export function ControlsTab({ cropId, plotId, plantingId, isAdmin = false }: Con
       <div className="bg-white rounded-lg overflow-hidden ">
         {controls.length === 0 && !loading && !error ? (
           <div className="text-center py-12 text-gray-500">
-            <p className="text-lg mb-2">No controls registered yet</p>
-            <p className="text-sm">Click "Add Control" to register your first control</p>
+            <p className="text-lg mb-2">{t('controls.noControls')}</p>
+            <p className="text-sm">{t('controls.clickAddControl')}</p>
           </div>
         ) : (
           <ControlsTable
