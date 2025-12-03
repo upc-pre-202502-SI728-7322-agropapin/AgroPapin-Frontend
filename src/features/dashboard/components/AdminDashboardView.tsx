@@ -37,7 +37,6 @@ export function AdminDashboardView() {
     navigate(ROUTES.INVENTORY);
   };
 
-
   const handleManageMembersClick = () => {
     navigate(ROUTES.MANAGE_MEMBERS);
   };
